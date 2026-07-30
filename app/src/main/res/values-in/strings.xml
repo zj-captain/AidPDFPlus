@@ -1,0 +1,185 @@
+<resources>
+    <string name="back">Kembali</string>
+    <string name="language">Bahasa</string>
+    <string name="language_action_next">Lanjut</string>
+    <string name="language_action_ok">OK</string>
+    <string name="settings">Pengaturan</string>
+    <string name="privacy_policy">Kebijakan Privasi</string>
+    <string name="tab_home">Beranda</string>
+    <string name="tab_recent">Terbaru</string>
+    <string name="tab_favorites">Favorit</string>
+    <string name="tab_tools">Alat</string>
+    <string name="loading">Memproses...</string>
+    <string name="onboarding_file_management">Kelola dan pratinjau PDF serta berbagai format</string>
+    <string name="onboarding_split_merge">Pisahkan dan gabungkan dokumen dengan cepat</string>
+    <string name="onboarding_file_security">Mendukung enkripsi dan dekripsi file</string>
+    <string name="onboarding_action_skip">Lewati</string>
+    <string name="onboarding_action_next">Lanjut</string>
+    <string name="onboarding_action_start">Mulai</string>
+    <string name="create_pdf">Buat PDF</string>
+    <string name="merge_pdf">Gabungkan PDF</string>
+    <string name="split_pdf">Pisahkan PDF</string>
+    <string name="lock_pdf">Kunci PDF</string>
+    <string name="unlock_pdf">Buka PDF</string>
+    <string name="scan_to_pdf">Pindai ke PDF</string>
+    <string name="tools_convert_extract">Konversi dan ekstrak</string>
+    <string name="tools_group_tools">Alat</string>
+    <string name="tools_security">Keamanan</string>
+    <string name="permission_title">Izin file diperlukan</string>
+    <string name="permission_message">Berikan izin pengelolaan file untuk membaca dan mengedit dokumen.</string>
+    <string name="grant_now">Izinkan sekarang</string>
+    <string name="empty_title">Tidak ada file ditemukan</string>
+    <string name="empty_message">Dokumen yang didukung akan muncul di sini.</string>
+    <string name="empty_recent_title">Tidak ada file terbaru</string>
+    <string name="empty_favorites_title">Tidak ada favorit</string>
+    <string name="cancel">Batal</string>
+    <string name="confirm">Konfirmasi</string>
+    <string name="continue_action">Lanjutkan</string>
+    <string name="app_name">AidPDF</string>
+    <string name="filter_pdf">PDF</string>
+    <string name="filter_word">WORD</string>
+    <string name="filter_excel">EXCEL</string>
+    <string name="filter_ppt">PPT</string>
+    <string name="tab_setting">Alat</string>
+    <string name="language_coming_soon">Pengaturan bahasa segera hadir</string>
+    <string name="share">Bagikan</string>
+    <string name="details">Detail</string>
+    <string name="file_details">Detail file</string>
+    <string name="rename">Ganti nama</string>
+    <string name="delete">Hapus</string>
+    <string name="save">Simpan</string>
+    <string name="file_name">Nama file</string>
+    <string name="file_size">Ukuran file</string>
+    <string name="modified_time">Waktu diubah</string>
+    <string name="storage_path">Jalur penyimpanan</string>
+    <string name="empty_recent_message">Dokumen yang dibuka akan muncul di sini.</string>
+    <string name="empty_favorites_message">Ketuk bintang untuk menyimpan dokumen di sini.</string>
+    <string name="share_app">Bagikan aplikasi</string>
+    <string name="privacy_body">AidPDF hanya membaca metadata dokumen lokal untuk daftar file, file terbaru, favorit, berbagi, mengganti nama, dan menghapus.</string>
+    <string name="app_version">Versi %1$s</string>
+    <string name="open_file_failed">Tidak dapat membuka file ini</string>
+    <string name="share_file_failed">Tidak dapat membagikan file ini</string>
+    <string name="rename_empty">Nama file tidak boleh kosong</string>
+    <string name="file_name_empty">Nama file tidak boleh kosong</string>
+    <string name="rename_exists">File dengan nama ini sudah ada</string>
+    <string name="rename_failed">Tidak dapat mengganti nama file ini</string>
+    <string name="delete_title">Hapus file?</string>
+    <string name="delete_message">File ini akan dihapus dari penyimpanan lokal.</string>
+    <string name="remove_recent_title">Hapus dari Terbaru?</string>
+    <string name="remove_recent_message">Ini hanya menghapus item dari Terbaru. File asli tetap ada di perangkat.</string>
+    <string name="delete_failed">Tidak dapat menghapus file ini</string>
+    <string name="favorite_added">Ditambahkan ke Favorit</string>
+    <string name="favorite_removed">Dihapus dari Favorit</string>
+    <string name="ad_title">HITUNG MUNDUR</string>
+    <string name="ad_hint">Ini adalah pengantar terperinci...</string>
+    <string name="ad_action">Instal</string>
+    <string name="ad_badge">IKLAN</string>
+    <string name="end_of_list">Akhir daftar</string>
+    <string name="pdf_page">Halaman %1$d / %2$d</string>
+    <string name="previous_page">Sebelumnya</string>
+    <string name="next_page">Berikutnya</string>
+    <string name="create_pdf_failed">Tidak dapat membuat PDF</string>
+    <string name="create_pdf_cancelled">Pembuatan PDF dibatalkan</string>
+    <string name="pdf_created">PDF dibuat</string>
+    <string name="open_it">Buka!</string>
+    <string name="back_home">Kembali ke Beranda</string>
+    <string name="pdf_badge">PDF</string>
+    <string name="loading_documents">Memuat dokumen...</string>
+    <string name="loading_pages">Memuat halaman...</string>
+    <string name="select_pdf">Pilih PDF</string>
+    <string name="select_pdf_first">Pilih PDF terlebih dahulu</string>
+    <string name="split_select_pdf_hint">Pilih satu file PDF untuk dipisahkan.</string>
+    <string name="lock_select_pdf_hint">Pilih PDF yang tidak terkunci untuk dilindungi dengan kata sandi.</string>
+    <string name="unlock_select_pdf_hint">Pilih PDF terkunci untuk menghapus perlindungan kata sandi.</string>
+    <string name="select_two_pdf">Pilih minimal 2 PDF</string>
+    <string name="selected_count">%1$d dipilih</string>
+    <string name="merge_selection_count">%1$d/%2$d dipilih. Pilih minimal 2 PDF.</string>
+    <string name="merge_max_selected">Anda dapat memilih hingga %1$d PDF</string>
+    <string name="merge_pdf_success">PDF berhasil digabung</string>
+    <string name="merge_pdf_failed">Tidak dapat menggabungkan file PDF</string>
+    <string name="merge_pdf_too_large">File terlalu besar, penggabungan gagal</string>
+    <string name="split_pdf_success">PDF berhasil dipisahkan</string>
+    <string name="split_pdf_failed">Tidak dapat memisahkan PDF ini</string>
+    <string name="split_page_hint">Pilih halaman untuk diekspor</string>
+    <string name="split_no_page_selected">Pilih minimal satu halaman</string>
+    <string name="one_page_tips">PDF ini hanya memiliki satu halaman</string>
+    <string name="page_count_text">Total %1$d halaman</string>
+    <string name="split_selected_count">%1$d/%2$d halaman dipilih</string>
+    <string name="page_number">Halaman %1$d</string>
+    <string name="lock_pdf_success">PDF berhasil dikunci</string>
+    <string name="lock_pdf_failed">Tidak dapat mengunci PDF ini</string>
+    <string name="unlock_pdf_success">PDF berhasil dibuka</string>
+    <string name="unlock_pdf_failed">Tidak dapat membuka PDF ini</string>
+    <string name="set_pdf_password_title">Atur kata sandi</string>
+    <string name="set_pdf_password_message">Kata sandi ini diperlukan untuk melihat atau mengedit PDF.</string>
+    <string name="unlock_pdf_password_title">Masukkan kata sandi</string>
+    <string name="unlock_pdf_password_message">Masukkan kata sandi saat ini untuk menghapus perlindungan dari PDF ini.</string>
+    <string name="pdf_password_hint">Kata sandi</string>
+    <string name="pdf_password_title">Masukkan kata sandi PDF</string>
+    <string name="pdf_password_file_message">Kata sandi diperlukan untuk:\n%1$s</string>
+    <string name="pdf_password_empty">Masukkan kata sandi</string>
+    <string name="pdf_password_incorrect">Kata sandi salah</string>
+    <string name="no_pdf_files">Tidak ada file PDF ditemukan</string>
+    <string name="no_unlocked_pdf_files">Tidak ada PDF terbuka ditemukan</string>
+    <string name="no_locked_pdf_files">Tidak ada PDF terkunci ditemukan</string>
+    <string name="reminder_action_check">Periksa</string>
+    <string-array name="reminder_time_messages">
+        <item>Draf Word jatuh tempo 5 menit lagi. Periksa sekarang.</item>
+        <item>Komentar Word menunggu balasan. Balas dalam 4 menit.</item>
+        <item>Lembar Excel memiliki kesalahan. Perbaiki dalam 3 menit.</item>
+        <item>Laporan Excel terlambat. Kirim dalam 7 menit.</item>
+        <item>Slide PPT jatuh tempo 6 menit lagi. Selesaikan sekarang.</item>
+        <item>Masukan PPT sudah tersedia. Periksa dalam 5 menit.</item>
+        <item>Kontrak PDF perlu ditandatangani. Tanda tangani dalam 2 menit.</item>
+        <item>Formulir PDF belum lengkap. Lengkapi dalam 3 menit.</item>
+    </string-array>
+    <string-array name="reminder_unlock_messages">
+        <item>Versi Word sudah usang. Perbarui dalam 8 menit.</item>
+        <item>Draf Word memiliki konflik. Selesaikan dalam 5 menit.</item>
+        <item>Laporan Excel jatuh tempo 10 menit lagi. Segera selesaikan.</item>
+        <item>Data Excel belum lengkap. Masukkan dalam 6 menit.</item>
+        <item>Presentasi PPT dimulai 6 menit lagi. Bersiaplah.</item>
+        <item>Urutan slide PPT tidak benar. Susun ulang dalam 3 menit.</item>
+        <item>Faktur PDF perlu disetujui. Setujui dalam 4 menit.</item>
+        <item>PDF memiliki catatan baru. Periksa dalam 5 menit.</item>
+    </string-array>
+    <string-array name="reminder_alarm_messages">
+        <item>Persetujuan akhir Word masih tertunda. Putuskan dalam 2 menit.</item>
+        <item>Tugas Word mendesak segera jatuh tempo. Tangani dalam 5 menit.</item>
+        <item>Tabel pivot Excel bermasalah. Perbaiki dalam 5 menit.</item>
+        <item>Prakiraan Excel tertinggal. Perbarui dalam 8 menit.</item>
+        <item>File PPT terlalu besar. Kompres dalam 4 menit.</item>
+        <item>Animasi PPT belum lengkap. Tambahkan dalam 2 menit.</item>
+        <item>Tanda terima PDF perlu diverifikasi. Verifikasi dalam 3 menit.</item>
+        <item>Tanda tangan PDF adalah langkah terakhir. Selesaikan dalam 4 menit.</item>
+    </string-array>
+    <string name="feedback">Masukan</string>
+    <string name="uninstall_shortcut_label">Copot pemasangan</string>
+    <string name="uninstall_problem_title">Mengalami masalah saat mengelola file PDF?</string>
+    <string name="uninstall_problem_subtitle">Kami terus mengoptimalkan fitur agar pengoperasian lebih lancar</string>
+    <string name="uninstall_sort_problem">Fitur pengurutan file tidak berfungsi dengan baik?</string>
+    <string name="uninstall_sort_action">Mulai pengurutan PDF menyeluruh</string>
+    <string name="uninstall_speed_problem">Pemrosesan PDF terlalu lambat?</string>
+    <string name="uninstall_speed_action">Percepat pemrosesan PDF sekarang</string>
+    <string name="uninstall_keep_using">Tetap gunakan AidPDF</string>
+    <string name="uninstall_action">Copot pemasangan</string>
+    <string name="uninstall_reason_title">Apa yang membuat Anda memutuskan untuk mencopot AidPDF?</string>
+    <string name="uninstall_reason_conversion">Tidak puas dengan hasil konversi PDF</string>
+    <string name="uninstall_reason_storage">Aplikasi memakai terlalu banyak ruang penyimpanan ponsel</string>
+    <string name="uninstall_reason_complex">Rumit dan tidak nyaman digunakan</string>
+    <string name="uninstall_reconsider">Pertimbangkan kembali sebelum mencopot pemasangan</string>
+    <string name="uninstall_confirm_message">Yakin ingin mencopot AidPDF?</string>
+    <string name="uninstall_continue_using">Lanjutkan menggunakan</string>
+    <string name="ad_loading">Memuat iklan...</string>
+    <string name="ad_label">IKLAN</string>
+    <string name="reminder_channel_name">Pengingat dokumen</string>
+    <string name="reminder_media_channel_name">Pengingat media dokumen</string>
+    <string name="reminder_bar_channel_name">Pintasan dokumen</string>
+    <string name="close">Tutup</string>
+    <string name="allow_permission">Izinkan</string>
+    <string name="not_now">Jangan sekarang</string>
+    <string name="overlay_permission_title">Aktifkan notifikasi untuk pembaruan aplikasi penting</string>
+    <string name="notification_permission_title">Dapatkan pemberitahuan penting dari aplikasi</string>
+    <string name="notification_permission_message">Aktifkan notifikasi untuk menerima pembaruan dan pengingat dokumen penting.</string>
+    <string name="skip">Lewati</string>
+</resources>

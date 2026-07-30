@@ -1,0 +1,185 @@
+<resources>
+    <string name="back">กลับ</string>
+    <string name="language">ภาษา</string>
+    <string name="language_action_next">ถัดไป</string>
+    <string name="language_action_ok">OK</string>
+    <string name="settings">การตั้งค่า</string>
+    <string name="privacy_policy">นโยบายความเป็นส่วนตัว</string>
+    <string name="tab_home">หน้าแรก</string>
+    <string name="tab_recent">ล่าสุด</string>
+    <string name="tab_favorites">รายการโปรด</string>
+    <string name="tab_tools">เครื่องมือ</string>
+    <string name="loading">กำลังประมวลผล...</string>
+    <string name="onboarding_file_management">จัดการและดูตัวอย่าง PDF และไฟล์หลายรูปแบบ</string>
+    <string name="onboarding_split_merge">แยกและรวมเอกสารได้รวดเร็ว</string>
+    <string name="onboarding_file_security">รองรับการเข้ารหัสและถอดรหัสไฟล์</string>
+    <string name="onboarding_action_skip">ข้าม</string>
+    <string name="onboarding_action_next">ถัดไป</string>
+    <string name="onboarding_action_start">เริ่ม</string>
+    <string name="create_pdf">สร้าง PDF</string>
+    <string name="merge_pdf">รวม PDF</string>
+    <string name="split_pdf">แยก PDF</string>
+    <string name="lock_pdf">ล็อก PDF</string>
+    <string name="unlock_pdf">ปลดล็อก PDF</string>
+    <string name="scan_to_pdf">สแกนเป็น PDF</string>
+    <string name="tools_convert_extract">แปลงและแยก</string>
+    <string name="tools_group_tools">เครื่องมือ</string>
+    <string name="tools_security">ความปลอดภัย</string>
+    <string name="permission_title">ต้องใช้สิทธิ์ไฟล์</string>
+    <string name="permission_message">โปรดอนุญาตการจัดการไฟล์เพื่ออ่านและแก้ไขเอกสาร</string>
+    <string name="grant_now">อนุญาตตอนนี้</string>
+    <string name="empty_title">ไม่พบไฟล์</string>
+    <string name="empty_message">เอกสารที่รองรับจะแสดงที่นี่</string>
+    <string name="empty_recent_title">ไม่มีไฟล์ล่าสุด</string>
+    <string name="empty_favorites_title">ไม่มีรายการโปรด</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="confirm">ยืนยัน</string>
+    <string name="continue_action">ดำเนินการต่อ</string>
+    <string name="app_name">AidPDF</string>
+    <string name="filter_pdf">PDF</string>
+    <string name="filter_word">WORD</string>
+    <string name="filter_excel">EXCEL</string>
+    <string name="filter_ppt">PPT</string>
+    <string name="tab_setting">เครื่องมือ</string>
+    <string name="language_coming_soon">การตั้งค่าภาษาจะพร้อมใช้งานเร็ว ๆ นี้</string>
+    <string name="share">แชร์</string>
+    <string name="details">รายละเอียด</string>
+    <string name="file_details">รายละเอียดไฟล์</string>
+    <string name="rename">เปลี่ยนชื่อ</string>
+    <string name="delete">ลบ</string>
+    <string name="save">บันทึก</string>
+    <string name="file_name">ชื่อไฟล์</string>
+    <string name="file_size">ขนาดไฟล์</string>
+    <string name="modified_time">เวลาแก้ไข</string>
+    <string name="storage_path">เส้นทางจัดเก็บ</string>
+    <string name="empty_recent_message">เอกสารที่เปิดแล้วจะแสดงที่นี่</string>
+    <string name="empty_favorites_message">แตะดาวเพื่อบันทึกเอกสารไว้ที่นี่</string>
+    <string name="share_app">แชร์แอป</string>
+    <string name="privacy_body">AidPDF อ่านเฉพาะข้อมูลเมตาของเอกสารในเครื่องเพื่อแสดงรายการไฟล์ ไฟล์ล่าสุด รายการโปรด การแชร์ การเปลี่ยนชื่อ และการลบ</string>
+    <string name="app_version">เวอร์ชัน %1$s</string>
+    <string name="open_file_failed">ไม่สามารถเปิดไฟล์นี้ได้</string>
+    <string name="share_file_failed">ไม่สามารถแชร์ไฟล์นี้ได้</string>
+    <string name="rename_empty">ชื่อไฟล์ต้องไม่ว่างเปล่า</string>
+    <string name="file_name_empty">ชื่อไฟล์ต้องไม่ว่างเปล่า</string>
+    <string name="rename_exists">มีไฟล์ชื่อนี้อยู่แล้ว</string>
+    <string name="rename_failed">ไม่สามารถเปลี่ยนชื่อไฟล์นี้ได้</string>
+    <string name="delete_title">ลบไฟล์หรือไม่</string>
+    <string name="delete_message">ไฟล์นี้จะถูกลบออกจากพื้นที่จัดเก็บในเครื่อง</string>
+    <string name="remove_recent_title">ลบออกจากล่าสุดหรือไม่</string>
+    <string name="remove_recent_message">รายการนี้จะถูกลบออกจากล่าสุดเท่านั้น ไฟล์ต้นฉบับจะยังอยู่ในอุปกรณ์</string>
+    <string name="delete_failed">ไม่สามารถลบไฟล์นี้ได้</string>
+    <string name="favorite_added">เพิ่มในรายการโปรดแล้ว</string>
+    <string name="favorite_removed">ลบออกจากรายการโปรดแล้ว</string>
+    <string name="ad_title">นับถอยหลัง</string>
+    <string name="ad_hint">นี่คือคำแนะนำโดยละเอียด...</string>
+    <string name="ad_action">ติดตั้ง</string>
+    <string name="ad_badge">โฆษณา</string>
+    <string name="end_of_list">สิ้นสุดรายการ</string>
+    <string name="pdf_page">หน้า %1$d / %2$d</string>
+    <string name="previous_page">ก่อนหน้า</string>
+    <string name="next_page">ถัดไป</string>
+    <string name="create_pdf_failed">ไม่สามารถสร้าง PDF ได้</string>
+    <string name="create_pdf_cancelled">ยกเลิกการสร้าง PDF แล้ว</string>
+    <string name="pdf_created">สร้าง PDF แล้ว</string>
+    <string name="open_it">เปิด!</string>
+    <string name="back_home">กลับหน้าแรก</string>
+    <string name="pdf_badge">PDF</string>
+    <string name="loading_documents">กำลังโหลดเอกสาร...</string>
+    <string name="loading_pages">กำลังโหลดหน้า...</string>
+    <string name="select_pdf">เลือก PDF</string>
+    <string name="select_pdf_first">เลือก PDF ก่อน</string>
+    <string name="split_select_pdf_hint">เลือกไฟล์ PDF หนึ่งไฟล์เพื่อแยก</string>
+    <string name="lock_select_pdf_hint">เลือก PDF ที่ยังไม่ล็อกเพื่อป้องกันด้วยรหัสผ่าน</string>
+    <string name="unlock_select_pdf_hint">เลือก PDF ที่ล็อกอยู่เพื่อลบรหัสผ่าน</string>
+    <string name="select_two_pdf">เลือก PDF อย่างน้อย 2 ไฟล์</string>
+    <string name="selected_count">เลือกแล้ว %1$d</string>
+    <string name="merge_selection_count">เลือกแล้ว %1$d/%2$d เลือก PDF อย่างน้อย 2 ไฟล์</string>
+    <string name="merge_max_selected">คุณเลือก PDF ได้สูงสุด %1$d ไฟล์</string>
+    <string name="merge_pdf_success">รวม PDF สำเร็จ</string>
+    <string name="merge_pdf_failed">ไม่สามารถรวมไฟล์ PDF ได้</string>
+    <string name="merge_pdf_too_large">ไฟล์ใหญ่เกินไป รวมไม่สำเร็จ</string>
+    <string name="split_pdf_success">แยก PDF สำเร็จ</string>
+    <string name="split_pdf_failed">ไม่สามารถแยก PDF นี้ได้</string>
+    <string name="split_page_hint">เลือกหน้าที่ต้องการส่งออก</string>
+    <string name="split_no_page_selected">เลือกอย่างน้อยหนึ่งหน้า</string>
+    <string name="one_page_tips">PDF นี้มีเพียงหน้าเดียว</string>
+    <string name="page_count_text">ทั้งหมด %1$d หน้า</string>
+    <string name="split_selected_count">เลือกแล้ว %1$d/%2$d หน้า</string>
+    <string name="page_number">หน้า %1$d</string>
+    <string name="lock_pdf_success">ล็อก PDF สำเร็จ</string>
+    <string name="lock_pdf_failed">ไม่สามารถล็อก PDF นี้ได้</string>
+    <string name="unlock_pdf_success">ปลดล็อก PDF สำเร็จ</string>
+    <string name="unlock_pdf_failed">ไม่สามารถปลดล็อก PDF นี้ได้</string>
+    <string name="set_pdf_password_title">ตั้งรหัสผ่าน</string>
+    <string name="set_pdf_password_message">ต้องใช้รหัสผ่านนี้เพื่อดูหรือแก้ไข PDF</string>
+    <string name="unlock_pdf_password_title">ป้อนรหัสผ่าน</string>
+    <string name="unlock_pdf_password_message">ป้อนรหัสผ่านปัจจุบันเพื่อลบการป้องกันจาก PDF นี้</string>
+    <string name="pdf_password_hint">รหัสผ่าน</string>
+    <string name="pdf_password_title">ป้อนรหัสผ่าน PDF</string>
+    <string name="pdf_password_file_message">ต้องใช้รหัสผ่านสำหรับ:\n%1$s</string>
+    <string name="pdf_password_empty">โปรดป้อนรหัสผ่าน</string>
+    <string name="pdf_password_incorrect">รหัสผ่านไม่ถูกต้อง</string>
+    <string name="no_pdf_files">ไม่พบไฟล์ PDF</string>
+    <string name="no_unlocked_pdf_files">ไม่พบไฟล์ PDF ที่ปลดล็อก</string>
+    <string name="no_locked_pdf_files">ไม่พบไฟล์ PDF ที่ล็อก</string>
+    <string name="reminder_action_check">ตรวจสอบ</string>
+    <string-array name="reminder_time_messages">
+        <item>ฉบับร่าง Word จะครบกำหนดใน 5 นาที โปรดตรวจสอบ</item>
+        <item>ความคิดเห็นใน Word กำลังรอคำตอบ โปรดตอบภายใน 4 นาที</item>
+        <item>ชีต Excel มีข้อผิดพลาด โปรดแก้ไขภายใน 3 นาที</item>
+        <item>รายงาน Excel เลยกำหนดแล้ว โปรดส่งภายใน 7 นาที</item>
+        <item>สไลด์ PPT จะครบกำหนดใน 6 นาที โปรดทำให้เสร็จตอนนี้</item>
+        <item>ข้อเสนอแนะเกี่ยวกับ PPT พร้อมแล้ว โปรดตรวจสอบภายใน 5 นาที</item>
+        <item>สัญญา PDF ต้องลงนาม โปรดลงนามภายใน 2 นาที</item>
+        <item>แบบฟอร์ม PDF ยังไม่สมบูรณ์ โปรดกรอกภายใน 3 นาที</item>
+    </string-array>
+    <string-array name="reminder_unlock_messages">
+        <item>เวอร์ชัน Word ล้าสมัย โปรดอัปเดตภายใน 8 นาที</item>
+        <item>ฉบับร่าง Word มีข้อขัดแย้ง โปรดแก้ไขภายใน 5 นาที</item>
+        <item>รายงาน Excel จะครบกำหนดใน 10 นาที โปรดรีบดำเนินการ</item>
+        <item>ข้อมูล Excel ไม่ครบ โปรดกรอกภายใน 6 นาที</item>
+        <item>การนำเสนอ PPT จะเริ่มใน 6 นาที โปรดเตรียมพร้อม</item>
+        <item>ลำดับสไลด์ PPT ไม่ถูกต้อง โปรดเรียงใหม่ภายใน 3 นาที</item>
+        <item>ใบแจ้งหนี้ PDF ต้องได้รับการอนุมัติ โปรดอนุมัติภายใน 4 นาที</item>
+        <item>PDF มีบันทึกใหม่ โปรดตรวจสอบภายใน 5 นาที</item>
+    </string-array>
+    <string-array name="reminder_alarm_messages">
+        <item>การอนุมัติ Word ขั้นสุดท้ายยังค้างอยู่ โปรดตัดสินใจภายใน 2 นาที</item>
+        <item>งาน Word เร่งด่วนใกล้ครบกำหนด โปรดจัดการภายใน 5 นาที</item>
+        <item>ตาราง Pivot ของ Excel มีปัญหา โปรดแก้ไขภายใน 5 นาที</item>
+        <item>การคาดการณ์ Excel ล่าช้า โปรดอัปเดตภายใน 8 นาที</item>
+        <item>ไฟล์ PPT ใหญ่เกินไป โปรดบีบอัดภายใน 4 นาที</item>
+        <item>ภาพเคลื่อนไหว PPT ไม่ครบ โปรดเพิ่มภายใน 2 นาที</item>
+        <item>ใบเสร็จ PDF ต้องตรวจสอบ โปรดตรวจสอบภายใน 3 นาที</item>
+        <item>การลงนาม PDF เป็นขั้นตอนสุดท้าย โปรดลงนามภายใน 4 นาที</item>
+    </string-array>
+    <string name="feedback">ข้อเสนอแนะ</string>
+    <string name="uninstall_shortcut_label">ถอนการติดตั้ง</string>
+    <string name="uninstall_problem_title">พบปัญหาขณะจัดการไฟล์ PDF หรือไม่?</string>
+    <string name="uninstall_problem_subtitle">เราปรับปรุงฟีเจอร์อย่างต่อเนื่องเพื่อให้ใช้งานได้ราบรื่นขึ้น</string>
+    <string name="uninstall_sort_problem">ฟังก์ชันจัดเรียงไฟล์ทำงานได้ไม่ดีหรือไม่?</string>
+    <string name="uninstall_sort_action">เริ่มจัดเรียงไฟล์ PDF แบบครบถ้วน</string>
+    <string name="uninstall_speed_problem">การประมวลผล PDF ช้าเกินไปหรือไม่?</string>
+    <string name="uninstall_speed_action">เพิ่มความเร็วการประมวลผล PDF ตอนนี้</string>
+    <string name="uninstall_keep_using">เก็บ AidPDF ไว้และใช้งานต่อ</string>
+    <string name="uninstall_action">ถอนการติดตั้ง</string>
+    <string name="uninstall_reason_title">เหตุใดคุณจึงตัดสินใจถอนการติดตั้ง AidPDF?</string>
+    <string name="uninstall_reason_conversion">ไม่พอใจกับผลลัพธ์การแปลง PDF</string>
+    <string name="uninstall_reason_storage">แอปใช้พื้นที่จัดเก็บในโทรศัพท์มากเกินไป</string>
+    <string name="uninstall_reason_complex">ใช้งานซับซ้อนและไม่สะดวก</string>
+    <string name="uninstall_reconsider">โปรดพิจารณาอีกครั้งก่อนถอนการติดตั้ง</string>
+    <string name="uninstall_confirm_message">ยืนยันการถอนการติดตั้ง AidPDF หรือไม่?</string>
+    <string name="uninstall_continue_using">ใช้งานต่อ</string>
+    <string name="ad_loading">กำลังโหลดโฆษณา...</string>
+    <string name="ad_label">โฆษณา</string>
+    <string name="reminder_channel_name">การแจ้งเตือนเอกสาร</string>
+    <string name="reminder_media_channel_name">การแจ้งเตือนสื่อเอกสาร</string>
+    <string name="reminder_bar_channel_name">ทางลัดเอกสาร</string>
+    <string name="close">ปิด</string>
+    <string name="allow_permission">อนุญาต</string>
+    <string name="not_now">ไว้ภายหลัง</string>
+    <string name="overlay_permission_title">เปิดการแจ้งเตือนสำหรับการอัปเดตแอปที่สำคัญ</string>
+    <string name="notification_permission_title">รับการแจ้งเตือนสำคัญจากแอป</string>
+    <string name="notification_permission_message">เปิดการแจ้งเตือนเพื่อรับข้อมูลอัปเดตและการเตือนความจำเกี่ยวกับเอกสารที่สำคัญ</string>
+    <string name="skip">ข้าม</string>
+</resources>

@@ -1,0 +1,185 @@
+<resources>
+    <string name="back">戻る</string>
+    <string name="language">言語</string>
+    <string name="language_action_next">次へ</string>
+    <string name="language_action_ok">OK</string>
+    <string name="settings">設定</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="tab_home">ホーム</string>
+    <string name="tab_recent">最近</string>
+    <string name="tab_favorites">お気に入り</string>
+    <string name="tab_tools">ツール</string>
+    <string name="loading">処理中...</string>
+    <string name="onboarding_file_management">PDF と各種形式のファイル管理とプレビュー</string>
+    <string name="onboarding_split_merge">文書をすばやく分割・結合</string>
+    <string name="onboarding_file_security">ファイルの暗号化と復号に対応</string>
+    <string name="onboarding_action_skip">スキップ</string>
+    <string name="onboarding_action_next">次へ</string>
+    <string name="onboarding_action_start">開始</string>
+    <string name="create_pdf">PDF を作成</string>
+    <string name="merge_pdf">PDF を結合</string>
+    <string name="split_pdf">PDF を分割</string>
+    <string name="lock_pdf">PDF をロック</string>
+    <string name="unlock_pdf">PDF を解除</string>
+    <string name="scan_to_pdf">PDF にスキャン</string>
+    <string name="tools_convert_extract">変換と抽出</string>
+    <string name="tools_group_tools">ツール</string>
+    <string name="tools_security">セキュリティ</string>
+    <string name="permission_title">ファイル権限が必要です</string>
+    <string name="permission_message">文書ファイルの読み取りと編集のため、ファイル管理権限を許可してください。</string>
+    <string name="grant_now">今すぐ許可</string>
+    <string name="empty_title">ファイルが見つかりません</string>
+    <string name="empty_message">対応する文書がここに表示されます。</string>
+    <string name="empty_recent_title">最近のファイルはありません</string>
+    <string name="empty_favorites_title">お気に入りはありません</string>
+    <string name="cancel">キャンセル</string>
+    <string name="confirm">確認</string>
+    <string name="continue_action">続行</string>
+    <string name="app_name">AidPDF</string>
+    <string name="filter_pdf">PDF</string>
+    <string name="filter_word">WORD</string>
+    <string name="filter_excel">EXCEL</string>
+    <string name="filter_ppt">PPT</string>
+    <string name="tab_setting">ツール</string>
+    <string name="language_coming_soon">言語設定は近日公開予定です</string>
+    <string name="share">共有</string>
+    <string name="details">詳細</string>
+    <string name="file_details">ファイル詳細</string>
+    <string name="rename">名前を変更</string>
+    <string name="delete">削除</string>
+    <string name="save">保存</string>
+    <string name="file_name">ファイル名</string>
+    <string name="file_size">ファイルサイズ</string>
+    <string name="modified_time">更新日時</string>
+    <string name="storage_path">保存先パス</string>
+    <string name="empty_recent_message">開いた文書がここに表示されます。</string>
+    <string name="empty_favorites_message">星をタップすると文書をここに保存できます。</string>
+    <string name="share_app">アプリを共有</string>
+    <string name="privacy_body">AidPDF は、ファイル一覧、最近のファイル、お気に入り、共有、名前変更、削除のためにローカル文書のメタデータのみを読み取ります。</string>
+    <string name="app_version">バージョン %1$s</string>
+    <string name="open_file_failed">このファイルを開けません</string>
+    <string name="share_file_failed">このファイルを共有できません</string>
+    <string name="rename_empty">ファイル名を空にすることはできません</string>
+    <string name="file_name_empty">ファイル名を空にすることはできません</string>
+    <string name="rename_exists">同じ名前のファイルが既に存在します</string>
+    <string name="rename_failed">このファイルの名前を変更できません</string>
+    <string name="delete_title">ファイルを削除しますか？</string>
+    <string name="delete_message">このファイルはローカルストレージから削除されます。</string>
+    <string name="remove_recent_title">最近の一覧から削除しますか？</string>
+    <string name="remove_recent_message">最近の一覧からのみ削除されます。元のファイルは端末に残ります。</string>
+    <string name="delete_failed">このファイルを削除できません</string>
+    <string name="favorite_added">お気に入りに追加しました</string>
+    <string name="favorite_removed">お気に入りから削除しました</string>
+    <string name="ad_title">カウントダウン</string>
+    <string name="ad_hint">これは詳細な紹介です...</string>
+    <string name="ad_action">インストール</string>
+    <string name="ad_badge">広告</string>
+    <string name="end_of_list">リストの最後です</string>
+    <string name="pdf_page">%1$d / %2$d ページ</string>
+    <string name="previous_page">前へ</string>
+    <string name="next_page">次へ</string>
+    <string name="create_pdf_failed">PDF を作成できません</string>
+    <string name="create_pdf_cancelled">PDF の作成をキャンセルしました</string>
+    <string name="pdf_created">PDF を作成しました</string>
+    <string name="open_it">開く！</string>
+    <string name="back_home">ホームに戻る</string>
+    <string name="pdf_badge">PDF</string>
+    <string name="loading_documents">文書を読み込み中...</string>
+    <string name="loading_pages">ページを読み込み中...</string>
+    <string name="select_pdf">PDF を選択</string>
+    <string name="select_pdf_first">先に PDF を選択してください</string>
+    <string name="split_select_pdf_hint">分割する PDF ファイルを 1 つ選択してください。</string>
+    <string name="lock_select_pdf_hint">パスワードで保護する未ロックの PDF を選択してください。</string>
+    <string name="unlock_select_pdf_hint">パスワード保護を解除するロック済み PDF を選択してください。</string>
+    <string name="select_two_pdf">PDF を 2 つ以上選択してください</string>
+    <string name="selected_count">%1$d 件選択済み</string>
+    <string name="merge_selection_count">%1$d/%2$d 件選択済み。PDF を 2 つ以上選択してください。</string>
+    <string name="merge_max_selected">最大 %1$d 個の PDF を選択できます</string>
+    <string name="merge_pdf_success">PDF を結合しました</string>
+    <string name="merge_pdf_failed">PDF ファイルを結合できません</string>
+    <string name="merge_pdf_too_large">ファイルが大きすぎるため結合に失敗しました</string>
+    <string name="split_pdf_success">PDF を分割しました</string>
+    <string name="split_pdf_failed">この PDF を分割できません</string>
+    <string name="split_page_hint">書き出すページを選択</string>
+    <string name="split_no_page_selected">少なくとも 1 ページ選択してください</string>
+    <string name="one_page_tips">この PDF は 1 ページのみです</string>
+    <string name="page_count_text">全 %1$d ページ</string>
+    <string name="split_selected_count">%1$d/%2$d ページ選択済み</string>
+    <string name="page_number">%1$d ページ</string>
+    <string name="lock_pdf_success">PDF をロックしました</string>
+    <string name="lock_pdf_failed">この PDF をロックできません</string>
+    <string name="unlock_pdf_success">PDF のロックを解除しました</string>
+    <string name="unlock_pdf_failed">この PDF のロックを解除できません</string>
+    <string name="set_pdf_password_title">パスワードを設定</string>
+    <string name="set_pdf_password_message">この PDF の表示または編集にはこのパスワードが必要です。</string>
+    <string name="unlock_pdf_password_title">パスワードを入力</string>
+    <string name="unlock_pdf_password_message">この PDF の保護を解除するには現在のパスワードを入力してください。</string>
+    <string name="pdf_password_hint">パスワード</string>
+    <string name="pdf_password_title">PDF パスワードを入力</string>
+    <string name="pdf_password_file_message">パスワードが必要です：\n%1$s</string>
+    <string name="pdf_password_empty">パスワードを入力してください</string>
+    <string name="pdf_password_incorrect">パスワードが正しくありません</string>
+    <string name="no_pdf_files">PDF ファイルが見つかりません</string>
+    <string name="no_unlocked_pdf_files">未ロックの PDF ファイルが見つかりません</string>
+    <string name="no_locked_pdf_files">ロック済み PDF ファイルが見つかりません</string>
+    <string name="reminder_action_check">確認</string>
+    <string-array name="reminder_time_messages">
+        <item>Word の下書きは 5 分後が期限です。確認してください。</item>
+        <item>Word のコメントへの返信が必要です。4 分以内に返信してください。</item>
+        <item>Excel シートにエラーがあります。3 分以内に修正してください。</item>
+        <item>Excel レポートは期限切れです。7 分以内に提出してください。</item>
+        <item>PPT のスライドは 6 分後が期限です。今すぐ仕上げてください。</item>
+        <item>PPT へのフィードバックが届いています。5 分以内に確認してください。</item>
+        <item>PDF の契約書に署名が必要です。2 分以内に署名してください。</item>
+        <item>PDF フォームが未完成です。3 分以内に入力してください。</item>
+    </string-array>
+    <string-array name="reminder_unlock_messages">
+        <item>Word のバージョンが古くなっています。8 分以内に更新してください。</item>
+        <item>Word の下書きに競合があります。5 分以内に解決してください。</item>
+        <item>Excel レポートは 10 分後が期限です。お急ぎください。</item>
+        <item>Excel のデータが不足しています。6 分以内に入力してください。</item>
+        <item>PPT プレゼンテーションは 6 分後に始まります。準備してください。</item>
+        <item>PPT スライドの順序が乱れています。3 分以内に並べ直してください。</item>
+        <item>PDF の請求書に承認が必要です。4 分以内に承認してください。</item>
+        <item>PDF に新しいメモがあります。5 分以内に確認してください。</item>
+    </string-array>
+    <string-array name="reminder_alarm_messages">
+        <item>Word の最終承認が保留中です。2 分以内に判断してください。</item>
+        <item>Word の緊急タスクが期限間近です。5 分以内に対応してください。</item>
+        <item>Excel のピボットテーブルに問題があります。5 分以内に修正してください。</item>
+        <item>Excel の予測更新が遅れています。8 分以内に更新してください。</item>
+        <item>PPT ファイルが大きすぎます。4 分以内に圧縮してください。</item>
+        <item>PPT のアニメーションが不足しています。2 分以内に追加してください。</item>
+        <item>PDF の領収書に確認が必要です。3 分以内に確認してください。</item>
+        <item>PDF の署名が最後の手順です。4 分以内に署名してください。</item>
+    </string-array>
+    <string name="feedback">フィードバック</string>
+    <string name="uninstall_shortcut_label">アンインストール</string>
+    <string name="uninstall_problem_title">PDF ファイルの管理中に問題が発生しましたか？</string>
+    <string name="uninstall_problem_subtitle">より快適に操作できるよう、機能の改善を続けています</string>
+    <string name="uninstall_sort_problem">ファイルの並べ替え機能がうまく動作しませんか？</string>
+    <string name="uninstall_sort_action">PDF ファイルをまとめて並べ替える</string>
+    <string name="uninstall_speed_problem">PDF の処理が遅すぎますか？</string>
+    <string name="uninstall_speed_action">PDF の処理速度を今すぐ向上</string>
+    <string name="uninstall_keep_using">AidPDF を引き続き使用する</string>
+    <string name="uninstall_action">アンインストール</string>
+    <string name="uninstall_reason_title">AidPDF をアンインストールする理由を教えてください</string>
+    <string name="uninstall_reason_conversion">PDF の変換結果に満足できない</string>
+    <string name="uninstall_reason_storage">アプリがスマートフォンの容量を使いすぎる</string>
+    <string name="uninstall_reason_complex">操作が複雑で使いにくい</string>
+    <string name="uninstall_reconsider">アンインストールする前にもう一度ご検討ください</string>
+    <string name="uninstall_confirm_message">AidPDF をアンインストールしますか？</string>
+    <string name="uninstall_continue_using">使用を続ける</string>
+    <string name="ad_loading">広告を読み込み中...</string>
+    <string name="ad_label">広告</string>
+    <string name="reminder_channel_name">文書のリマインダー</string>
+    <string name="reminder_media_channel_name">文書のメディアリマインダー</string>
+    <string name="reminder_bar_channel_name">文書のショートカット</string>
+    <string name="close">閉じる</string>
+    <string name="allow_permission">権限を許可</string>
+    <string name="not_now">後で</string>
+    <string name="overlay_permission_title">重要なアプリ更新の通知をオンにする</string>
+    <string name="notification_permission_title">アプリからの重要なお知らせを受け取る</string>
+    <string name="notification_permission_message">重要な文書の更新やリマインダーを受け取るには、通知をオンにしてください。</string>
+    <string name="skip">スキップ</string>
+</resources>

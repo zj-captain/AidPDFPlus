@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_panel"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingStart="22dp"
+    android:paddingTop="26dp"
+    android:paddingEnd="22dp"
+    android:paddingBottom="20dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_bold"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/notification_permission_title"
+        android:textColor="@color/text_primary"
+        android:textSize="18sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/poppins"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:lineSpacingExtra="2dp"
+        android:text="@string/notification_permission_message"
+        android:textColor="#777777"
+        android:textSize="13sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/allow_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_uninstall_primary_button"
+        android:fontFamily="@font/poppins_bold"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/allow_permission"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/not_now_button"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/poppins_bold"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/not_now"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp" />
+
+</LinearLayout>

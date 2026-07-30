@@ -1,0 +1,64 @@
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+def vertRepositoryUser = providers.gradleProperty("vert.repository.user")
+        .orElse(providers.environmentVariable("VERT_REPOSITORY_USER"))
+        .getOrElse("")
+def vertRepositoryPassword = providers.gradleProperty("vert.repository.password")
+        .orElse(providers.environmentVariable("VERT_REPOSITORY_PASSWORD"))
+        .getOrElse("")
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven {
+            url = uri("https://maven.aliyun.com/nexus/content/repositories/releases/")
+            content {
+                includeGroup "com.aliyun.ams"
+            }
+        }
+        maven {
+            allowInsecureProtocol = true
+            url = uri("http://dev.yingzhongshare.com/nexus/content/groups/public/")
+            credentials {
+                username = "xmiles-outside"
+                password = "xmiles-outside"
+            }
+        }
+        /*maven {
+            name = "VertSdkRepository"
+            url = uri("http://dev.yingzhongshare.com/nexus/content/groups/public/")
+            allowInsecureProtocol = true
+            credentials {
+                username = vertRepositoryUser
+                password = vertRepositoryPassword
+            }
+            content {
+                includeGroup "com.xmiles.androidsdk"
+            }
+        }*/
+//        maven { url = uri("https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea") }
+//        maven { url = uri("https://artifact.bytedance.com/repository/pangle/") }
+//        maven { url = uri("https://android-sdk.is.com/") }
+    }
+}
+
+rootProject.name = "AidPDF"
+include ':app'

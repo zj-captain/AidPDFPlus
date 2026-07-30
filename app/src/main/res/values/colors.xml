@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="color_primary">#EB0300</color>
+    <color name="page_background">#F7F8FA</color>
+    <color name="text_primary">#333333</color>
+    <color name="text_secondary">#CCCCCC</color>
+    <color name="line_light">#33CCCCCC</color>
+    <color name="tab_inactive">#B5B7BE</color>
+    <color name="chip_inactive">#D7D9DF</color>
+    <color name="reminder_text">#222222</color>
+    <color name="reminder_surface">#FFFFFF</color>
+</resources>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/reminder_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="9dp"
+    android:paddingBottom="10dp">
+
+    <ImageView
+        android:id="@+id/reminder_image"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@null"
+        android:scaleType="centerInside"
+        tools:src="@drawable/img_notice_pdf" />
+
+    <TextView
+        android:id="@+id/reminder_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="3"
+        android:textColor="@color/reminder_text"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:text="Preview complete Word content" />
+
+    <TextView
+        android:id="@+id/reminder_action"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_reminder_action"
+        android:fontFamily="@font/poppins"
+        android:gravity="center"
+        android:layout_marginHorizontal="14dp"
+        android:includeFontPadding="false"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        tools:text="Check" />
+</LinearLayout>

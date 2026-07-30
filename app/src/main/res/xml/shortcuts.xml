@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/img_uninstall"
+        android:shortcutId="shortcut_uninstall"
+        android:shortcutLongLabel="@string/uninstall_shortcut_label"
+        android:shortcutShortLabel="@string/uninstall_shortcut_label">
+        <intent
+            android:action="com.ysdc.aidpdf.action.UNINSTALL_SHORTCUT"
+            android:targetClass="com.ysdc.aidpdf.ui.guide.LaunchLoadingActivity"
+            android:targetPackage="com.ysdc.aidpdf">
+            <extra
+                android:name="key_uninstall"
+                android:value="shortcut_uninstall" />
+        </intent>
+    </shortcut>
+
+</shortcuts>

@@ -1,0 +1,127 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
+    id 'stringfog'
+}
+
+if (file("google-services.json").exists()) {
+    apply plugin: 'com.google.gms.google-services'
+}
+
+import com.github.megatronking.stringfog.plugin.StringFogMode
+import com.github.megatronking.stringfog.plugin.kg.RandomKeyGenerator
+
+def trackingProductId = providers.gradleProperty("aidpdf.tracking.productId")
+        .orElse(providers.environmentVariable("AIDPDF_TRACKING_PRODUCT_ID"))
+        .getOrElse("")
+def trackingHost = providers.gradleProperty("aidpdf.tracking.host")
+        .orElse(providers.environmentVariable("AIDPDF_TRACKING_HOST"))
+        .getOrElse("https://commerce.ulalimited.com")
+def trackingChannel = providers.gradleProperty("aidpdf.tracking.channel")
+        .orElse(providers.environmentVariable("AIDPDF_TRACKING_CHANNEL"))
+        .getOrElse("138")
+def adjustAppToken = providers.gradleProperty("aidpdf.adjust.appToken")
+        .orElse(providers.environmentVariable("AIDPDF_ADJUST_APP_TOKEN"))
+        .getOrElse("")
+
+stringfog {
+    implementation 'com.github.megatronking.stringfog.xor.StringFogImpl'
+    enable true
+    fogPackages = ['com.ysdc.aidpdf']
+    kg new RandomKeyGenerator()
+    mode StringFogMode.bytes
+}
+
+android {
+    namespace 'com.ysdc.aidpdf'
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId "com.up.test"
+        minSdk 26
+        targetSdk 36
+        versionCode 100
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "TRACKING_PRODUCT_ID", groovy.json.JsonOutput.toJson(trackingProductId)
+        buildConfigField "String", "TRACKING_HOST", groovy.json.JsonOutput.toJson(trackingHost)
+        buildConfigField "String", "TRACKING_CHANNEL", groovy.json.JsonOutput.toJson(trackingChannel)
+        buildConfigField "String", "ADJUST_APP_TOKEN", groovy.json.JsonOutput.toJson(adjustAppToken)
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.16.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.11.0'
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("com.google.android.material:material:1.14.0")
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.fragment:fragment-ktx:1.8.9'
+    implementation 'androidx.activity:activity-ktx:1.9.3'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'androidx.media:media:1.7.0'
+    implementation 'com.github.marain87:AndroidPdfViewer:3.2.8'
+    implementation 'com.github.seapeak233:AndroidDocViewer:0.0.3'
+    implementation 'com.tom-roush:pdfbox-android:2.0.27.0'
+    implementation 'com.google.android.gms:play-services-mlkit-document-scanner:16.0.0'
+    implementation platform('com.google.firebase:firebase-bom:34.15.0')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-config'
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.3.0'
+    implementation 'com.xmiles.androidsdk:vertSdk:1.0.1.3-releases'
+    implementation 'com.adjust.sdk:adjust-android:5.7.0'
+    implementation 'com.android.installreferrer:installreferrer:2.2'
+    implementation 'com.google.android.gms:play-services-ads:24.6.0'
+    implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
+    // Lifecycle & ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.11.0")
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+
+    //stringfog
+    implementation 'com.github.megatronking.stringfog:xor:5.0.0'
+    implementation 'com.github.bumptech.glide:glide:5.0.7'
+}

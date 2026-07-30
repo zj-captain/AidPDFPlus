@@ -1,0 +1,185 @@
+<resources>
+    <string name="back">رجوع</string>
+    <string name="language">اللغة</string>
+    <string name="language_action_next">التالي</string>
+    <string name="language_action_ok">OK</string>
+    <string name="settings">الإعدادات</string>
+    <string name="privacy_policy">سياسة الخصوصية</string>
+    <string name="tab_home">الرئيسية</string>
+    <string name="tab_recent">الأحدث</string>
+    <string name="tab_favorites">المفضلة</string>
+    <string name="tab_tools">الأدوات</string>
+    <string name="loading">جار المعالجة...</string>
+    <string name="onboarding_file_management">إدارة ومعاينة PDF ومختلف التنسيقات</string>
+    <string name="onboarding_split_merge">تقسيم ودمج المستندات بسرعة</string>
+    <string name="onboarding_file_security">دعم تشفير الملفات وفك التشفير</string>
+    <string name="onboarding_action_skip">تخطي</string>
+    <string name="onboarding_action_next">التالي</string>
+    <string name="onboarding_action_start">ابدأ</string>
+    <string name="create_pdf">إنشاء PDF</string>
+    <string name="merge_pdf">دمج PDF</string>
+    <string name="split_pdf">تقسيم PDF</string>
+    <string name="lock_pdf">قفل PDF</string>
+    <string name="unlock_pdf">إلغاء قفل PDF</string>
+    <string name="scan_to_pdf">مسح إلى PDF</string>
+    <string name="tools_convert_extract">تحويل واستخراج</string>
+    <string name="tools_group_tools">الأدوات</string>
+    <string name="tools_security">الأمان</string>
+    <string name="permission_title">إذن الملفات مطلوب</string>
+    <string name="permission_message">يرجى منح إذن إدارة الملفات لقراءة المستندات وتحريرها.</string>
+    <string name="grant_now">السماح الآن</string>
+    <string name="empty_title">لم يتم العثور على ملفات</string>
+    <string name="empty_message">ستظهر المستندات المدعومة هنا.</string>
+    <string name="empty_recent_title">لا توجد ملفات حديثة</string>
+    <string name="empty_favorites_title">لا توجد مفضلة</string>
+    <string name="cancel">إلغاء</string>
+    <string name="confirm">تأكيد</string>
+    <string name="continue_action">متابعة</string>
+    <string name="app_name">AidPDF</string>
+    <string name="filter_pdf">PDF</string>
+    <string name="filter_word">WORD</string>
+    <string name="filter_excel">EXCEL</string>
+    <string name="filter_ppt">PPT</string>
+    <string name="tab_setting">الأدوات</string>
+    <string name="language_coming_soon">إعدادات اللغة قريبا</string>
+    <string name="share">مشاركة</string>
+    <string name="details">التفاصيل</string>
+    <string name="file_details">تفاصيل الملف</string>
+    <string name="rename">إعادة تسمية</string>
+    <string name="delete">حذف</string>
+    <string name="save">حفظ</string>
+    <string name="file_name">اسم الملف</string>
+    <string name="file_size">حجم الملف</string>
+    <string name="modified_time">وقت التعديل</string>
+    <string name="storage_path">مسار التخزين</string>
+    <string name="empty_recent_message">ستظهر المستندات المفتوحة هنا.</string>
+    <string name="empty_favorites_message">اضغط على النجمة لحفظ المستندات هنا.</string>
+    <string name="share_app">مشاركة التطبيق</string>
+    <string name="privacy_body">يقرأ AidPDF بيانات المستندات المحلية فقط لقائمة الملفات والملفات الحديثة والمفضلة والمشاركة وإعادة التسمية والحذف.</string>
+    <string name="app_version">الإصدار %1$s</string>
+    <string name="open_file_failed">تعذر فتح هذا الملف</string>
+    <string name="share_file_failed">تعذر مشاركة هذا الملف</string>
+    <string name="rename_empty">لا يمكن أن يكون اسم الملف فارغا</string>
+    <string name="file_name_empty">لا يمكن أن يكون اسم الملف فارغا</string>
+    <string name="rename_exists">يوجد ملف بهذا الاسم بالفعل</string>
+    <string name="rename_failed">تعذرت إعادة تسمية هذا الملف</string>
+    <string name="delete_title">حذف الملف؟</string>
+    <string name="delete_message">ستتم إزالة هذا الملف من التخزين المحلي.</string>
+    <string name="remove_recent_title">إزالة من الحديثة؟</string>
+    <string name="remove_recent_message">هذا يزيل العنصر من الحديثة فقط. سيبقى الملف الأصلي على جهازك.</string>
+    <string name="delete_failed">تعذر حذف هذا الملف</string>
+    <string name="favorite_added">تمت الإضافة إلى المفضلة</string>
+    <string name="favorite_removed">تمت الإزالة من المفضلة</string>
+    <string name="ad_title">عد تنازلي</string>
+    <string name="ad_hint">هذه مقدمة تفصيلية...</string>
+    <string name="ad_action">تثبيت</string>
+    <string name="ad_badge">إعلان</string>
+    <string name="end_of_list">نهاية القائمة</string>
+    <string name="pdf_page">الصفحة %1$d / %2$d</string>
+    <string name="previous_page">السابق</string>
+    <string name="next_page">التالي</string>
+    <string name="create_pdf_failed">تعذر إنشاء PDF</string>
+    <string name="create_pdf_cancelled">تم إلغاء إنشاء PDF</string>
+    <string name="pdf_created">تم إنشاء PDF</string>
+    <string name="open_it">افتحه!</string>
+    <string name="back_home">العودة للرئيسية</string>
+    <string name="pdf_badge">PDF</string>
+    <string name="loading_documents">جار تحميل المستندات...</string>
+    <string name="loading_pages">جار تحميل الصفحات...</string>
+    <string name="select_pdf">اختر PDF</string>
+    <string name="select_pdf_first">اختر ملف PDF أولا</string>
+    <string name="split_select_pdf_hint">اختر ملف PDF واحدا لتقسيمه.</string>
+    <string name="lock_select_pdf_hint">اختر ملف PDF غير مقفل لحمايته بكلمة مرور.</string>
+    <string name="unlock_select_pdf_hint">اختر ملف PDF مقفلا لإزالة حماية كلمة المرور.</string>
+    <string name="select_two_pdf">اختر ملفي PDF على الأقل</string>
+    <string name="selected_count">تم اختيار %1$d</string>
+    <string name="merge_selection_count">تم اختيار %1$d/%2$d. اختر ملفي PDF على الأقل.</string>
+    <string name="merge_max_selected">يمكنك اختيار حتى %1$d ملفات PDF</string>
+    <string name="merge_pdf_success">تم دمج PDF بنجاح</string>
+    <string name="merge_pdf_failed">تعذر دمج ملفات PDF</string>
+    <string name="merge_pdf_too_large">الملف كبير جدا، فشل الدمج</string>
+    <string name="split_pdf_success">تم تقسيم PDF بنجاح</string>
+    <string name="split_pdf_failed">تعذر تقسيم هذا PDF</string>
+    <string name="split_page_hint">اختر الصفحات للتصدير</string>
+    <string name="split_no_page_selected">اختر صفحة واحدة على الأقل</string>
+    <string name="one_page_tips">يحتوي هذا PDF على صفحة واحدة فقط</string>
+    <string name="page_count_text">المجموع %1$d صفحات</string>
+    <string name="split_selected_count">تم اختيار %1$d/%2$d صفحات</string>
+    <string name="page_number">الصفحة %1$d</string>
+    <string name="lock_pdf_success">تم قفل PDF بنجاح</string>
+    <string name="lock_pdf_failed">تعذر قفل هذا PDF</string>
+    <string name="unlock_pdf_success">تم إلغاء قفل PDF بنجاح</string>
+    <string name="unlock_pdf_failed">تعذر إلغاء قفل هذا PDF</string>
+    <string name="set_pdf_password_title">تعيين كلمة مرور</string>
+    <string name="set_pdf_password_message">ستكون كلمة المرور هذه مطلوبة لعرض أو تعديل PDF.</string>
+    <string name="unlock_pdf_password_title">أدخل كلمة المرور</string>
+    <string name="unlock_pdf_password_message">أدخل كلمة المرور الحالية لإزالة الحماية من هذا PDF.</string>
+    <string name="pdf_password_hint">كلمة المرور</string>
+    <string name="pdf_password_title">أدخل كلمة مرور PDF</string>
+    <string name="pdf_password_file_message">كلمة المرور مطلوبة لـ:\n%1$s</string>
+    <string name="pdf_password_empty">يرجى إدخال كلمة المرور</string>
+    <string name="pdf_password_incorrect">كلمة المرور غير صحيحة</string>
+    <string name="no_pdf_files">لم يتم العثور على ملفات PDF</string>
+    <string name="no_unlocked_pdf_files">لم يتم العثور على ملفات PDF غير مقفلة</string>
+    <string name="no_locked_pdf_files">لم يتم العثور على ملفات PDF مقفلة</string>
+    <string name="reminder_action_check">تحقق</string>
+    <string-array name="reminder_time_messages">
+        <item>مسودة Word مستحقة خلال 5 دقائق. راجعها.</item>
+        <item>تعليقات Word تنتظر الرد. أجب خلال 4 دقائق.</item>
+        <item>توجد أخطاء في ورقة Excel. أصلحها خلال 3 دقائق.</item>
+        <item>تقرير Excel متأخر. أرسله خلال 7 دقائق.</item>
+        <item>شرائح PPT مستحقة خلال 6 دقائق. أكملها الآن.</item>
+        <item>ملاحظات PPT جاهزة. راجعها خلال 5 دقائق.</item>
+        <item>عقد PDF يحتاج إلى توقيع. وقّعه خلال دقيقتين.</item>
+        <item>نموذج PDF غير مكتمل. أكمله خلال 3 دقائق.</item>
+    </string-array>
+    <string-array name="reminder_unlock_messages">
+        <item>إصدار Word قديم. حدّثه خلال 8 دقائق.</item>
+        <item>توجد تعارضات في مسودة Word. حلّها خلال 5 دقائق.</item>
+        <item>تقرير Excel مستحق خلال 10 دقائق. أسرع.</item>
+        <item>بيانات Excel ناقصة. أدخلها خلال 6 دقائق.</item>
+        <item>يبدأ عرض PPT خلال 6 دقائق. استعد.</item>
+        <item>ترتيب شرائح PPT غير صحيح. أعد ترتيبها خلال 3 دقائق.</item>
+        <item>فاتورة PDF تحتاج إلى موافقة. وافق عليها خلال 4 دقائق.</item>
+        <item>يحتوي PDF على ملاحظات جديدة. راجعها خلال 5 دقائق.</item>
+    </string-array>
+    <string-array name="reminder_alarm_messages">
+        <item>الموافقة النهائية على Word معلقة. قرر خلال دقيقتين.</item>
+        <item>مهمة Word عاجلة على وشك الاستحقاق. أنجزها خلال 5 دقائق.</item>
+        <item>جدول Excel المحوري لا يعمل. أصلحه خلال 5 دقائق.</item>
+        <item>توقعات Excel متأخرة. حدّثها خلال 8 دقائق.</item>
+        <item>ملف PPT كبير جدًا. اضغطه خلال 4 دقائق.</item>
+        <item>رسوم PPT المتحركة ناقصة. أضفها خلال دقيقتين.</item>
+        <item>إيصال PDF يحتاج إلى التحقق. تحقّق منه خلال 3 دقائق.</item>
+        <item>توقيع PDF هو الخطوة الأخيرة. وقّعه خلال 4 دقائق.</item>
+    </string-array>
+    <string name="feedback">إرسال ملاحظات</string>
+    <string name="uninstall_shortcut_label">إلغاء التثبيت</string>
+    <string name="uninstall_problem_title">هل واجهت مشكلات أثناء إدارة ملفات PDF؟</string>
+    <string name="uninstall_problem_subtitle">نواصل تحسين الميزات لتجربة استخدام أكثر سلاسة</string>
+    <string name="uninstall_sort_problem">هل لا تعمل ميزة فرز الملفات بشكل جيد؟</string>
+    <string name="uninstall_sort_action">ابدأ فرز ملفات PDF بالكامل</string>
+    <string name="uninstall_speed_problem">هل معالجة PDF بطيئة جدًا؟</string>
+    <string name="uninstall_speed_action">سرّع معالجة PDF الآن</string>
+    <string name="uninstall_keep_using">ابق واستمر في استخدام AidPDF</string>
+    <string name="uninstall_action">إلغاء التثبيت</string>
+    <string name="uninstall_reason_title">ما الذي دفعك إلى إلغاء تثبيت AidPDF؟</string>
+    <string name="uninstall_reason_conversion">غير راضٍ عن نتائج تحويل PDF</string>
+    <string name="uninstall_reason_storage">يشغل التطبيق مساحة تخزين كبيرة على الهاتف</string>
+    <string name="uninstall_reason_complex">الاستخدام معقد وغير مريح</string>
+    <string name="uninstall_reconsider">يرجى إعادة النظر قبل إلغاء التثبيت</string>
+    <string name="uninstall_confirm_message">هل تريد تأكيد إلغاء تثبيت AidPDF؟</string>
+    <string name="uninstall_continue_using">متابعة الاستخدام</string>
+    <string name="ad_loading">جار تحميل الإعلان...</string>
+    <string name="ad_label">إعلان</string>
+    <string name="reminder_channel_name">تذكيرات المستندات</string>
+    <string name="reminder_media_channel_name">تذكيرات وسائط المستندات</string>
+    <string name="reminder_bar_channel_name">اختصارات المستندات</string>
+    <string name="close">إغلاق</string>
+    <string name="allow_permission">السماح بالإذن</string>
+    <string name="not_now">ليس الآن</string>
+    <string name="overlay_permission_title">فعّل الإشعارات لتحديثات التطبيق المهمة</string>
+    <string name="notification_permission_title">احصل على تنبيهات التطبيق المهمة</string>
+    <string name="notification_permission_message">فعّل الإشعارات لتلقي تحديثات المستندات والتذكيرات المهمة.</string>
+    <string name="skip">تخطي</string>
+</resources>

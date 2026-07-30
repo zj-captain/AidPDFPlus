@@ -1,0 +1,185 @@
+<resources>
+    <string name="back">返回</string>
+    <string name="language">語言</string>
+    <string name="language_action_next">下一步</string>
+    <string name="language_action_ok">OK</string>
+    <string name="settings">設定</string>
+    <string name="privacy_policy">私隱政策</string>
+    <string name="tab_home">首頁</string>
+    <string name="tab_recent">最近</string>
+    <string name="tab_favorites">收藏</string>
+    <string name="tab_tools">工具</string>
+    <string name="loading">處理中...</string>
+    <string name="onboarding_file_management">管理及預覽 PDF 和多種格式文件</string>
+    <string name="onboarding_split_merge">快速分割及合併文件</string>
+    <string name="onboarding_file_security">支援文件加密和解密</string>
+    <string name="onboarding_action_skip">跳過</string>
+    <string name="onboarding_action_next">下一步</string>
+    <string name="onboarding_action_start">開始</string>
+    <string name="create_pdf">建立 PDF</string>
+    <string name="merge_pdf">合併 PDF</string>
+    <string name="split_pdf">分割 PDF</string>
+    <string name="lock_pdf">加密 PDF</string>
+    <string name="unlock_pdf">解密 PDF</string>
+    <string name="scan_to_pdf">掃描為 PDF</string>
+    <string name="tools_convert_extract">轉換與擷取</string>
+    <string name="tools_group_tools">工具</string>
+    <string name="tools_security">安全</string>
+    <string name="permission_title">需要文件權限</string>
+    <string name="permission_message">請授予文件管理權限，以讀取及編輯文件。</string>
+    <string name="grant_now">立即授權</string>
+    <string name="empty_title">找不到文件</string>
+    <string name="empty_message">支援的文件會顯示在這裏。</string>
+    <string name="empty_recent_title">暫無最近文件</string>
+    <string name="empty_favorites_title">暫無收藏</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">確認</string>
+    <string name="continue_action">繼續</string>
+    <string name="app_name">AidPDF</string>
+    <string name="filter_pdf">PDF</string>
+    <string name="filter_word">WORD</string>
+    <string name="filter_excel">EXCEL</string>
+    <string name="filter_ppt">PPT</string>
+    <string name="tab_setting">工具</string>
+    <string name="language_coming_soon">語言設定即將推出</string>
+    <string name="share">分享</string>
+    <string name="details">詳情</string>
+    <string name="file_details">文件詳情</string>
+    <string name="rename">重新命名</string>
+    <string name="delete">刪除</string>
+    <string name="save">儲存</string>
+    <string name="file_name">文件名稱</string>
+    <string name="file_size">文件大小</string>
+    <string name="modified_time">修改時間</string>
+    <string name="storage_path">儲存路徑</string>
+    <string name="empty_recent_message">開啟過的文件會顯示在這裏。</string>
+    <string name="empty_favorites_message">點擊星標即可將文件儲存在這裏。</string>
+    <string name="share_app">分享應用程式</string>
+    <string name="privacy_body">AidPDF 只會讀取本地文件中繼資料，用於文件列表、最近文件、收藏、分享、重新命名和刪除操作。</string>
+    <string name="app_version">版本 %1$s</string>
+    <string name="open_file_failed">無法開啟此文件</string>
+    <string name="share_file_failed">無法分享此文件</string>
+    <string name="rename_empty">文件名稱不能為空</string>
+    <string name="file_name_empty">文件名稱不能為空</string>
+    <string name="rename_exists">已存在同名文件</string>
+    <string name="rename_failed">無法重新命名此文件</string>
+    <string name="delete_title">刪除文件？</string>
+    <string name="delete_message">此文件將從本地儲存中移除。</string>
+    <string name="remove_recent_title">從最近列表移除？</string>
+    <string name="remove_recent_message">這只會從最近列表移除此項目，原文件仍會保留在裝置上。</string>
+    <string name="delete_failed">無法刪除此文件</string>
+    <string name="favorite_added">已加入收藏</string>
+    <string name="favorite_removed">已取消收藏</string>
+    <string name="ad_title">倒數</string>
+    <string name="ad_hint">這是一個詳細介紹...</string>
+    <string name="ad_action">安裝</string>
+    <string name="ad_badge">廣告</string>
+    <string name="end_of_list">列表已到底</string>
+    <string name="pdf_page">第 %1$d / %2$d 頁</string>
+    <string name="previous_page">上一頁</string>
+    <string name="next_page">下一頁</string>
+    <string name="create_pdf_failed">無法建立 PDF</string>
+    <string name="create_pdf_cancelled">已取消建立 PDF</string>
+    <string name="pdf_created">PDF 已建立</string>
+    <string name="open_it">開啟！</string>
+    <string name="back_home">返回首頁</string>
+    <string name="pdf_badge">PDF</string>
+    <string name="loading_documents">正在載入文件...</string>
+    <string name="loading_pages">正在載入頁面...</string>
+    <string name="select_pdf">選擇 PDF</string>
+    <string name="select_pdf_first">請先選擇一個 PDF</string>
+    <string name="split_select_pdf_hint">選擇一個 PDF 文件進行分割。</string>
+    <string name="lock_select_pdf_hint">選擇一個未加密的 PDF，用密碼保護。</string>
+    <string name="unlock_select_pdf_hint">選擇一個已加密的 PDF，移除密碼保護。</string>
+    <string name="select_two_pdf">請至少選擇 2 個 PDF</string>
+    <string name="selected_count">已選擇 %1$d 個</string>
+    <string name="merge_selection_count">已選擇 %1$d/%2$d 個。請至少選擇 2 個 PDF。</string>
+    <string name="merge_max_selected">最多可選擇 %1$d 個 PDF</string>
+    <string name="merge_pdf_success">PDF 合併成功</string>
+    <string name="merge_pdf_failed">無法合併 PDF 文件</string>
+    <string name="merge_pdf_too_large">文件過大，合併失敗</string>
+    <string name="split_pdf_success">PDF 分割成功</string>
+    <string name="split_pdf_failed">無法分割此 PDF</string>
+    <string name="split_page_hint">選擇要匯出的頁面</string>
+    <string name="split_no_page_selected">請至少選擇一頁</string>
+    <string name="one_page_tips">此 PDF 只有一頁</string>
+    <string name="page_count_text">共 %1$d 頁</string>
+    <string name="split_selected_count">已選擇 %1$d/%2$d 頁</string>
+    <string name="page_number">第 %1$d 頁</string>
+    <string name="lock_pdf_success">PDF 加密成功</string>
+    <string name="lock_pdf_failed">無法加密此 PDF</string>
+    <string name="unlock_pdf_success">PDF 解密成功</string>
+    <string name="unlock_pdf_failed">無法解密此 PDF</string>
+    <string name="set_pdf_password_title">設定密碼</string>
+    <string name="set_pdf_password_message">查看或編輯該 PDF 時將需要此密碼。</string>
+    <string name="unlock_pdf_password_title">輸入密碼</string>
+    <string name="unlock_pdf_password_message">輸入目前密碼以移除此 PDF 的保護。</string>
+    <string name="pdf_password_hint">密碼</string>
+    <string name="pdf_password_title">輸入 PDF 密碼</string>
+    <string name="pdf_password_file_message">文件需要密碼：\n%1$s</string>
+    <string name="pdf_password_empty">請輸入密碼</string>
+    <string name="pdf_password_incorrect">密碼不正確</string>
+    <string name="no_pdf_files">找不到 PDF 文件</string>
+    <string name="no_unlocked_pdf_files">找不到未加密的 PDF 文件</string>
+    <string name="no_locked_pdf_files">找不到已加密的 PDF 文件</string>
+    <string name="reminder_action_check">查看</string>
+    <string-array name="reminder_time_messages">
+        <item>Word 草稿將於 5 分鐘後到期，請及時檢查。</item>
+        <item>Word 評論等待回覆，請在 4 分鐘內處理。</item>
+        <item>Excel 試算表有錯誤，請在 3 分鐘內修正。</item>
+        <item>Excel 報告已逾期，請在 7 分鐘內提交。</item>
+        <item>PPT 投影片將於 6 分鐘後到期，請立即完成。</item>
+        <item>PPT 意見已準備好，請在 5 分鐘內查看。</item>
+        <item>PDF 合約需要簽署，請在 2 分鐘內完成。</item>
+        <item>PDF 表格尚未填妥，請在 3 分鐘內完成。</item>
+    </string-array>
+    <string-array name="reminder_unlock_messages">
+        <item>Word 版本已過時，請在 8 分鐘內更新。</item>
+        <item>Word 草稿有衝突，請在 5 分鐘內解決。</item>
+        <item>Excel 報告將於 10 分鐘後到期，請盡快處理。</item>
+        <item>Excel 資料不完整，請在 6 分鐘內補充。</item>
+        <item>PPT 簡報將於 6 分鐘後開始，請做好準備。</item>
+        <item>PPT 投影片次序有誤，請在 3 分鐘內重新排列。</item>
+        <item>PDF 發票需要審批，請在 4 分鐘內完成。</item>
+        <item>PDF 有新註解，請在 5 分鐘內查看。</item>
+    </string-array>
+    <string-array name="reminder_alarm_messages">
+        <item>Word 定稿等待審批，請在 2 分鐘內決定。</item>
+        <item>Word 緊急工作即將到期，請在 5 分鐘內處理。</item>
+        <item>Excel 樞紐分析表已損壞，請在 5 分鐘內修正。</item>
+        <item>Excel 預測進度落後，請在 8 分鐘內更新。</item>
+        <item>PPT 檔案過大，請在 4 分鐘內壓縮。</item>
+        <item>PPT 缺少動畫，請在 2 分鐘內加入。</item>
+        <item>PDF 收據需要核實，請在 3 分鐘內完成。</item>
+        <item>PDF 簽署是最後一步，請在 4 分鐘內完成。</item>
+    </string-array>
+    <string name="feedback">意見反映</string>
+    <string name="uninstall_shortcut_label">解除安裝</string>
+    <string name="uninstall_problem_title">管理 PDF 文件時遇到問題？</string>
+    <string name="uninstall_problem_subtitle">我們持續優化功能，令操作更流暢</string>
+    <string name="uninstall_sort_problem">文件排序功能不理想？</string>
+    <string name="uninstall_sort_action">立即進行全面 PDF 排序</string>
+    <string name="uninstall_speed_problem">PDF 處理速度太慢？</string>
+    <string name="uninstall_speed_action">立即提升 PDF 操作速度</string>
+    <string name="uninstall_keep_using">留下並繼續使用 AidPDF</string>
+    <string name="uninstall_action">解除安裝</string>
+    <string name="uninstall_reason_title">甚麼原因令你決定解除安裝 AidPDF？</string>
+    <string name="uninstall_reason_conversion">不滿意 PDF 轉換效果</string>
+    <string name="uninstall_reason_storage">應用程式佔用太多手機儲存空間</string>
+    <string name="uninstall_reason_complex">操作複雜且不方便</string>
+    <string name="uninstall_reconsider">解除安裝前請再考慮</string>
+    <string name="uninstall_confirm_message">確認解除安裝 AidPDF？</string>
+    <string name="uninstall_continue_using">繼續使用</string>
+    <string name="ad_loading">正在載入廣告...</string>
+    <string name="ad_label">廣告</string>
+    <string name="reminder_channel_name">文件提醒</string>
+    <string name="reminder_media_channel_name">文件媒體提醒</string>
+    <string name="reminder_bar_channel_name">文件捷徑</string>
+    <string name="close">關閉</string>
+    <string name="allow_permission">允許權限</string>
+    <string name="not_now">暫時不要</string>
+    <string name="overlay_permission_title">開啟通知以接收重要的應用程式更新</string>
+    <string name="notification_permission_title">接收重要的應用程式通知</string>
+    <string name="notification_permission_message">開啟通知以接收重要的文件更新和提醒。</string>
+    <string name="skip">跳過</string>
+</resources>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:baselineAligned="false"
+    android:gravity="center"
+    android:orientation="horizontal"
+    tools:ignore="UseCompatTextViewDrawableXml">
+
+    <TextView
+        android:id="@+id/reminder_bar_pdf"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/img_hold_bar_pdf"
+        android:drawablePadding="2dp"
+        android:fontFamily="@font/poppins"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/filter_pdf"
+        android:textColor="@color/reminder_text"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/reminder_bar_excel"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/img_hold_bar_excel"
+        android:drawablePadding="2dp"
+        android:fontFamily="@font/poppins"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/filter_excel"
+        android:textColor="@color/reminder_text"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/reminder_bar_ppt"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/img_hold_bar_ppt"
+        android:drawablePadding="2dp"
+        android:fontFamily="@font/poppins"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/filter_ppt"
+        android:textColor="@color/reminder_text"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+</LinearLayout>

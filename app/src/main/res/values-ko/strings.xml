@@ -1,0 +1,185 @@
+<resources>
+    <string name="back">뒤로</string>
+    <string name="language">언어</string>
+    <string name="language_action_next">다음</string>
+    <string name="language_action_ok">OK</string>
+    <string name="settings">설정</string>
+    <string name="privacy_policy">개인정보 처리방침</string>
+    <string name="tab_home">홈</string>
+    <string name="tab_recent">최근</string>
+    <string name="tab_favorites">즐겨찾기</string>
+    <string name="tab_tools">도구</string>
+    <string name="loading">처리 중...</string>
+    <string name="onboarding_file_management">PDF 및 다양한 형식의 파일 관리와 미리보기</string>
+    <string name="onboarding_split_merge">문서를 빠르게 분할하고 병합</string>
+    <string name="onboarding_file_security">파일 암호화 및 복호화 지원</string>
+    <string name="onboarding_action_skip">건너뛰기</string>
+    <string name="onboarding_action_next">다음</string>
+    <string name="onboarding_action_start">시작</string>
+    <string name="create_pdf">PDF 만들기</string>
+    <string name="merge_pdf">PDF 병합</string>
+    <string name="split_pdf">PDF 분할</string>
+    <string name="lock_pdf">PDF 잠금</string>
+    <string name="unlock_pdf">PDF 잠금 해제</string>
+    <string name="scan_to_pdf">PDF로 스캔</string>
+    <string name="tools_convert_extract">변환 및 추출</string>
+    <string name="tools_group_tools">도구</string>
+    <string name="tools_security">보안</string>
+    <string name="permission_title">파일 권한 필요</string>
+    <string name="permission_message">문서 파일을 읽고 편집하려면 파일 관리 권한을 허용해 주세요.</string>
+    <string name="grant_now">지금 허용</string>
+    <string name="empty_title">파일을 찾을 수 없음</string>
+    <string name="empty_message">지원되는 문서가 여기에 표시됩니다.</string>
+    <string name="empty_recent_title">최근 파일 없음</string>
+    <string name="empty_favorites_title">즐겨찾기 없음</string>
+    <string name="cancel">취소</string>
+    <string name="confirm">확인</string>
+    <string name="continue_action">계속</string>
+    <string name="app_name">AidPDF</string>
+    <string name="filter_pdf">PDF</string>
+    <string name="filter_word">WORD</string>
+    <string name="filter_excel">EXCEL</string>
+    <string name="filter_ppt">PPT</string>
+    <string name="tab_setting">도구</string>
+    <string name="language_coming_soon">언어 설정은 곧 제공됩니다</string>
+    <string name="share">공유</string>
+    <string name="details">세부 정보</string>
+    <string name="file_details">파일 세부 정보</string>
+    <string name="rename">이름 변경</string>
+    <string name="delete">삭제</string>
+    <string name="save">저장</string>
+    <string name="file_name">파일 이름</string>
+    <string name="file_size">파일 크기</string>
+    <string name="modified_time">수정 시간</string>
+    <string name="storage_path">저장 경로</string>
+    <string name="empty_recent_message">열었던 문서가 여기에 표시됩니다.</string>
+    <string name="empty_favorites_message">별표를 탭하면 문서가 여기에 저장됩니다.</string>
+    <string name="share_app">앱 공유</string>
+    <string name="privacy_body">AidPDF는 파일 목록, 최근 파일, 즐겨찾기, 공유, 이름 변경 및 삭제 작업을 위해 로컬 문서 메타데이터만 읽습니다.</string>
+    <string name="app_version">버전 %1$s</string>
+    <string name="open_file_failed">이 파일을 열 수 없습니다</string>
+    <string name="share_file_failed">이 파일을 공유할 수 없습니다</string>
+    <string name="rename_empty">파일 이름은 비워 둘 수 없습니다</string>
+    <string name="file_name_empty">파일 이름은 비워 둘 수 없습니다</string>
+    <string name="rename_exists">같은 이름의 파일이 이미 있습니다</string>
+    <string name="rename_failed">이 파일의 이름을 변경할 수 없습니다</string>
+    <string name="delete_title">파일을 삭제할까요?</string>
+    <string name="delete_message">이 파일은 로컬 저장소에서 제거됩니다.</string>
+    <string name="remove_recent_title">최근 목록에서 제거할까요?</string>
+    <string name="remove_recent_message">최근 목록에서만 제거됩니다. 원본 파일은 기기에 남아 있습니다.</string>
+    <string name="delete_failed">이 파일을 삭제할 수 없습니다</string>
+    <string name="favorite_added">즐겨찾기에 추가됨</string>
+    <string name="favorite_removed">즐겨찾기에서 제거됨</string>
+    <string name="ad_title">카운트다운</string>
+    <string name="ad_hint">자세한 소개입니다...</string>
+    <string name="ad_action">설치</string>
+    <string name="ad_badge">광고</string>
+    <string name="end_of_list">목록 끝</string>
+    <string name="pdf_page">%1$d / %2$d 페이지</string>
+    <string name="previous_page">이전</string>
+    <string name="next_page">다음</string>
+    <string name="create_pdf_failed">PDF를 만들 수 없습니다</string>
+    <string name="create_pdf_cancelled">PDF 생성이 취소되었습니다</string>
+    <string name="pdf_created">PDF가 생성되었습니다</string>
+    <string name="open_it">열기!</string>
+    <string name="back_home">홈으로 돌아가기</string>
+    <string name="pdf_badge">PDF</string>
+    <string name="loading_documents">문서 로드 중...</string>
+    <string name="loading_pages">페이지 로드 중...</string>
+    <string name="select_pdf">PDF 선택</string>
+    <string name="select_pdf_first">먼저 PDF를 선택하세요</string>
+    <string name="split_select_pdf_hint">분할할 PDF 파일 하나를 선택하세요.</string>
+    <string name="lock_select_pdf_hint">암호로 보호할 잠금 해제된 PDF를 선택하세요.</string>
+    <string name="unlock_select_pdf_hint">암호 보호를 제거할 잠긴 PDF를 선택하세요.</string>
+    <string name="select_two_pdf">PDF를 2개 이상 선택하세요</string>
+    <string name="selected_count">%1$d개 선택됨</string>
+    <string name="merge_selection_count">%1$d/%2$d개 선택됨. PDF를 2개 이상 선택하세요.</string>
+    <string name="merge_max_selected">최대 %1$d개의 PDF를 선택할 수 있습니다</string>
+    <string name="merge_pdf_success">PDF 병합 완료</string>
+    <string name="merge_pdf_failed">PDF 파일을 병합할 수 없습니다</string>
+    <string name="merge_pdf_too_large">파일이 너무 커서 병합에 실패했습니다</string>
+    <string name="split_pdf_success">PDF 분할 완료</string>
+    <string name="split_pdf_failed">이 PDF를 분할할 수 없습니다</string>
+    <string name="split_page_hint">내보낼 페이지 선택</string>
+    <string name="split_no_page_selected">페이지를 하나 이상 선택하세요</string>
+    <string name="one_page_tips">이 PDF는 한 페이지뿐입니다</string>
+    <string name="page_count_text">총 %1$d페이지</string>
+    <string name="split_selected_count">%1$d/%2$d페이지 선택됨</string>
+    <string name="page_number">%1$d페이지</string>
+    <string name="lock_pdf_success">PDF 잠금 완료</string>
+    <string name="lock_pdf_failed">이 PDF를 잠글 수 없습니다</string>
+    <string name="unlock_pdf_success">PDF 잠금 해제 완료</string>
+    <string name="unlock_pdf_failed">이 PDF의 잠금을 해제할 수 없습니다</string>
+    <string name="set_pdf_password_title">암호 설정</string>
+    <string name="set_pdf_password_message">이 PDF를 보거나 편집하려면 이 암호가 필요합니다.</string>
+    <string name="unlock_pdf_password_title">암호 입력</string>
+    <string name="unlock_pdf_password_message">이 PDF의 보호를 제거하려면 현재 암호를 입력하세요.</string>
+    <string name="pdf_password_hint">암호</string>
+    <string name="pdf_password_title">PDF 암호 입력</string>
+    <string name="pdf_password_file_message">암호 필요:\n%1$s</string>
+    <string name="pdf_password_empty">암호를 입력하세요</string>
+    <string name="pdf_password_incorrect">암호가 올바르지 않습니다</string>
+    <string name="no_pdf_files">PDF 파일을 찾을 수 없습니다</string>
+    <string name="no_unlocked_pdf_files">잠금 해제된 PDF 파일을 찾을 수 없습니다</string>
+    <string name="no_locked_pdf_files">잠긴 PDF 파일을 찾을 수 없습니다</string>
+    <string name="reminder_action_check">확인</string>
+    <string-array name="reminder_time_messages">
+        <item>Word 초안이 5분 후 마감됩니다. 검토해 주세요.</item>
+        <item>Word 댓글에 답변이 필요합니다. 4분 안에 답변해 주세요.</item>
+        <item>Excel 시트에 오류가 있습니다. 3분 안에 수정해 주세요.</item>
+        <item>Excel 보고서가 기한을 넘겼습니다. 7분 안에 제출해 주세요.</item>
+        <item>PPT 슬라이드가 6분 후 마감됩니다. 지금 완료해 주세요.</item>
+        <item>PPT 피드백이 도착했습니다. 5분 안에 확인해 주세요.</item>
+        <item>PDF 계약서에 서명이 필요합니다. 2분 안에 서명해 주세요.</item>
+        <item>PDF 양식이 미완성입니다. 3분 안에 작성해 주세요.</item>
+    </string-array>
+    <string-array name="reminder_unlock_messages">
+        <item>Word 버전이 오래되었습니다. 8분 안에 업데이트해 주세요.</item>
+        <item>Word 초안에 충돌이 있습니다. 5분 안에 해결해 주세요.</item>
+        <item>Excel 보고서가 10분 후 마감됩니다. 서둘러 주세요.</item>
+        <item>Excel 데이터가 누락되었습니다. 6분 안에 입력해 주세요.</item>
+        <item>PPT 발표가 6분 후 시작됩니다. 준비해 주세요.</item>
+        <item>PPT 슬라이드 순서가 잘못되었습니다. 3분 안에 재정렬해 주세요.</item>
+        <item>PDF 청구서에 승인이 필요합니다. 4분 안에 승인해 주세요.</item>
+        <item>PDF에 새 메모가 있습니다. 5분 안에 검토해 주세요.</item>
+    </string-array>
+    <string-array name="reminder_alarm_messages">
+        <item>Word 최종 승인이 보류 중입니다. 2분 안에 결정해 주세요.</item>
+        <item>Word 긴급 작업이 곧 마감됩니다. 5분 안에 처리해 주세요.</item>
+        <item>Excel 피벗 테이블에 문제가 있습니다. 5분 안에 수정해 주세요.</item>
+        <item>Excel 예측 업데이트가 지연되었습니다. 8분 안에 업데이트해 주세요.</item>
+        <item>PPT 파일이 너무 큽니다. 4분 안에 압축해 주세요.</item>
+        <item>PPT 애니메이션이 누락되었습니다. 2분 안에 추가해 주세요.</item>
+        <item>PDF 영수증을 확인해야 합니다. 3분 안에 확인해 주세요.</item>
+        <item>PDF 서명이 마지막 단계입니다. 4분 안에 서명해 주세요.</item>
+    </string-array>
+    <string name="feedback">의견 보내기</string>
+    <string name="uninstall_shortcut_label">제거</string>
+    <string name="uninstall_problem_title">PDF 파일을 관리하는 중에 문제가 발생했나요?</string>
+    <string name="uninstall_problem_subtitle">더 원활하게 사용할 수 있도록 기능을 계속 개선하고 있습니다</string>
+    <string name="uninstall_sort_problem">파일 정렬 기능이 제대로 작동하지 않나요?</string>
+    <string name="uninstall_sort_action">PDF 파일 전체 정렬 시작</string>
+    <string name="uninstall_speed_problem">PDF 처리 속도가 너무 느린가요?</string>
+    <string name="uninstall_speed_action">지금 바로 PDF 처리 속도 향상</string>
+    <string name="uninstall_keep_using">AidPDF를 계속 사용하기</string>
+    <string name="uninstall_action">제거</string>
+    <string name="uninstall_reason_title">AidPDF를 제거하려는 이유가 무엇인가요?</string>
+    <string name="uninstall_reason_conversion">PDF 변환 결과가 만족스럽지 않음</string>
+    <string name="uninstall_reason_storage">앱이 휴대전화 저장 공간을 너무 많이 차지함</string>
+    <string name="uninstall_reason_complex">사용법이 복잡하고 불편함</string>
+    <string name="uninstall_reconsider">제거하기 전에 다시 한번 생각해 주세요</string>
+    <string name="uninstall_confirm_message">AidPDF를 제거하시겠습니까?</string>
+    <string name="uninstall_continue_using">계속 사용</string>
+    <string name="ad_loading">광고 로드 중...</string>
+    <string name="ad_label">광고</string>
+    <string name="reminder_channel_name">문서 알림</string>
+    <string name="reminder_media_channel_name">문서 미디어 알림</string>
+    <string name="reminder_bar_channel_name">문서 바로가기</string>
+    <string name="close">닫기</string>
+    <string name="allow_permission">권한 허용</string>
+    <string name="not_now">나중에</string>
+    <string name="overlay_permission_title">중요한 앱 업데이트 알림 켜기</string>
+    <string name="notification_permission_title">중요한 앱 알림 받기</string>
+    <string name="notification_permission_message">중요한 문서 업데이트와 알림을 받으려면 알림을 켜세요.</string>
+    <string name="skip">건너뛰기</string>
+</resources>

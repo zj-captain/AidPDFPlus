@@ -1,0 +1,185 @@
+<resources>
+    <string name="back">वापस</string>
+    <string name="language">भाषा</string>
+    <string name="language_action_next">आगे</string>
+    <string name="language_action_ok">OK</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="privacy_policy">गोपनीयता नीति</string>
+    <string name="tab_home">होम</string>
+    <string name="tab_recent">हाल के</string>
+    <string name="tab_favorites">पसंदीदा</string>
+    <string name="tab_tools">टूल</string>
+    <string name="loading">प्रोसेस हो रहा है...</string>
+    <string name="onboarding_file_management">PDF और कई फॉर्मेट की फाइल प्रबंधन और प्रीव्यू</string>
+    <string name="onboarding_split_merge">दस्तावेजों को जल्दी विभाजित और मर्ज करें</string>
+    <string name="onboarding_file_security">फाइल एन्क्रिप्शन और डिक्रिप्शन समर्थन</string>
+    <string name="onboarding_action_skip">छोड़ें</string>
+    <string name="onboarding_action_next">आगे</string>
+    <string name="onboarding_action_start">शुरू करें</string>
+    <string name="create_pdf">PDF बनाएं</string>
+    <string name="merge_pdf">PDF मर्ज करें</string>
+    <string name="split_pdf">PDF विभाजित करें</string>
+    <string name="lock_pdf">PDF लॉक करें</string>
+    <string name="unlock_pdf">PDF अनलॉक करें</string>
+    <string name="scan_to_pdf">PDF में स्कैन करें</string>
+    <string name="tools_convert_extract">कन्वर्ट और एक्सट्रैक्ट</string>
+    <string name="tools_group_tools">टूल</string>
+    <string name="tools_security">सुरक्षा</string>
+    <string name="permission_title">फाइल अनुमति आवश्यक</string>
+    <string name="permission_message">दस्तावेज फाइलों को पढ़ने और संपादित करने के लिए फाइल प्रबंधन अनुमति दें।</string>
+    <string name="grant_now">अभी अनुमति दें</string>
+    <string name="empty_title">कोई फाइल नहीं मिली</string>
+    <string name="empty_message">समर्थित दस्तावेज यहां दिखाई देंगे।</string>
+    <string name="empty_recent_title">कोई हाल की फाइल नहीं</string>
+    <string name="empty_favorites_title">कोई पसंदीदा नहीं</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="continue_action">जारी रखें</string>
+    <string name="app_name">AidPDF</string>
+    <string name="filter_pdf">PDF</string>
+    <string name="filter_word">WORD</string>
+    <string name="filter_excel">EXCEL</string>
+    <string name="filter_ppt">PPT</string>
+    <string name="tab_setting">टूल</string>
+    <string name="language_coming_soon">भाषा सेटिंग जल्द आ रही है</string>
+    <string name="share">शेयर करें</string>
+    <string name="details">विवरण</string>
+    <string name="file_details">फाइल विवरण</string>
+    <string name="rename">नाम बदलें</string>
+    <string name="delete">हटाएं</string>
+    <string name="save">सेव करें</string>
+    <string name="file_name">फाइल नाम</string>
+    <string name="file_size">फाइल आकार</string>
+    <string name="modified_time">संशोधन समय</string>
+    <string name="storage_path">स्टोरेज पथ</string>
+    <string name="empty_recent_message">खोले गए दस्तावेज यहां दिखाई देंगे।</string>
+    <string name="empty_favorites_message">दस्तावेज यहां सेव करने के लिए स्टार टैप करें।</string>
+    <string name="share_app">ऐप शेयर करें</string>
+    <string name="privacy_body">AidPDF केवल फाइल सूची, हाल की फाइलें, पसंदीदा, शेयर, नाम बदलने और हटाने के लिए स्थानीय दस्तावेज मेटाडेटा पढ़ता है।</string>
+    <string name="app_version">संस्करण %1$s</string>
+    <string name="open_file_failed">यह फाइल नहीं खुल सकी</string>
+    <string name="share_file_failed">यह फाइल शेयर नहीं हो सकी</string>
+    <string name="rename_empty">फाइल नाम खाली नहीं हो सकता</string>
+    <string name="file_name_empty">फाइल नाम खाली नहीं हो सकता</string>
+    <string name="rename_exists">इस नाम की फाइल पहले से मौजूद है</string>
+    <string name="rename_failed">इस फाइल का नाम नहीं बदला जा सका</string>
+    <string name="delete_title">फाइल हटाएं?</string>
+    <string name="delete_message">यह फाइल स्थानीय स्टोरेज से हटा दी जाएगी।</string>
+    <string name="remove_recent_title">हाल की सूची से हटाएं?</string>
+    <string name="remove_recent_message">यह केवल आइटम को हाल की सूची से हटाता है। मूल फाइल आपके डिवाइस पर रहेगी।</string>
+    <string name="delete_failed">यह फाइल हटाई नहीं जा सकी</string>
+    <string name="favorite_added">पसंदीदा में जोड़ा गया</string>
+    <string name="favorite_removed">पसंदीदा से हटाया गया</string>
+    <string name="ad_title">काउंटडाउन</string>
+    <string name="ad_hint">यह एक विस्तृत परिचय है...</string>
+    <string name="ad_action">इंस्टॉल करें</string>
+    <string name="ad_badge">विज्ञापन</string>
+    <string name="end_of_list">सूची समाप्त</string>
+    <string name="pdf_page">पेज %1$d / %2$d</string>
+    <string name="previous_page">पिछला</string>
+    <string name="next_page">अगला</string>
+    <string name="create_pdf_failed">PDF नहीं बनाया जा सका</string>
+    <string name="create_pdf_cancelled">PDF बनाना रद्द किया गया</string>
+    <string name="pdf_created">PDF बन गया</string>
+    <string name="open_it">खोलें!</string>
+    <string name="back_home">होम पर वापस</string>
+    <string name="pdf_badge">PDF</string>
+    <string name="loading_documents">दस्तावेज लोड हो रहे हैं...</string>
+    <string name="loading_pages">पेज लोड हो रहे हैं...</string>
+    <string name="select_pdf">PDF चुनें</string>
+    <string name="select_pdf_first">पहले PDF चुनें</string>
+    <string name="split_select_pdf_hint">विभाजित करने के लिए एक PDF फाइल चुनें।</string>
+    <string name="lock_select_pdf_hint">पासवर्ड से सुरक्षित करने के लिए अनलॉक PDF चुनें।</string>
+    <string name="unlock_select_pdf_hint">पासवर्ड सुरक्षा हटाने के लिए लॉक PDF चुनें।</string>
+    <string name="select_two_pdf">कम से कम 2 PDF चुनें</string>
+    <string name="selected_count">%1$d चुना गया</string>
+    <string name="merge_selection_count">%1$d/%2$d चुने गए। कम से कम 2 PDF चुनें।</string>
+    <string name="merge_max_selected">आप अधिकतम %1$d PDF चुन सकते हैं</string>
+    <string name="merge_pdf_success">PDF सफलतापूर्वक मर्ज हुआ</string>
+    <string name="merge_pdf_failed">PDF फाइलें मर्ज नहीं हो सकीं</string>
+    <string name="merge_pdf_too_large">फाइल बहुत बड़ी है, मर्ज विफल</string>
+    <string name="split_pdf_success">PDF सफलतापूर्वक विभाजित हुआ</string>
+    <string name="split_pdf_failed">यह PDF विभाजित नहीं हो सका</string>
+    <string name="split_page_hint">निर्यात करने के लिए पेज चुनें</string>
+    <string name="split_no_page_selected">कम से कम एक पेज चुनें</string>
+    <string name="one_page_tips">इस PDF में केवल एक पेज है</string>
+    <string name="page_count_text">कुल %1$d पेज</string>
+    <string name="split_selected_count">%1$d/%2$d पेज चुने गए</string>
+    <string name="page_number">पेज %1$d</string>
+    <string name="lock_pdf_success">PDF सफलतापूर्वक लॉक हुआ</string>
+    <string name="lock_pdf_failed">यह PDF लॉक नहीं हो सका</string>
+    <string name="unlock_pdf_success">PDF सफलतापूर्वक अनलॉक हुआ</string>
+    <string name="unlock_pdf_failed">यह PDF अनलॉक नहीं हो सका</string>
+    <string name="set_pdf_password_title">पासवर्ड सेट करें</string>
+    <string name="set_pdf_password_message">PDF देखने या संपादित करने के लिए यह पासवर्ड आवश्यक होगा।</string>
+    <string name="unlock_pdf_password_title">पासवर्ड दर्ज करें</string>
+    <string name="unlock_pdf_password_message">इस PDF से सुरक्षा हटाने के लिए वर्तमान पासवर्ड दर्ज करें।</string>
+    <string name="pdf_password_hint">पासवर्ड</string>
+    <string name="pdf_password_title">PDF पासवर्ड दर्ज करें</string>
+    <string name="pdf_password_file_message">इसके लिए पासवर्ड आवश्यक है:\n%1$s</string>
+    <string name="pdf_password_empty">कृपया पासवर्ड दर्ज करें</string>
+    <string name="pdf_password_incorrect">गलत पासवर्ड</string>
+    <string name="no_pdf_files">कोई PDF फाइल नहीं मिली</string>
+    <string name="no_unlocked_pdf_files">कोई अनलॉक PDF फाइल नहीं मिली</string>
+    <string name="no_locked_pdf_files">कोई लॉक PDF फाइल नहीं मिली</string>
+    <string name="reminder_action_check">देखें</string>
+    <string-array name="reminder_time_messages">
+        <item>Word ड्राफ्ट 5 मिनट में देय है। इसे जाँचें।</item>
+        <item>Word टिप्पणियाँ उत्तर की प्रतीक्षा कर रही हैं। 4 मिनट में उत्तर दें।</item>
+        <item>Excel शीट में त्रुटियाँ हैं। उन्हें 3 मिनट में ठीक करें।</item>
+        <item>Excel रिपोर्ट की समय सीमा निकल चुकी है। इसे 7 मिनट में जमा करें।</item>
+        <item>PPT स्लाइड 6 मिनट में देय हैं। उन्हें अभी पूरा करें।</item>
+        <item>PPT फ़ीडबैक तैयार है। इसे 5 मिनट में देखें।</item>
+        <item>PDF अनुबंध पर हस्ताक्षर चाहिए। 2 मिनट में हस्ताक्षर करें।</item>
+        <item>PDF फ़ॉर्म अधूरा है। इसे 3 मिनट में भरें।</item>
+    </string-array>
+    <string-array name="reminder_unlock_messages">
+        <item>Word संस्करण पुराना है। इसे 8 मिनट में अपडेट करें।</item>
+        <item>Word ड्राफ्ट में टकराव हैं। उन्हें 5 मिनट में सुलझाएँ।</item>
+        <item>Excel रिपोर्ट 10 मिनट में देय है। जल्दी करें।</item>
+        <item>Excel डेटा अधूरा है। इसे 6 मिनट में दर्ज करें।</item>
+        <item>PPT प्रस्तुति 6 मिनट में शुरू होगी। तैयार हो जाएँ।</item>
+        <item>PPT स्लाइड का क्रम गलत है। उन्हें 3 मिनट में दोबारा व्यवस्थित करें।</item>
+        <item>PDF इनवॉइस को मंज़ूरी चाहिए। 4 मिनट में मंज़ूर करें।</item>
+        <item>PDF में नए नोट हैं। उन्हें 5 मिनट में देखें।</item>
+    </string-array>
+    <string-array name="reminder_alarm_messages">
+        <item>Word की अंतिम मंज़ूरी लंबित है। 2 मिनट में निर्णय लें।</item>
+        <item>Word का ज़रूरी काम जल्द देय है। इसे 5 मिनट में पूरा करें।</item>
+        <item>Excel पिवट तालिका में समस्या है। इसे 5 मिनट में ठीक करें।</item>
+        <item>Excel पूर्वानुमान पीछे चल रहा है। इसे 8 मिनट में अपडेट करें।</item>
+        <item>PPT फ़ाइल बहुत बड़ी है। इसे 4 मिनट में कंप्रेस करें।</item>
+        <item>PPT एनिमेशन अधूरे हैं। उन्हें 2 मिनट में जोड़ें।</item>
+        <item>PDF रसीद का सत्यापन ज़रूरी है। इसे 3 मिनट में सत्यापित करें।</item>
+        <item>PDF हस्ताक्षर अंतिम चरण है। 4 मिनट में हस्ताक्षर करें।</item>
+    </string-array>
+    <string name="feedback">प्रतिक्रिया</string>
+    <string name="uninstall_shortcut_label">अनइंस्टॉल करें</string>
+    <string name="uninstall_problem_title">PDF फ़ाइलें मैनेज करते समय परेशानी हुई?</string>
+    <string name="uninstall_problem_subtitle">बेहतर अनुभव के लिए हम सुविधाओं को लगातार बेहतर बना रहे हैं</string>
+    <string name="uninstall_sort_problem">क्या फ़ाइल सॉर्ट करने की सुविधा ठीक से काम नहीं कर रही?</string>
+    <string name="uninstall_sort_action">सभी PDF को व्यवस्थित करना शुरू करें</string>
+    <string name="uninstall_speed_problem">क्या PDF प्रोसेसिंग बहुत धीमी है?</string>
+    <string name="uninstall_speed_action">PDF प्रोसेसिंग की गति अभी बढ़ाएँ</string>
+    <string name="uninstall_keep_using">AidPDF रखें और इस्तेमाल जारी रखें</string>
+    <string name="uninstall_action">अनइंस्टॉल करें</string>
+    <string name="uninstall_reason_title">आपने AidPDF अनइंस्टॉल करने का निर्णय क्यों लिया?</string>
+    <string name="uninstall_reason_conversion">PDF कन्वर्ज़न के परिणाम से असंतुष्ट</string>
+    <string name="uninstall_reason_storage">ऐप फ़ोन की बहुत अधिक स्टोरेज लेता है</string>
+    <string name="uninstall_reason_complex">इस्तेमाल करना जटिल और असुविधाजनक है</string>
+    <string name="uninstall_reconsider">अनइंस्टॉल करने से पहले फिर विचार करें</string>
+    <string name="uninstall_confirm_message">क्या AidPDF को अनइंस्टॉल करना है?</string>
+    <string name="uninstall_continue_using">इस्तेमाल जारी रखें</string>
+    <string name="ad_loading">विज्ञापन लोड हो रहा है...</string>
+    <string name="ad_label">विज्ञापन</string>
+    <string name="reminder_channel_name">दस्तावेज़ रिमाइंडर</string>
+    <string name="reminder_media_channel_name">दस्तावेज़ मीडिया रिमाइंडर</string>
+    <string name="reminder_bar_channel_name">दस्तावेज़ शॉर्टकट</string>
+    <string name="close">बंद करें</string>
+    <string name="allow_permission">अनुमति दें</string>
+    <string name="not_now">अभी नहीं</string>
+    <string name="overlay_permission_title">ऐप के महत्वपूर्ण अपडेट के लिए सूचनाएँ चालू करें</string>
+    <string name="notification_permission_title">ऐप की महत्वपूर्ण सूचनाएँ पाएँ</string>
+    <string name="notification_permission_message">महत्वपूर्ण दस्तावेज़ अपडेट और रिमाइंडर पाने के लिए सूचनाएँ चालू करें।</string>
+    <string name="skip">छोड़ें</string>
+</resources>

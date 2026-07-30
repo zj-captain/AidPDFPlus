@@ -1,0 +1,185 @@
+<resources>
+    <string name="app_name">AidPDF</string>
+    <string name="reminder_channel_name">Document reminders</string>
+    <string name="reminder_media_channel_name">Document media reminders</string>
+    <string name="reminder_bar_channel_name">Document shortcuts</string>
+    <string name="reminder_action_check">Check</string>
+    <string-array name="reminder_time_messages">
+        <item>Word draft is due in 5 minutes, review it.</item>
+        <item>Word comments are waiting, reply in 4 minutes.</item>
+        <item>Excel sheet has errors, fix them in 3 minutes.</item>
+        <item>Excel report is overdue, submit it in 7.</item>
+        <item>PPT slides are due in 6 minutes, finalize now.</item>
+        <item>PPT feedback is ready, check it in 5 minutes.</item>
+        <item>PDF contract needs signature, sign it in 2.</item>
+        <item>PDF form is incomplete, fill it in 3 minutes.</item>
+    </string-array>
+    <string-array name="reminder_unlock_messages">
+        <item>Word version is outdated, update it in 8.</item>
+        <item>Word draft has conflicts, resolve in 5 minutes.</item>
+        <item>Excel report is due in 10 minutes, hurry.</item>
+        <item>Excel data is missing, enter it in 6 minutes.</item>
+        <item>PPT presentation starts in 6, get ready.</item>
+        <item>PPT slides are disordered, reorder in 3.</item>
+        <item>PDF invoice needs approval, approve in 4.</item>
+        <item>PDF has new notes, review them in 5.</item>
+    </string-array>
+    <string-array name="reminder_alarm_messages">
+        <item>Word final approval is pending, decide in 2.</item>
+        <item>Word urgent task is due, handle in 5 minutes.</item>
+        <item>Excel pivot is broken, fix it in 5 minutes.</item>
+        <item>Excel forecast is behind, update in 8 minutes.</item>
+        <item>PPT file is too large, compress in 4 minutes.</item>
+        <item>PPT animations are missing, add them in 2.</item>
+        <item>PDF receipt needs verification, verify in 3.</item>
+        <item>PDF signature is last step, sign in 4 minutes.</item>
+    </string-array>
+    <string name="filter_pdf">PDF</string>
+    <string name="filter_word">WORD</string>
+    <string name="filter_excel">EXCEL</string>
+    <string name="filter_ppt">PPT</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_recent">Recently</string>
+    <string name="tab_favorites">Favorites</string>
+    <string name="tab_setting">Tools</string>
+    <string name="tab_tools">Tools</string>
+    <string name="settings">Settings</string>
+    <string name="back">Back</string>
+    <string name="language">Language</string>
+    <string name="language_coming_soon">Language settings coming soon</string>
+    <string name="language_action_next">Next</string>
+    <string name="language_action_ok">OK</string>
+    <string name="share">Share</string>
+    <string name="details">Details</string>
+    <string name="file_details">File Details</string>
+    <string name="rename">Rename</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="confirm">Confirm</string>
+    <string name="file_name">File name</string>
+    <string name="file_size">File size</string>
+    <string name="modified_time">Modified Time</string>
+    <string name="storage_path">Storage path</string>
+    <string name="permission_title">File permission required</string>
+    <string name="permission_message">Please grant file management permission to read and edit document files.</string>
+    <string name="grant_now">Grant now</string>
+    <string name="empty_title">No files found</string>
+    <string name="empty_message">Supported documents will appear here.</string>
+    <string name="empty_recent_title">No recent files</string>
+    <string name="empty_recent_message">Opened documents will appear here.</string>
+    <string name="empty_favorites_title">No favorites</string>
+    <string name="empty_favorites_message">Tap the star to save documents here.</string>
+    <string name="share_app">Share App</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_body">AidPDF reads local document metadata only for file listing, recent files, favorites, sharing, renaming and deletion actions.</string>
+    <string name="app_version">Version %1$s</string>
+    <string name="open_file_failed">Unable to open this file</string>
+    <string name="share_file_failed">Unable to share this file</string>
+    <string name="rename_empty">File name cannot be empty</string>
+    <string name="file_name_empty">File name cannot be empty</string>
+    <string name="rename_exists">A file with this name already exists</string>
+    <string name="rename_failed">Unable to rename this file</string>
+    <string name="delete_title">Delete file?</string>
+    <string name="delete_message">This file will be removed from local storage.</string>
+    <string name="remove_recent_title">Remove from Recent?</string>
+    <string name="remove_recent_message">This only removes the item from Recent. The original file will stay on your device.</string>
+    <string name="delete_failed">Unable to delete this file</string>
+    <string name="favorite_added">Added to Favorites</string>
+    <string name="favorite_removed">Removed from Favorites</string>
+    <string name="ad_title">COUNTDOWN</string>
+    <string name="ad_hint">This is a detailed introduction to...</string>
+    <string name="ad_action">Install</string>
+    <string name="ad_badge">AD</string>
+    <string name="end_of_list">End of list</string>
+    <string name="pdf_page">Page %1$d / %2$d</string>
+    <string name="previous_page">Previous</string>
+    <string name="next_page">Next</string>
+    <string name="create_pdf">Create PDF</string>
+    <string name="create_pdf_failed">Unable to create PDF</string>
+    <string name="create_pdf_cancelled">PDF creation cancelled</string>
+    <string name="pdf_created">PDF created</string>
+    <string name="open_it">Open it !</string>
+    <string name="back_home">Back Home</string>
+    <string name="pdf_badge">PDF</string>
+    <string name="loading">Processing...</string>
+    <string name="loading_documents">Loading documents...</string>
+    <string name="loading_pages">Loading pages...</string>
+    <string name="merge_pdf">Merge PDF</string>
+    <string name="split_pdf">Split PDF</string>
+    <string name="lock_pdf">Lock PDF</string>
+    <string name="unlock_pdf">Unlock PDF</string>
+    <string name="tools_convert_extract">Convert &amp; Extract</string>
+    <string name="tools_group_tools">Tools</string>
+    <string name="tools_security">Security</string>
+    <string name="scan_to_pdf">Scan to PDF</string>
+    <string name="select_pdf">Select PDF</string>
+    <string name="select_pdf_first">Select a PDF first</string>
+    <string name="split_select_pdf_hint">Select one PDF file to split.</string>
+    <string name="lock_select_pdf_hint">Select an unlocked PDF to protect with a password.</string>
+    <string name="unlock_select_pdf_hint">Select a locked PDF to remove password protection.</string>
+    <string name="select_two_pdf">Choose at least 2 PDFs</string>
+    <string name="selected_count">Selected %1$d</string>
+    <string name="merge_selection_count">Selected %1$d/%2$d. Choose at least 2 PDFs.</string>
+    <string name="merge_max_selected">You can choose up to %1$d PDFs</string>
+    <string name="continue_action">Continue</string>
+    <string name="merge_pdf_success">PDF merged successfully</string>
+    <string name="merge_pdf_failed">Unable to merge PDF files</string>
+    <string name="merge_pdf_too_large">File is too large, merge failed</string>
+    <string name="split_pdf_success">PDF split successfully</string>
+    <string name="split_pdf_failed">Unable to split this PDF</string>
+    <string name="split_page_hint">Select pages to export</string>
+    <string name="split_no_page_selected">Select at least one page</string>
+    <string name="one_page_tips">This PDF has only one page</string>
+    <string name="page_count_text">Total %1$d pages</string>
+    <string name="split_selected_count">Selected %1$d/%2$d pages</string>
+    <string name="page_number">Page %1$d</string>
+    <string name="lock_pdf_success">PDF locked successfully</string>
+    <string name="lock_pdf_failed">Unable to lock this PDF</string>
+    <string name="unlock_pdf_success">PDF unlocked successfully</string>
+    <string name="unlock_pdf_failed">Unable to unlock this PDF</string>
+    <string name="set_pdf_password_title">Set password</string>
+    <string name="set_pdf_password_message">This password will be required to view or edit the PDF.</string>
+    <string name="unlock_pdf_password_title">Enter password</string>
+    <string name="unlock_pdf_password_message">Enter the current password to remove protection from this PDF.</string>
+    <string name="pdf_password_hint">Password</string>
+    <string name="pdf_password_title">Enter PDF password</string>
+    <string name="pdf_password_file_message">Password required for:\n%1$s</string>
+    <string name="pdf_password_empty">Please enter password</string>
+    <string name="pdf_password_incorrect">Incorrect password</string>
+    <string name="no_pdf_files">No PDF files found</string>
+    <string name="no_unlocked_pdf_files">No unlocked PDF files found</string>
+    <string name="no_locked_pdf_files">No locked PDF files found</string>
+    <string name="onboarding_file_management">File management &amp; preview for PDF and various formats</string>
+    <string name="onboarding_split_merge">Quick split and merge of documents</string>
+    <string name="onboarding_file_security">Support file encryption and decryption</string>
+    <string name="onboarding_action_skip">SKIP</string>
+    <string name="onboarding_action_next">NEXT</string>
+    <string name="onboarding_action_start">START</string>
+    <string name="feedback">Feedback</string>
+    <string name="uninstall_shortcut_label">Uninstall</string>
+    <string name="uninstall_problem_title">Ran into troubles while managing PDF files?</string>
+    <string name="uninstall_problem_subtitle">We keep optimizing features for smoother operation</string>
+    <string name="uninstall_sort_problem">Is the file sorting function not working well?</string>
+    <string name="uninstall_sort_action">Initiate all-round PDF sorting</string>
+    <string name="uninstall_speed_problem">Is PDF processing running too slowly?</string>
+    <string name="uninstall_speed_action">Boost PDF operating speed right away</string>
+    <string name="uninstall_keep_using">Stay and keep using AidPDF</string>
+    <string name="uninstall_action">Uninstall</string>
+    <string name="uninstall_reason_title">What makes you decide to uninstall AidPDF?</string>
+    <string name="uninstall_reason_conversion">Dissatisfied with PDF conversion effects</string>
+    <string name="uninstall_reason_storage">The app occupies too much phone storage</string>
+    <string name="uninstall_reason_complex">Complicated and inconvenient to use</string>
+    <string name="uninstall_reconsider">Please reconsider before uninstallation</string>
+    <string name="uninstall_confirm_message">Confirm to uninstall AidPDF?</string>
+    <string name="uninstall_continue_using">Continue using</string>
+    <string name="ad_loading">Loading ad...</string>
+    <string name="ad_label">AD</string>
+    <string name="close">Close</string>
+    <string name="allow_permission">Allow permission</string>
+    <string name="not_now">Not now</string>
+    <string name="overlay_permission_title">Turn on notifications for critical app updates</string>
+    <string name="notification_permission_title">Get alerted with important app notices</string>
+    <string name="notification_permission_message">Turn on notifications to receive important document updates and reminders.</string>
+    <string name="skip">skip</string>
+</resources>

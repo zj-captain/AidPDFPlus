@@ -1,0 +1,185 @@
+<resources>
+    <string name="back">Atrás</string>
+    <string name="language">Idioma</string>
+    <string name="language_action_next">Siguiente</string>
+    <string name="language_action_ok">OK</string>
+    <string name="settings">Ajustes</string>
+    <string name="privacy_policy">Política de privacidad</string>
+    <string name="tab_home">Inicio</string>
+    <string name="tab_recent">Recientes</string>
+    <string name="tab_favorites">Favoritos</string>
+    <string name="tab_tools">Herramientas</string>
+    <string name="loading">Procesando...</string>
+    <string name="onboarding_file_management">Gestión y vista previa de PDF y varios formatos</string>
+    <string name="onboarding_split_merge">División y combinación rápida de documentos</string>
+    <string name="onboarding_file_security">Soporte para cifrado y descifrado de archivos</string>
+    <string name="onboarding_action_skip">Saltar</string>
+    <string name="onboarding_action_next">Siguiente</string>
+    <string name="onboarding_action_start">Iniciar</string>
+    <string name="create_pdf">Crear PDF</string>
+    <string name="merge_pdf">Combinar PDF</string>
+    <string name="split_pdf">Dividir PDF</string>
+    <string name="lock_pdf">Bloquear PDF</string>
+    <string name="unlock_pdf">Desbloquear PDF</string>
+    <string name="scan_to_pdf">Escanear a PDF</string>
+    <string name="tools_convert_extract">Convertir y extraer</string>
+    <string name="tools_group_tools">Herramientas</string>
+    <string name="tools_security">Seguridad</string>
+    <string name="permission_title">Permiso de archivos requerido</string>
+    <string name="permission_message">Concede permiso de gestión de archivos para leer y editar documentos.</string>
+    <string name="grant_now">Permitir ahora</string>
+    <string name="empty_title">No se encontraron archivos</string>
+    <string name="empty_message">Los documentos compatibles aparecerán aquí.</string>
+    <string name="empty_recent_title">No hay archivos recientes</string>
+    <string name="empty_favorites_title">No hay favoritos</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="continue_action">Continuar</string>
+    <string name="app_name">AidPDF</string>
+    <string name="filter_pdf">PDF</string>
+    <string name="filter_word">WORD</string>
+    <string name="filter_excel">EXCEL</string>
+    <string name="filter_ppt">PPT</string>
+    <string name="tab_setting">Herramientas</string>
+    <string name="language_coming_soon">La configuración de idioma llegará pronto</string>
+    <string name="share">Compartir</string>
+    <string name="details">Detalles</string>
+    <string name="file_details">Detalles del archivo</string>
+    <string name="rename">Renombrar</string>
+    <string name="delete">Eliminar</string>
+    <string name="save">Guardar</string>
+    <string name="file_name">Nombre del archivo</string>
+    <string name="file_size">Tamaño del archivo</string>
+    <string name="modified_time">Hora de modificación</string>
+    <string name="storage_path">Ruta de almacenamiento</string>
+    <string name="empty_recent_message">Los documentos abiertos aparecerán aquí.</string>
+    <string name="empty_favorites_message">Toca la estrella para guardar documentos aquí.</string>
+    <string name="share_app">Compartir app</string>
+    <string name="privacy_body">AidPDF solo lee metadatos de documentos locales para lista de archivos, recientes, favoritos, compartir, renombrar y eliminar.</string>
+    <string name="app_version">Versión %1$s</string>
+    <string name="open_file_failed">No se puede abrir este archivo</string>
+    <string name="share_file_failed">No se puede compartir este archivo</string>
+    <string name="rename_empty">El nombre del archivo no puede estar vacío</string>
+    <string name="file_name_empty">El nombre del archivo no puede estar vacío</string>
+    <string name="rename_exists">Ya existe un archivo con este nombre</string>
+    <string name="rename_failed">No se puede renombrar este archivo</string>
+    <string name="delete_title">¿Eliminar archivo?</string>
+    <string name="delete_message">Este archivo se eliminará del almacenamiento local.</string>
+    <string name="remove_recent_title">¿Eliminar de recientes?</string>
+    <string name="remove_recent_message">Solo se elimina de Recientes. El archivo original permanecerá en tu dispositivo.</string>
+    <string name="delete_failed">No se puede eliminar este archivo</string>
+    <string name="favorite_added">Añadido a favoritos</string>
+    <string name="favorite_removed">Eliminado de favoritos</string>
+    <string name="ad_title">CUENTA ATRÁS</string>
+    <string name="ad_hint">Esta es una introducción detallada...</string>
+    <string name="ad_action">Instalar</string>
+    <string name="ad_badge">ANUNCIO</string>
+    <string name="end_of_list">Fin de la lista</string>
+    <string name="pdf_page">Página %1$d / %2$d</string>
+    <string name="previous_page">Anterior</string>
+    <string name="next_page">Siguiente</string>
+    <string name="create_pdf_failed">No se puede crear el PDF</string>
+    <string name="create_pdf_cancelled">Creación de PDF cancelada</string>
+    <string name="pdf_created">PDF creado</string>
+    <string name="open_it">¡Abrir!</string>
+    <string name="back_home">Volver al inicio</string>
+    <string name="pdf_badge">PDF</string>
+    <string name="loading_documents">Cargando documentos...</string>
+    <string name="loading_pages">Cargando páginas...</string>
+    <string name="select_pdf">Seleccionar PDF</string>
+    <string name="select_pdf_first">Selecciona un PDF primero</string>
+    <string name="split_select_pdf_hint">Selecciona un archivo PDF para dividir.</string>
+    <string name="lock_select_pdf_hint">Selecciona un PDF desbloqueado para protegerlo con contraseña.</string>
+    <string name="unlock_select_pdf_hint">Selecciona un PDF bloqueado para quitar la protección por contraseña.</string>
+    <string name="select_two_pdf">Elige al menos 2 PDFs</string>
+    <string name="selected_count">%1$d seleccionado(s)</string>
+    <string name="merge_selection_count">%1$d/%2$d seleccionados. Elige al menos 2 PDFs.</string>
+    <string name="merge_max_selected">Puedes elegir hasta %1$d PDFs</string>
+    <string name="merge_pdf_success">PDF combinado correctamente</string>
+    <string name="merge_pdf_failed">No se pueden combinar archivos PDF</string>
+    <string name="merge_pdf_too_large">El archivo es demasiado grande, combinación fallida</string>
+    <string name="split_pdf_success">PDF dividido correctamente</string>
+    <string name="split_pdf_failed">No se puede dividir este PDF</string>
+    <string name="split_page_hint">Selecciona páginas para exportar</string>
+    <string name="split_no_page_selected">Selecciona al menos una página</string>
+    <string name="one_page_tips">Este PDF solo tiene una página</string>
+    <string name="page_count_text">Total %1$d páginas</string>
+    <string name="split_selected_count">%1$d/%2$d páginas seleccionadas</string>
+    <string name="page_number">Página %1$d</string>
+    <string name="lock_pdf_success">PDF bloqueado correctamente</string>
+    <string name="lock_pdf_failed">No se puede bloquear este PDF</string>
+    <string name="unlock_pdf_success">PDF desbloqueado correctamente</string>
+    <string name="unlock_pdf_failed">No se puede desbloquear este PDF</string>
+    <string name="set_pdf_password_title">Establecer contraseña</string>
+    <string name="set_pdf_password_message">Esta contraseña será necesaria para ver o editar el PDF.</string>
+    <string name="unlock_pdf_password_title">Introduce contraseña</string>
+    <string name="unlock_pdf_password_message">Introduce la contraseña actual para quitar la protección de este PDF.</string>
+    <string name="pdf_password_hint">Contraseña</string>
+    <string name="pdf_password_title">Introduce contraseña PDF</string>
+    <string name="pdf_password_file_message">Contraseña requerida para:\n%1$s</string>
+    <string name="pdf_password_empty">Introduce la contraseña</string>
+    <string name="pdf_password_incorrect">Contraseña incorrecta</string>
+    <string name="no_pdf_files">No se encontraron archivos PDF</string>
+    <string name="no_unlocked_pdf_files">No se encontraron PDF desbloqueados</string>
+    <string name="no_locked_pdf_files">No se encontraron PDF bloqueados</string>
+    <string name="reminder_action_check">Revisar</string>
+    <string-array name="reminder_time_messages">
+        <item>El borrador de Word vence en 5 minutos. Revísalo.</item>
+        <item>Hay comentarios de Word esperando respuesta. Responde en 4 minutos.</item>
+        <item>La hoja de Excel tiene errores. Corrígelos en 3 minutos.</item>
+        <item>El informe de Excel está atrasado. Envíalo en 7 minutos.</item>
+        <item>Las diapositivas PPT vencen en 6 minutos. Termínalas ahora.</item>
+        <item>Los comentarios sobre la PPT están listos. Revísalos en 5 minutos.</item>
+        <item>El contrato PDF necesita una firma. Fírmalo en 2 minutos.</item>
+        <item>El formulario PDF está incompleto. Complétalo en 3 minutos.</item>
+    </string-array>
+    <string-array name="reminder_unlock_messages">
+        <item>La versión de Word está desactualizada. Actualízala en 8 minutos.</item>
+        <item>El borrador de Word tiene conflictos. Resuélvelos en 5 minutos.</item>
+        <item>El informe de Excel vence en 10 minutos. Date prisa.</item>
+        <item>Faltan datos en Excel. Introdúcelos en 6 minutos.</item>
+        <item>La presentación PPT comienza en 6 minutos. Prepárate.</item>
+        <item>Las diapositivas PPT están desordenadas. Ordénalas en 3 minutos.</item>
+        <item>La factura PDF necesita aprobación. Apruébala en 4 minutos.</item>
+        <item>El PDF tiene notas nuevas. Revísalas en 5 minutos.</item>
+    </string-array>
+    <string-array name="reminder_alarm_messages">
+        <item>La aprobación final de Word está pendiente. Decide en 2 minutos.</item>
+        <item>Una tarea urgente de Word está por vencer. Atiéndela en 5 minutos.</item>
+        <item>La tabla dinámica de Excel tiene errores. Corrígela en 5 minutos.</item>
+        <item>El pronóstico de Excel está atrasado. Actualízalo en 8 minutos.</item>
+        <item>El archivo PPT es demasiado grande. Comprímelo en 4 minutos.</item>
+        <item>Faltan animaciones en la PPT. Añádelas en 2 minutos.</item>
+        <item>El recibo PDF necesita verificación. Verifícalo en 3 minutos.</item>
+        <item>La firma del PDF es el último paso. Fírmalo en 4 minutos.</item>
+    </string-array>
+    <string name="feedback">Comentarios</string>
+    <string name="uninstall_shortcut_label">Desinstalar</string>
+    <string name="uninstall_problem_title">¿Tuviste problemas al gestionar archivos PDF?</string>
+    <string name="uninstall_problem_subtitle">Seguimos optimizando las funciones para ofrecer un uso más fluido</string>
+    <string name="uninstall_sort_problem">¿La función de ordenar archivos no funciona bien?</string>
+    <string name="uninstall_sort_action">Iniciar una organización completa de PDF</string>
+    <string name="uninstall_speed_problem">¿El procesamiento de PDF es demasiado lento?</string>
+    <string name="uninstall_speed_action">Acelerar ahora el procesamiento de PDF</string>
+    <string name="uninstall_keep_using">Quedarse y seguir usando AidPDF</string>
+    <string name="uninstall_action">Desinstalar</string>
+    <string name="uninstall_reason_title">¿Por qué decidiste desinstalar AidPDF?</string>
+    <string name="uninstall_reason_conversion">No estoy satisfecho con la conversión de PDF</string>
+    <string name="uninstall_reason_storage">La aplicación ocupa demasiado espacio en el teléfono</string>
+    <string name="uninstall_reason_complex">Es complicada e incómoda de usar</string>
+    <string name="uninstall_reconsider">Piénsalo de nuevo antes de desinstalar</string>
+    <string name="uninstall_confirm_message">¿Confirmas que quieres desinstalar AidPDF?</string>
+    <string name="uninstall_continue_using">Seguir usando</string>
+    <string name="ad_loading">Cargando anuncio...</string>
+    <string name="ad_label">ANUNCIO</string>
+    <string name="reminder_channel_name">Recordatorios de documentos</string>
+    <string name="reminder_media_channel_name">Recordatorios multimedia de documentos</string>
+    <string name="reminder_bar_channel_name">Accesos directos a documentos</string>
+    <string name="close">Cerrar</string>
+    <string name="allow_permission">Permitir acceso</string>
+    <string name="not_now">Ahora no</string>
+    <string name="overlay_permission_title">Activa las notificaciones para actualizaciones importantes de la aplicación</string>
+    <string name="notification_permission_title">Recibe avisos importantes de la aplicación</string>
+    <string name="notification_permission_message">Activa las notificaciones para recibir actualizaciones y recordatorios importantes de documentos.</string>
+    <string name="skip">Omitir</string>
+</resources>
