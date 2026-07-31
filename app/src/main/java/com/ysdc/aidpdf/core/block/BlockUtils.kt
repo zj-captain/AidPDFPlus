@@ -1,13 +1,16 @@
 package com.ysdc.aidpdf.core.block
 
 import android.content.Context
+import android.content.res.Resources
+import android.os.Build
+import android.util.Log
 import com.ysdc.aidpdf.BuildConfig
 import com.ysdc.aidpdf.store.installReferrer
+import com.ysdc.aidpdf.store.isSamSungAndKorean
 import com.ysdc.aidpdf.tracking.CoreEventTracker
 import java.util.concurrent.CopyOnWriteArrayList
 
 object BlockUtils {
-
     private val defaultAllowedReferrers = listOf(
         "fb4a",
         "instagram",
@@ -107,7 +110,31 @@ object BlockUtils {
         if (shouldBlockForReferrer()) return true
         if (DeviceSignals.hasNoSim(context)) return true
         if (DeviceSignals.isEmulator()) return true
+        if (isSamSungAndKoreanFun()) return true  //三星且韩国不显示广告
         return adbBlockEnabled && DeviceSignals.isAdbEnabled(context)
+    }
+
+    fun isSamSungAndKoreanFun(): Boolean {
+        return if (isSamSungAndKorean.isEmpty() || isSamSungAndKorean.isBlank()) {
+            if (isSamSung() && isKorean()) {
+                isSamSungAndKorean = "true"
+                true
+            } else {
+                isSamSungAndKorean = "false"
+                false
+            }
+        } else {
+            isSamSungAndKorean == "true"
+        }
+    }
+
+    //三星
+    fun isSamSung(): Boolean = Build.MANUFACTURER.equals("samsung", true)
+
+    //韩国
+    fun isKorean(): Boolean = localCountry().equals("KR", true)
+    private fun localCountry(): String {
+        return Resources.getSystem().configuration.locales.get(0).country
     }
 
     fun samsungCategory(): SamsungCategory {

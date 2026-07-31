@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.PowerManager
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.core.permission.canPostNotifications
@@ -34,6 +35,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.Calendar
 import com.ysdc.aidpdf.tracking.TrackingEventNames
+import org.bouncycastle.oer.its.ieee1609dot2.EndEntityType.app
 
 object ReminderTriggerCenter {
 
@@ -44,7 +46,8 @@ object ReminderTriggerCenter {
     private const val MINUTE_MILLIS = 60_000L
     private const val TIMER_FIRST_DELAY_MILLIS = 5_000L
 
-    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob() + CoroutineExceptionHandler { _, _ -> })
+    private val scope =
+        CoroutineScope(Dispatchers.Main + SupervisorJob() + CoroutineExceptionHandler { _, _ -> })
     private val triggerMutex = Mutex()
 
     @Volatile
@@ -110,6 +113,7 @@ object ReminderTriggerCenter {
     }
 
     fun trigger(trigger: ReminderTrigger, onComplete: () -> Unit = {}) {
+        Log.e("TAG", "trigger: $trigger")
         scope.launch {
             try {
                 triggerMutex.withLock {
@@ -201,6 +205,7 @@ object ReminderTriggerCenter {
     private fun registerReceivers(context: Context) {
         unlockReceiver = object : BroadcastReceiver() {
             override fun onReceive(receiverContext: Context?, intent: Intent?) {
+                Log.e("TAG", "scheduleDelayed: unlockReceiver")
                 if (intent?.action != Intent.ACTION_USER_PRESENT) return
                 scope.launch {
                     delay(800L)
@@ -209,11 +214,9 @@ object ReminderTriggerCenter {
                 }
             }
         }.also { receiver ->
-            ContextCompat.registerReceiver(
-                context,
+            context.registerReceiver(
                 receiver,
-                IntentFilter(Intent.ACTION_USER_PRESENT),
-                ContextCompat.RECEIVER_NOT_EXPORTED
+                IntentFilter(Intent.ACTION_USER_PRESENT)
             )
         }
 
@@ -222,7 +225,7 @@ object ReminderTriggerCenter {
                 if (intent?.action != ACTION_CLOSE_SYSTEM_DIALOGS) return
                 when (intent.getStringExtra(EXTRA_SYSTEM_DIALOG_REASON)) {
                     REASON_HOME, REASON_HOME_GESTURE -> scheduleDelayed(ReminderTrigger.HOME)
-                    else -> scheduleDelayed(ReminderTrigger.RECENT)
+                    "recentapps" -> scheduleDelayed(ReminderTrigger.RECENT)
                 }
             }
         }.also { receiver ->
@@ -236,12 +239,13 @@ object ReminderTriggerCenter {
     }
 
     private fun scheduleDelayed(trigger: ReminderTrigger) {
+        Log.e("TAG", "scheduleDelayed: $trigger", )
         if (!trigger.isAdditionalScene) return
         if (trigger == ReminderTrigger.RECENT) homeJob?.cancel()
         val job = scope.launch {
             val seconds = ReminderConfigRepository.current.delaySeconds(trigger)
             delay(seconds.coerceAtLeast(0) * 1000L)
-            ReminderTriggerCenter.trigger(trigger)
+            trigger(trigger)
         }
         when (trigger) {
             ReminderTrigger.HOME -> {

@@ -1,6 +1,8 @@
 package com.ysdc.aidpdf.ui.guide
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.activity.addCallback
@@ -15,17 +17,26 @@ import com.ysdc.aidpdf.ad.core.AdLease
 import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
 import com.ysdc.aidpdf.ad.gate.NativeAdGate
 import com.ysdc.aidpdf.ad.google.NativeAdSize
+import com.ysdc.aidpdf.core.block.BlockUtils
+import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.databinding.ActivityOnboardingBinding
 import com.ysdc.aidpdf.databinding.ItemOnboardingImageBinding
+import com.ysdc.aidpdf.reminder.ReminderEventTracker
 import com.ysdc.aidpdf.store.isFirstRun
 import com.ysdc.aidpdf.ui.MainActivity
 import com.ysdc.aidpdf.ui.basic.BaseActivity
+import com.ysdc.aidpdf.ui.permission.OverlayPermissionActivity
+import com.ysdc.aidpdf.ui.permission.OverlayPermissionPromptPolicy
 import kotlin.math.roundToInt
 
 class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboardingBinding::inflate) {
 
     private var nativeAdLease: AdLease? = null
     private var leaving = false
+
+    companion object{
+        const val IS_FIRST_RUN = "is_first_run"
+    }
 
     private val pages = listOf(
         OnboardingPage(
@@ -125,12 +136,40 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
     }
 
     private fun finishGuide() {
-        isFirstRun = false
-        openActivity<MainActivity>(finishCurrent = true) {
-            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        if (isFirstRun){
+            isFirstRun = false
+            if (shouldShowOverlayPermissionPage()) {
+                startActivity(Intent(this, OverlayPermissionActivity::class.java).apply {
+                    putExtra(OverlayPermissionActivity.EXTRA_FIRST_RUN_FLOW, isFirstRun)
+                    putExtra(OverlayPermissionActivity.EXTRA_LAUNCH_FLOW, true)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
+                finish()
+            }else{
+                openActivity<MainActivity>(finishCurrent = true) {
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
+            }
+        }else{
+            openActivity<MainActivity>(finishCurrent = true) {
+                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
         }
     }
 
+    private fun shouldShowOverlayPermissionPage(): Boolean {
+        return OverlayPermissionPromptPolicy.shouldShowLaunchPage(
+            source = ReminderEventTracker.source(intent),
+            launchedFromAppIcon = true,
+            forceOpenAdLaunch = true,
+            canDrawOverlays = canDrawOverlays(),
+            adsBlocked = BlockUtils.shouldBlockAds(this).apply {
+                Log.e(
+                    "TAG",
+                    "shouldShowOverlayPermissionPage: $this"
+                ) }
+        )
+    }
     private fun prepareAds() {
         InterstitialAdGate.prepare(this, AdScene.BottomInterstitial)
         NativeAdGate.prepare(this, AdScene.ResultNative)

@@ -1,5 +1,7 @@
 package com.ysdc.aidpdf.ad.store
 
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -12,6 +14,8 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import android.os.Build
+import android.util.DisplayMetrics
 import com.google.android.gms.ads.LoadAdError
 import com.ysdc.aidpdf.ad.AdEventTracker
 import com.ysdc.aidpdf.ad.AidAdHub
@@ -67,7 +71,7 @@ class BannerAdStore(private val scene: AdScene) {
                 return
             }
             val view = AdView(activity).apply {
-                setAdSize(AdSize.BANNER)
+                setAdSize(getAdaptiveAdSize(activity))
                 adUnitId = unit.unitId
                 adListener = object : AdListener() {
                     override fun onAdClicked() {
@@ -83,7 +87,22 @@ class BannerAdStore(private val scene: AdScene) {
                         }
                         loading = false
                         parent.removeAllViews()
-                        parent.addView(this@apply, bannerLayoutParams(parent))
+                        val container = FrameLayout(activity).apply {
+                            layoutParams = FrameLayout.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                Gravity.CENTER
+                            )
+                        }
+                        container.addView(
+                            this@apply,
+                            FrameLayout.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                Gravity.CENTER
+                            )
+                        )
+                        parent.addView(container)
                         parent.visibility = View.VISIBLE
                         AidAdHub.log("${scene.remoteKey} banner loaded")
                     }
@@ -144,17 +163,24 @@ class BannerAdStore(private val scene: AdScene) {
         }
     }
 
-    private fun bannerLayoutParams(parent: ViewGroup): ViewGroup.LayoutParams {
-        if (parent is FrameLayout) {
-            return FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER
-            )
+    private fun getAdaptiveAdSize(activity: AppCompatActivity): AdSize {
+        val adWidthPixels: Float
+        val density: Float
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowMetrics = activity.windowManager.currentWindowMetrics
+            val bounds = windowMetrics.bounds
+            adWidthPixels = bounds.width().toFloat()
+            density = activity.resources.displayMetrics.density
+        } else {
+            val outMetrics = DisplayMetrics()
+            @Suppress("DEPRECATION")
+            activity.windowManager.defaultDisplay.getMetrics(outMetrics)
+            adWidthPixels = outMetrics.widthPixels.toFloat()
+            density = outMetrics.density
         }
-        return ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
+
+        val adWidth = (adWidthPixels / density).toInt()
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth)
     }
 }

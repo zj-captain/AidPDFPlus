@@ -50,7 +50,6 @@ class FullScreenAdStore(private val scene: AdScene) : QueuedAdStore<AdmobFullScr
             load(activity)
             return
         }
-
         ad.sceneName = sceneOverride
         activity.lifecycleScope.launch(Dispatchers.Main) {
             val loadingDialog = if (loadingDelayMillis > 0L) showLoading(activity) else null

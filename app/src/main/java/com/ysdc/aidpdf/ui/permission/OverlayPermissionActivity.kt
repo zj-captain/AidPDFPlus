@@ -38,7 +38,7 @@ class OverlayPermissionActivity : BaseActivity<ActivityOverlayPermissionBinding>
             ?: intent.getBooleanExtra(EXTRA_LAUNCH_FLOW, false)
         onBackPressedDispatcher.addCallback(this) { }
         AidEventHub.track(TrackingEventNames.FLOATING_NOTIFICATION_POPUP_VIEW)
-        InterstitialAdGate.prepare(this, AdScene.TopInterstitial)
+        InterstitialAdGate.prepare(this, AdScene.MainBackInterstitial)
         startButtonPulse()
     }
 
@@ -103,7 +103,7 @@ class OverlayPermissionActivity : BaseActivity<ActivityOverlayPermissionBinding>
         navigatingNext = true
         InterstitialAdGate.showForClickThenContinue(
             activity = this,
-            scene = AdScene.TopInterstitial
+            scene = AdScene.MainBackInterstitial
         ) {
             openNextPage()
         }

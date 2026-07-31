@@ -23,9 +23,9 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/settingsButton"
-        app:layout_goneMarginEnd="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginEnd="16dp" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/settingsButton"
@@ -283,8 +283,8 @@
                     android:id="@+id/mergeTool"
                     android:layout_width="0dp"
                     android:layout_height="62dp"
-                    android:layout_weight="1"
                     android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
                     android:background="@drawable/bg_tool_tile"
                     android:clickable="true"
                     android:focusable="true"
@@ -318,8 +318,8 @@
                     android:id="@+id/splitTool"
                     android:layout_width="0dp"
                     android:layout_height="62dp"
-                    android:layout_weight="1"
                     android:layout_marginStart="6dp"
+                    android:layout_weight="1"
                     android:background="@drawable/bg_tool_tile"
                     android:clickable="true"
                     android:focusable="true"
@@ -417,8 +417,8 @@
                 <LinearLayout
                     android:id="@+id/unlockTool"
                     android:layout_width="0dp"
-                    android:layout_marginStart="6dp"
                     android:layout_height="62dp"
+                    android:layout_marginStart="6dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_tool_tile"
                     android:clickable="true"
@@ -618,7 +618,8 @@
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
             android:visibility="gone"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            android:layout_gravity="center"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -156,6 +156,8 @@ private fun SharedPreferences.readDouble(key: String, defaultValue: Double): Dou
     return java.lang.Double.longBitsToDouble(rawBits)
 }
 
+var isSamSungAndKorean by SharedPreferencesDelegates.string("")
+
 var isFirstRun by SharedPreferencesDelegates.boolean(true)
 var launchCount by SharedPreferencesDelegates.int(0)
 var lastOpenedAt by SharedPreferencesDelegates.long(0L)

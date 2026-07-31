@@ -10,7 +10,7 @@
         <intent
             android:action="com.ysdc.aidpdf.action.UNINSTALL_SHORTCUT"
             android:targetClass="com.ysdc.aidpdf.ui.guide.LaunchLoadingActivity"
-            android:targetPackage="com.ysdc.aidpdf">
+            android:targetPackage="com.up.test">
             <extra
                 android:name="key_uninstall"
                 android:value="shortcut_uninstall" />

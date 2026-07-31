@@ -11,6 +11,8 @@ import org.json.JSONObject
 
 object AdRemoteBridge {
 
+    @Volatile
+    var virtual_block_switch = 1  //隐藏虚拟按键逻辑开关
     private const val REMOTE_AD_CONFIG_KEY = "ac_ad_config"
 
     const val DEFAULT_AD_CONFIG_JSON = """

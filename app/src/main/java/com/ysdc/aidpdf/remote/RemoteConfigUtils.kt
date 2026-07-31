@@ -5,11 +5,14 @@ import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.google.gson.Gson
 import com.ysdc.aidpdf.BuildConfig
 import com.ysdc.aidpdf.ad.remote.AdRemoteBridge
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderOverlayConfigRepository
+import com.ysdc.aidpdf.reminder.notice.PopRefresh
+import com.ysdc.aidpdf.reminder.notice.ReminderNotificationCenter
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
 import org.json.JSONArray
 import org.json.JSONObject
@@ -42,6 +45,16 @@ object RemoteConfigUtils {
     """
     private const val DEFAULT_BLOCKED_REFERRERS = "[\"gclid=123456789\"]"
 
+    private const val POP_REFRESH = "pop_refresh"
+    private const val DEFAULT_POP_REFRESH = """
+        {
+            "pop_refresh_switch":1,
+            "times":30,
+            "interval":2
+        }
+    """
+
+    private const val virtual_block_switch = "virtual_block_switch"
     private var initialized = false
 
     fun initRemoteConfig(application: Application, onApplied: () -> Unit = {}) {
@@ -62,7 +75,8 @@ object RemoteConfigUtils {
                             GLOBAL_BLOCK_SWITCH_KEY to "1",
                             REFERRER_CONFIG_KEY to DEFAULT_REFERRER_CONFIG,
                             BLOCKED_REFERRER_KEY to DEFAULT_BLOCKED_REFERRERS,
-                            ADB_BLOCK_SWITCH_KEY to "1"
+                            ADB_BLOCK_SWITCH_KEY to "1",
+                            POP_REFRESH to DEFAULT_POP_REFRESH
                         )
                     )
                     putAll(ReminderConfigRepository.defaultJsonValues())
@@ -71,8 +85,11 @@ object RemoteConfigUtils {
             )
             getAllConfigs(onApplied)
             config.fetchAndActivate()
-                .addOnSuccessListener { getAllConfigs(onApplied) }
-                .addOnFailureListener { log("Remote Config fetch failed: ${it.message}") }
+                .addOnSuccessListener {
+                    Log.e(TAG, "initRemoteConfig: OnSuccessListener")
+                    getAllConfigs(onApplied)
+                }
+                .addOnFailureListener { Log.e(TAG, "Remote Config fetch failed: ${it.message}") }
         }.onFailure {
             log("Firebase Remote Config unavailable: ${it.message}")
             getAllConfigs(onApplied)
@@ -81,7 +98,11 @@ object RemoteConfigUtils {
 
     fun getString(key: String): String {
         if (!initialized) return ""
-        return runCatching { FirebaseRemoteConfig.getInstance().getString(key) }.getOrDefault("")
+        return runCatching {
+            FirebaseRemoteConfig.getInstance().getString(key).apply {
+                Log.e(TAG, "getString: key = $key  value = $this")
+            }
+        }.getOrDefault("")
     }
 
     private fun getAllConfigs(onApplied: () -> Unit) {
@@ -117,6 +138,8 @@ object RemoteConfigUtils {
         BlockUtils.applyAdbSwitch(readSwitch(ADB_BLOCK_SWITCH_KEY, defaultValue = true))
         applyReferrerConfig()
         applyBlockedReferrers()
+        applyPopRefresh()
+        applyVirtualBlockSwitch()
     }
 
     private fun applyReferrerConfig() {
@@ -135,6 +158,24 @@ object RemoteConfigUtils {
         }.onFailure {
             BlockUtils.restoreDefaultReferrerConfig()
             log("Referrer config failed: ${it.message}")
+        }
+    }
+
+    private fun applyPopRefresh() {
+        val raw = getString(POP_REFRESH).ifBlank { DEFAULT_POP_REFRESH }
+        runCatching {
+            ReminderNotificationCenter.popRefresh = Gson().fromJson(raw, PopRefresh::class.java)
+        }.onFailure {
+            ReminderNotificationCenter.popRefresh =
+                Gson().fromJson(DEFAULT_POP_REFRESH, PopRefresh::class.java)
+        }
+    }
+
+    private fun applyVirtualBlockSwitch() {
+        if (readSwitch(virtual_block_switch, defaultValue = true)) {
+            AdRemoteBridge.virtual_block_switch = 1
+        } else {
+            AdRemoteBridge.virtual_block_switch = 0
         }
     }
 

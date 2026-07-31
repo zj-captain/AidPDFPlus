@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
@@ -132,15 +133,15 @@ class LaunchLoadingActivity : BaseActivity<ActivityLaunchLoadingBinding>(Activit
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             })
             finish()
-        } else if (shouldShowOverlayPermissionPage()) {
+        }  else if (isFirstRun) {
+            startActivity(LanguageActivity.firstRunIntent(this))
+            finish()
+        }else if (shouldShowOverlayPermissionPage()) {
             startActivity(Intent(this, OverlayPermissionActivity::class.java).apply {
                 putExtra(OverlayPermissionActivity.EXTRA_FIRST_RUN_FLOW, isFirstRun)
                 putExtra(OverlayPermissionActivity.EXTRA_LAUNCH_FLOW, true)
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             })
-            finish()
-        } else if (isFirstRun) {
-            startActivity(LanguageActivity.firstRunIntent(this))
             finish()
         } else {
             openActivity<MainActivity>(finishCurrent = true)
@@ -153,7 +154,11 @@ class LaunchLoadingActivity : BaseActivity<ActivityLaunchLoadingBinding>(Activit
             launchedFromAppIcon = launchedFromAppIcon(),
             forceOpenAdLaunch = forceOpenAdLaunch,
             canDrawOverlays = canDrawOverlays(),
-            adsBlocked = BlockUtils.shouldBlockAds(this)
+            adsBlocked = BlockUtils.shouldBlockAds(this).apply {
+                Log.e(
+                    "TAG",
+                    "shouldShowOverlayPermissionPage: $this"
+                ) }
         )
     }
 

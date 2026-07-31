@@ -124,4 +124,6 @@ dependencies {
     //stringfog
     implementation 'com.github.megatronking.stringfog:xor:5.0.0'
     implementation 'com.github.bumptech.glide:glide:5.0.7'
+
+    implementation("com.google.code.gson:gson:2.8.6")
 }

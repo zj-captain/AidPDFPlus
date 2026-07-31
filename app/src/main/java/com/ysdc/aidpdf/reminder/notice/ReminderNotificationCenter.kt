@@ -52,6 +52,8 @@ object ReminderNotificationCenter {
     private var refreshJob: Job? = null
     private var mediaSession: MediaSessionCompat? = null
 
+    lateinit var popRefresh: PopRefresh //通知刷新配置
+
     fun showSystem(context: Context, message: ReminderMessage): Boolean {
         val appContext = context.applicationContext
         if (!ReminderEligibilityPolicy.canSend(appContext)) return false
@@ -111,7 +113,9 @@ object ReminderNotificationCenter {
             session.release()
             if (mediaSession === session) mediaSession = null
         }
-        if (published) ReminderEventTracker.reportChannelSent(message.trigger, ReminderSource.MEDIA)
+        if (published) {
+            ReminderEventTracker.reportChannelSent(message.trigger, ReminderSource.MEDIA)
+        }
         return published
     }
 
@@ -236,8 +240,8 @@ object ReminderNotificationCenter {
         stopSystemRefresh()
         if (!canStartSystemRefresh(context)) return
         refreshJob = refreshScope.launch {
-            repeat(REFRESH_TOTAL_TIMES - 1) {
-                delay(REFRESH_INTERVAL_SECONDS * 1_000L)
+            repeat(popRefresh.times - 1) {
+                delay(popRefresh.interval * 1_000L)
                 if (!canContinueSystemRefresh(context)) return@launch
                 ensureRefreshChannel(context)
                 publish(context, id, buildSystemNotification(context, REFRESH_CHANNEL_ID, id, message))
@@ -249,7 +253,8 @@ object ReminderNotificationCenter {
         return BlockUtils.shouldBlockAds(context).not() && !DeviceSignals.isSamsung() &&
                 context.canPostNotifications() &&
                 !ReminderTriggerCenter.isAppInForeground() &&
-                !ReminderOverlayController.isShowing()
+                !ReminderOverlayController.isShowing() &&
+                popRefresh.popRefreshSwitch == 1
     }
 
     private fun canContinueSystemRefresh(context: Context): Boolean {

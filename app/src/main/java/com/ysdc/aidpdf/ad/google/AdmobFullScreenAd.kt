@@ -1,6 +1,7 @@
 package com.ysdc.aidpdf.ad.google
 
 import android.content.Context
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +19,7 @@ import com.ysdc.aidpdf.ad.config.AdUnitConfig
 import com.ysdc.aidpdf.ad.core.AdLoadResult
 import com.ysdc.aidpdf.ad.core.AdRenderRequest
 import com.ysdc.aidpdf.ad.core.CachedAd
+import com.ysdc.aidpdf.ad.remote.AdRemoteBridge
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -58,16 +60,30 @@ class AdmobFullScreenAd(
         when (val ad = sdkAd) {
             is AppOpenAd -> {
                 ad.fullScreenContentCallback = callback
-                ad.setImmersiveMode(true)
+                if (AdRemoteBridge.virtual_block_switch == 1) {
+                    ad.setImmersiveMode(true)
+                } else {
+                    ad.setImmersiveMode(false)
+                }
                 ad.show(request.activity)
             }
+
             is InterstitialAd -> {
                 ad.fullScreenContentCallback = callback
-                ad.setImmersiveMode(true)
+                if (AdRemoteBridge.virtual_block_switch == 1) {
+                    ad.setImmersiveMode(true)
+                } else {
+                    ad.setImmersiveMode(false)
+                }
                 ad.show(request.activity)
             }
+
             else -> {
-                AdEventTracker.reportImpressionFailed(sceneName, INTERNAL_ERROR_CODE, "Ad is unavailable.")
+                AdEventTracker.reportImpressionFailed(
+                    sceneName,
+                    INTERNAL_ERROR_CODE,
+                    "Ad is unavailable."
+                )
                 continueWhenResumed(request.activity, request.onFinished)
             }
         }
