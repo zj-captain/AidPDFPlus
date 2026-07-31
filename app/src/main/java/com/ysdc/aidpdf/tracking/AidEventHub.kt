@@ -9,6 +9,7 @@ import com.loft.vertsdk.InitializationCallback
 import com.loft.vertsdk.VertConfiguration
 import com.loft.vertsdk.VertSDK
 import com.ysdc.aidpdf.BuildConfig
+import com.ysdc.aidpdf.tracking.TrackingEventNames.ADMOB_IMPRESSION
 import org.json.JSONObject
 
 enum class EventDelivery {
@@ -123,7 +124,9 @@ object AidEventHub {
         if (BuildConfig.DEBUG) return
         val analytics = firebaseAnalytics ?: return
         runCatching {
-            analytics.logEvent(event.name, event.parameters.toBundle())
+            if (event.name != ADMOB_IMPRESSION){
+                analytics.logEvent(event.name, event.parameters.toBundle())
+            }
         }.onFailure {
             debugLog("Firebase event failed: ${event.name}, ${it.message}")
         }
