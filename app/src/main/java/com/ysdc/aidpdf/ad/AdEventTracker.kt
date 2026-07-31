@@ -1,13 +1,16 @@
 package com.ysdc.aidpdf.ad
 
+import com.facebook.appevents.AppEventsLogger
 import com.google.android.gms.ads.AdValue
 import com.google.android.gms.ads.ResponseInfo
 import com.ysdc.aidpdf.ad.config.AdFormat
 import com.ysdc.aidpdf.ad.config.AdUnitConfig
+import com.ysdc.aidpdf.store.appInstance
 import com.ysdc.aidpdf.tracking.AdjustInitializer
 import com.ysdc.aidpdf.tracking.AidEventHub
 import com.ysdc.aidpdf.tracking.EventDelivery
 import com.ysdc.aidpdf.tracking.TrackingEventNames
+import java.util.Currency
 
 object AdEventTracker {
 
@@ -53,6 +56,8 @@ object AdEventTracker {
         report(TrackingEventNames.AD_CLOSE, scene)
     }
 
+    val facebookLogger by lazy { AppEventsLogger.newLogger(appInstance) }
+
     fun reportPaidValue(
         scene: String,
         config: AdUnitConfig,
@@ -73,6 +78,15 @@ object AdEventTracker {
             )
         )
         AdjustInitializer.trackAdRevenue(adValue, responseInfo)
+
+        val revenue = adValue.valueMicros / 1_000_000.0
+        runCatching {
+            facebookLogger.logPurchase(
+                revenue.toBigDecimal(),
+                Currency.getInstance("USD")
+            )
+        }
+
     }
 
     internal fun firebaseRevenueParameters(
@@ -86,7 +100,7 @@ object AdEventTracker {
     ): Map<String, Any?> {
         val revenue = valueMicros / MICROS_PER_CURRENCY_UNIT
         return mapOf(
-            "value" to revenue * ACEC_FIREBASE_VALUE_SCALE,
+            "value" to revenue,
             "currency" to ACEC_FIREBASE_CURRENCY,
             "scene" to scene,
             "ad_platform" to ADMOB_PLATFORM,

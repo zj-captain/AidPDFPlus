@@ -54,6 +54,14 @@
             android:name="com.google.android.gms.ads.flag.NATIVE_AD_DEBUGGER_ENABLED"
             android:value="false" />
 
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileProvider"
