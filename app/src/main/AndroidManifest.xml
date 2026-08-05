@@ -34,7 +34,7 @@
         android:requestRawExternalStorageAccess="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="portrait"
-        android:supportsRtl="false"
+        android:supportsRtl="true"
         android:theme="@style/Theme.AidPDF"
         android:usesCleartextTraffic="true"
         tools:ignore="DiscouragedApi,LockedOrientationActivity,UnusedAttribute">

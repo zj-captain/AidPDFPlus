@@ -220,3 +220,6 @@ var timeReminderSystemNoticeSlot by SharedPreferencesDelegates.int(0, "time_syst
 var unlockReminderSystemNoticeSlot by SharedPreferencesDelegates.int(0, "unlock_system_notice_slot")
 var alarmReminderSystemNoticeSlot by SharedPreferencesDelegates.int(0, "alarm_system_notice_slot")
 var additionalReminderSystemNoticeSlot by SharedPreferencesDelegates.int(0, "additional_system_notice_slot")
+
+var lastRateShowTime by SharedPreferencesDelegates.long(0L, "last_rate_show_time")
+var rateValue by SharedPreferencesDelegates.int(0, "user_rate_value")

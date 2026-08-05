@@ -56,6 +56,8 @@ import com.ysdc.aidpdf.databinding.ActivityMainBinding
 import com.ysdc.aidpdf.reminder.model.ReminderTarget
 import com.ysdc.aidpdf.reminder.store.ReminderNavigationStore
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
+import com.ysdc.aidpdf.store.lastRateShowTime
+import com.ysdc.aidpdf.store.rateValue
 import com.ysdc.aidpdf.ui.basic.BaseActivity
 import com.ysdc.aidpdf.ui.dialog.ConfirmDialogFragment
 import com.ysdc.aidpdf.ui.dialog.TextInputDialogFragment
@@ -76,12 +78,14 @@ import com.ysdc.aidpdf.ui.reader.OfficePreviewActivity
 import com.ysdc.aidpdf.ui.reader.PdfPreviewActivity
 import com.ysdc.aidpdf.tracking.AidEventHub
 import com.ysdc.aidpdf.tracking.TrackingEventNames
+import com.ysdc.aidpdf.ui.dialog.RateUsDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.Calendar
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
@@ -390,9 +394,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             retryHomePermissionChecks()
             return
         }
-        if (showOverlayPermissionIfNeeded()) return
+//        if (showOverlayPermissionIfNeeded()) return
         if (requestNotificationPermissionIfNeeded()) return
-        showNotificationGuideIfNeeded()
+        if (showNotificationGuideIfNeeded()) return
+        checkRateUsDialogShow()
     }
 
     private fun showOverlayPermissionIfNeeded(): Boolean {
@@ -1141,6 +1146,28 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         private const val TAG_NOTIFICATION_PERMISSION = "notification_permission"
         private const val HOME_PERMISSION_RETRY_MILLIS = 300L
         private var notificationGuideShownThisProcess = false
+    }
+
+
+    private fun checkRateUsDialogShow(){
+        runCatching {
+            if (BlockUtils.isShowRateDialog(this)){
+                if (rateValue == 0){//没有评分的用户
+                    if (!lastRateShowTime.isToday()){
+                        RateUsDialogFragment().show(supportFragmentManager, "rate_dialog")
+                    }
+                }
+            }
+        }
+    }
+
+    //是否是当天
+    fun Long.isToday(): Boolean {
+        val now = Calendar.getInstance()
+        val target = Calendar.getInstance()
+        target.timeInMillis = this
+        return now.get(Calendar.YEAR) == target.get(Calendar.YEAR) &&
+                now.get(Calendar.DAY_OF_YEAR) == target.get(Calendar.DAY_OF_YEAR)
     }
 
 }
