@@ -8,33 +8,26 @@ import com.adjust.sdk.AdjustAdRevenue
 import com.adjust.sdk.LogLevel
 import com.google.android.gms.ads.AdValue
 import com.google.android.gms.ads.ResponseInfo
+import com.loft.vertsdk.VertSDK
 import com.ysdc.aidpdf.BuildConfig
 
 internal object AdjustInitializer {
 
     private const val TAG = "AdjustInitializer"
-    private const val CUSTOMER_USER_ID = "customer_user_id"
 
     @Volatile
     private var initialized = false
 
-    fun initialize(application: Application, customerUserId: String?) {
-        val appToken = BuildConfig.ADJUST_APP_TOKEN.trim()
-        if (appToken.isEmpty()) {
-            debugLog("Adjust is disabled because no app token is configured")
-            return
-        }
-
+    fun initialize(application: Application) {
         runCatching {
-            customerUserId
-                ?.takeIf(String::isNotBlank)
-                ?.let { Adjust.addGlobalCallbackParameter(CUSTOMER_USER_ID, it) }
-
+            val customerUserId = VertSDK.getDistinctId()
+            Adjust.addGlobalCallbackParameter("customer_user_id", customerUserId)
             val environment = if (BuildConfig.DEBUG) {
                 AdjustConfig.ENVIRONMENT_SANDBOX
             } else {
                 AdjustConfig.ENVIRONMENT_PRODUCTION
             }
+            val appToken = "rjwx33oxsao0"
             val config = AdjustConfig(application, appToken, environment).apply {
                 setLogLevel(if (BuildConfig.DEBUG) LogLevel.VERBOSE else LogLevel.WARN)
             }

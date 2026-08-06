@@ -97,25 +97,21 @@ object AidEventHub {
     }
 
     private fun initializeVert(application: Application) {
-        val productId = BuildConfig.TRACKING_PRODUCT_ID.trim()
-        if (productId.isEmpty()) {
-            debugLog("Vert tracking is disabled because no product ID is configured")
-            return
-        }
+        val productId = "5110105"
+        val host = "https://commerce.aurastudioi.com"
 
         runCatching {
-            val configuration = VertConfiguration.Builder(productId, BuildConfig.TRACKING_HOST)
-                .channel(BuildConfig.TRACKING_CHANNEL)
-                .debugMode(BuildConfig.DEBUG)
-                .enableLog(BuildConfig.DEBUG)
-                .analyticsProperties(JSONObject().put("prd_id", productId))
+            val configuration = VertConfiguration.Builder(productId, host)
+                .channel("138")
+                .debugMode(false)
+                .enableLog(false)
                 .build()
 
             VertSDK.initialize(application, configuration, object : InitializationCallback {
                 override fun onSuccess(data: JSONObject?) {
                     debugLog("Vert tracking initialized")
-
-                    AdjustInitializer.initialize(application, vertDistinctId())
+                    VertSDK.setPublicProperties(JSONObject().put("prd_id", productId))
+                    AdjustInitializer.initialize(application)
                 }
 
                 override fun onFailure(error: String) {
