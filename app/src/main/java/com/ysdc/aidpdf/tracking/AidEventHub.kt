@@ -32,7 +32,6 @@ object AidEventHub {
             if (initialized) return
             initializeFirebase(application)
             initializeVert(application)
-            AdjustInitializer.initialize(application, vertDistinctId())
             initialized = true
         }
     }
@@ -108,6 +107,8 @@ object AidEventHub {
             VertSDK.initialize(application, configuration, object : InitializationCallback {
                 override fun onSuccess(data: JSONObject?) {
                     debugLog("Vert tracking initialized")
+
+                    AdjustInitializer.initialize(application, vertDistinctId())
                 }
 
                 override fun onFailure(error: String) {

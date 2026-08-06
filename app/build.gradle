@@ -38,11 +38,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId "com.up.test"
+        applicationId "com.aidpdf.pdfeditor"
         minSdk 26
         targetSdk 36
-        versionCode 100
-        versionName "1.0.0"
+        versionCode 111
+        versionName "1.1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "TRACKING_PRODUCT_ID", groovy.json.JsonOutput.toJson(trackingProductId)

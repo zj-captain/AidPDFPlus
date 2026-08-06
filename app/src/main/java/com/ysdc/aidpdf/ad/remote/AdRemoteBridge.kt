@@ -15,67 +15,122 @@ object AdRemoteBridge {
     var virtual_block_switch = 1  //隐藏虚拟按键逻辑开关
     private const val REMOTE_AD_CONFIG_KEY = "ac_ad_config"
 
-    const val DEFAULT_AD_CONFIG_JSON = """
-{
+    const val DEFAULT_AD_CONFIG_JSON = """{
   "ac_launch": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/9257395921",
+      "ad_unit_id": "ca-app-pub-9270792764224532/6726437861",
       "ad_paltfrom": "admob",
       "ad_type": "op",
-      "ad_timelimit": 1200
+      "ad_timelimit": 13800
+    }
+  ],
+  "ac_language_int": [
+    {
+      "ad_unit_id": "ca-app-pub-9270792764224532/4461191001",
+      "ad_paltfrom": "admob",
+      "ad_type": "int",
+      "ad_timelimit": 3000
+    }
+  ],
+  "ac_guide_int": [
+    {
+      "ad_unit_id": "ca-app-pub-9270792764224532/2900697325",
+      "ad_paltfrom": "admob",
+      "ad_type": "int",
+      "ad_timelimit": 3000
     }
   ],
   "ac_bottom_int": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+      "ad_unit_id": "ca-app-pub-9270792764224532/4461191001",
       "ad_paltfrom": "admob",
       "ad_type": "int",
-      "ad_timelimit": 1200
+      "ad_timelimit": 3000
     }
   ],
   "ac_top_int": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+      "ad_unit_id": "ca-app-pub-9270792764224532/2900697325",
       "ad_paltfrom": "admob",
       "ad_type": "int",
-      "ad_timelimit": 1200
+      "ad_timelimit": 3000
     }
   ],
   "ac_check_int": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+      "ad_unit_id": "ca-app-pub-9270792764224532/2900697325",
       "ad_paltfrom": "admob",
       "ad_type": "int",
-      "ad_timelimit": 1200
+      "ad_timelimit": 3000
     }
   ],
-  "ac_mainback_int": [
+  "ac_scan_int": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+      "ad_unit_id": "ca-app-pub-9270792764224532/4461191001",
       "ad_paltfrom": "admob",
       "ad_type": "int",
-      "ad_timelimit": 1200
+      "ad_timelimit": 3000
+    }
+  ],
+  "ac_back_int": [
+    {
+      "ad_unit_id": "ca-app-pub-9270792764224532/4461191001",
+      "ad_paltfrom": "admob",
+      "ad_type": "int",
+      "ad_timelimit": 3000
     }
   ],
   "ac_main_nat": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/2247696110",
+      "ad_unit_id": "ca-app-pub-9270792764224532/7606229097",
       "ad_paltfrom": "admob",
       "ad_type": "nat",
-      "ad_timelimit": 1200
+      "ad_timelimit": 3000
     }
   ],
   "ac_main_banner": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/9214589741",
+      "ad_unit_id": "ca-app-pub-9270792764224532/3963744394",
       "ad_paltfrom": "admob",
       "ad_type": "banner",
-      "ad_timelimit": 1200
+      "ad_timelimit": 3000
+    }
+  ],
+  "ac_scan_nat": [
+    {
+      "ad_unit_id": "ca-app-pub-9270792764224532/7606229097",
+      "ad_paltfrom": "admob",
+      "ad_type": "nat",
+      "ad_timelimit": 3000
+    }
+  ],
+  "ac_result_nat": [
+    {
+      "ad_unit_id": "ca-app-pub-9270792764224532/7606229097",
+      "ad_paltfrom": "admob",
+      "ad_type": "nat",
+      "ad_timelimit": 3000
+    }
+  ],
+  "ac_language_nat": [
+    {
+      "ad_unit_id": "ca-app-pub-9270792764224532/7606229097",
+      "ad_paltfrom": "admob",
+      "ad_type": "nat",
+      "ad_timelimit": 3000
+    }
+  ],
+  "ac_guide_nat": [
+    {
+      "ad_unit_id": "ca-app-pub-9270792764224532/7606229097",
+      "ad_paltfrom": "admob",
+      "ad_type": "nat",
+      "ad_timelimit": 3000
     }
   ],
   "ac_uninstall1_nat": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/2247696110",
+      "ad_unit_id": "ca-app-pub-9270792764224532/7606229097",
       "ad_paltfrom": "admob",
       "ad_type": "nat",
       "ad_timelimit": 1200
@@ -83,38 +138,29 @@ object AdRemoteBridge {
   ],
   "ac_uninstall1_int": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+      "ad_unit_id": "ca-app-pub-9270792764224532/4461191001",
       "ad_paltfrom": "admob",
       "ad_type": "int",
-      "ad_timelimit": 1200
+      "ad_timelimit": 3000
     }
   ],
   "ac_uninstall2_nat": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/2247696110",
+      "ad_unit_id": "ca-app-pub-9270792764224532/7606229097",
       "ad_paltfrom": "admob",
       "ad_type": "nat",
-      "ad_timelimit": 1200
+      "ad_timelimit": 3000
     }
   ],
   "ac_uninstall2_int": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+      "ad_unit_id": "ca-app-pub-9270792764224532/2900697325",
       "ad_paltfrom": "admob",
       "ad_type": "int",
-      "ad_timelimit": 1200
-    }
-  ],
-  "ac_result_nat": [
-    {
-      "ad_unit_id": "ca-app-pub-3940256099942544/2247696110",
-      "ad_paltfrom": "admob",
-      "ad_type": "nat",
-      "ad_timelimit": 1200
+      "ad_timelimit": 3000
     }
   ]
-}
-"""
+}"""
 
     private val localCatalog: AdCatalog by lazy {
         parseCatalog(DEFAULT_AD_CONFIG_JSON, AdCatalog())

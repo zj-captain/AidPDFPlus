@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.vivo.abe.permission.launcher.notification.num" />
@@ -34,13 +34,13 @@
         android:requestRawExternalStorageAccess="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="portrait"
-        android:supportsRtl="false"
+        android:supportsRtl="true"
         android:theme="@style/Theme.AidPDF"
         android:usesCleartextTraffic="true"
         tools:ignore="DiscouragedApi,LockedOrientationActivity,UnusedAttribute">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-9270792764224532~2941886933" />
 
         <meta-data
             android:name="com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION"
@@ -56,11 +56,11 @@
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="" />
+            android:value="1084840084499116" />
 
         <meta-data
             android:name="com.facebook.sdk.ClientToken"
-            android:value="" />
+            android:value="dfea023bb3af384befc7a0df895245ef" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -75,7 +75,7 @@
         <service
             android:name=".reminder.front.ReminderBarService"
             android:exported="false"
-            android:foregroundServiceType="specialUse">
+            android:foregroundServiceType="">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Persistent PDF, Excel, and PowerPoint document shortcuts" />
@@ -84,7 +84,7 @@
         <service
             android:name=".reminder.alive.ReminderKeepAliveJobService"
             android:exported="true"
-            android:foregroundServiceType="specialUse"
+            android:foregroundServiceType="mediaPlayback"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service
@@ -96,7 +96,7 @@
             android:name=".reminder.alive.ReminderKeepAliveRouteService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="specialUse"
+            android:foregroundServiceType="mediaPlayback"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.ysdc.aidpdf_two" />

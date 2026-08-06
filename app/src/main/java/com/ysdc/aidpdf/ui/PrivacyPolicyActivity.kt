@@ -55,7 +55,7 @@ class PrivacyPolicyActivity : BaseActivity<ActivityPrivacyPolicyBinding>(Activit
         binding.policyWebView.apply {
             stopLoading()
             webChromeClient = null
-            loadUrl("about:blank")
+            loadUrl("https://sites.google.com/view/aidpdf-privacy-policy/%E9%A6%96%E9%A1%B5")
             clearHistory()
             removeAllViews()
             destroy()
