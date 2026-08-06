@@ -182,4 +182,11 @@
     <string name="notification_permission_title">Dapatkan pemberitahuan penting dari aplikasi</string>
     <string name="notification_permission_message">Aktifkan notifikasi untuk menerima pembaruan dan pengingat dokumen penting.</string>
     <string name="skip">Lewati</string>
+    <string name="we_glad">Kami senang Anda menyukai aplikasi kami, terima kasih atas dukungannya</string>
+    <string name="have_suggestions">Punya saran? Kirimkan masukan berharga Anda kepada kami</string>
+    <string name="feedback_subject">Masukan AidPDF</string>
+    <string name="feedback_body">Halo tim AidPDF, saya ingin memberikan masukan tentang aplikasi ini.</string>
+    <string name="send_feedback">Kirim masukan</string>
+    <string name="no_email_app">Tidak ada aplikasi email ditemukan</string>
+    <string name="thanks_support">Terima kasih atas dukungan Anda</string>
 </resources>

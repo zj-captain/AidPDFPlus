@@ -182,4 +182,11 @@
     <string name="notification_permission_title">接收重要的应用通知</string>
     <string name="notification_permission_message">开启通知以接收重要的文档更新和提醒。</string>
     <string name="skip">跳过</string>
+    <string name="we_glad">很高兴您喜欢我们的应用，感谢您的支持</string>
+    <string name="have_suggestions">有建议？请向我们发送您的宝贵反馈</string>
+    <string name="feedback_subject">AidPDF 反馈</string>
+    <string name="feedback_body">AidPDF 团队您好，我想反馈一些关于本应用的意见。</string>
+    <string name="send_feedback">发送反馈</string>
+    <string name="no_email_app">未找到邮件应用</string>
+    <string name="thanks_support">感谢您的支持</string>
 </resources>

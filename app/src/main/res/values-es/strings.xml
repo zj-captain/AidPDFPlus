@@ -182,4 +182,11 @@
     <string name="notification_permission_title">Recibe avisos importantes de la aplicación</string>
     <string name="notification_permission_message">Activa las notificaciones para recibir actualizaciones y recordatorios importantes de documentos.</string>
     <string name="skip">Omitir</string>
+    <string name="we_glad">Nos alegra que te encante nuestra app, agradecemos tu apoyo</string>
+    <string name="have_suggestions">¿Tienes sugerencias? Envíanos tu valiosa opinión</string>
+    <string name="feedback_subject">Opinión sobre AidPDF</string>
+    <string name="feedback_body">Hola equipo de AidPDF, me gustaría compartir mi opinión sobre la app.</string>
+    <string name="send_feedback">Enviar opinión</string>
+    <string name="no_email_app">No se encontró ninguna app de correo</string>
+    <string name="thanks_support">Gracias por tu apoyo</string>
 </resources>

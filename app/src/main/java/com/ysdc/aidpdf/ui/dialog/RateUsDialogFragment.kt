@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -114,52 +115,62 @@ class RateUsDialogFragment : BaseDialogFragment<DialogRateUsBinding>(DialogRateU
     }
 
     private fun openFeedbackEmail() {
-        val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = "mailto:upstreamstudio365@gmail.com".toUri()
-            putExtra(Intent.EXTRA_EMAIL, arrayOf("upstreamstudio365@gmail.com"))
-            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_subject))
-            putExtra(Intent.EXTRA_TEXT, getString(R.string.feedback_body))
-        }
         try {
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = "mailto:upstreamstudio365@gmail.com".toUri()
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("upstreamstudio365@gmail.com"))
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_subject))
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.feedback_body))
+            }
+
 //            appInstance.toReStartApp = true
 //            app.isNeedJudgeReStartApp = true
             startActivity(Intent.createChooser(intent, getString(R.string.send_feedback)))
         } catch (e: Throwable) {
             Toast.makeText(context, getString(R.string.no_email_app), Toast.LENGTH_SHORT).show()
+        } finally {
+            dismiss()
         }
     }
 
     private fun launchInAppReview() {
-        val manager = ReviewManagerFactory.create(context)
-        manager.requestReviewFlow().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                runCatching {
-                    manager.launchReviewFlow(mainActivity, task.result).addOnCompleteListener {
-                        Toast.makeText(
-                            context,
-                            getString(R.string.thanks_support),
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+        try {
+            val manager = ReviewManagerFactory.create(context)
+            manager.requestReviewFlow().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    runCatching {
+                        manager.launchReviewFlow(mainActivity, task.result).addOnCompleteListener {
+                            Toast.makeText(
+                                context,
+                                getString(R.string.thanks_support),
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
                     }
-                }
-            } else {
-                val marketIntent =
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        "market://details?id=${mainActivity.packageName}".toUri()
-                    )
-                try {
-                    startActivity(marketIntent)
-                } catch (_: Exception) {
-                    startActivity(
+                } else {
+                    val marketIntent =
                         Intent(
                             Intent.ACTION_VIEW,
-                            "https://play.google.com/store/apps/details?id=${mainActivity.packageName}".toUri()
+                            "market://details?id=${mainActivity.packageName}".toUri()
                         )
-                    )
+                    try {
+                        startActivity(marketIntent)
+                    } catch (_: Exception) {
+                        startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                "https://play.google.com/store/apps/details?id=${mainActivity.packageName}".toUri()
+                            )
+                        )
+                    }
                 }
             }
+        } catch (t: Throwable) {
+            Log.e("TAG", "launchInAppReview: $t")
+        } finally {
+            dismiss()
         }
+
     }
 }

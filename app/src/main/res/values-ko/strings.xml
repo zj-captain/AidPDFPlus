@@ -182,4 +182,12 @@
     <string name="notification_permission_title">중요한 앱 알림 받기</string>
     <string name="notification_permission_message">중요한 문서 업데이트와 알림을 받으려면 알림을 켜세요.</string>
     <string name="skip">건너뛰기</string>
+
+    <string name="we_glad">우리 앱을 좋아해 주셔서 기쁘고, 응원해 주셔서 감사해요</string>
+    <string name="have_suggestions">추천할 게 있나요? 소중한 의견을 보내주세요</string>
+    <string name="feedback_subject">AidPDF 피드백</string>
+    <string name="feedback_body">안녕 AidPDF 팀, 앱에 대한 피드백을 좀 공유하고 싶어요.</string>
+    <string name="send_feedback">피드백 보내기</string>
+    <string name="no_email_app">이메일 앱을 찾을 수 없음</string>
+    <string name="thanks_support">응원해줘서 고마워</string>
 </resources>

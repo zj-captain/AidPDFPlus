@@ -182,4 +182,11 @@
     <string name="notification_permission_title">ऐप की महत्वपूर्ण सूचनाएँ पाएँ</string>
     <string name="notification_permission_message">महत्वपूर्ण दस्तावेज़ अपडेट और रिमाइंडर पाने के लिए सूचनाएँ चालू करें।</string>
     <string name="skip">छोड़ें</string>
+    <string name="we_glad">हमें खुशी है कि आपको हमारा ऐप पसंद है, आपके समर्थन के लिए धन्यवाद</string>
+    <string name="have_suggestions">कोई सुझाव है? हमें अपनी बहुमूल्य प्रतिक्रिया भेजें</string>
+    <string name="feedback_subject">AidPDF प्रतिक्रिया</string>
+    <string name="feedback_body">नमस्ते AidPDF टीम, मैं ऐप के बारे में कुछ प्रतिक्रिया साझा करना चाहता/चाहती हूँ।</string>
+    <string name="send_feedback">प्रतिक्रिया भेजें</string>
+    <string name="no_email_app">कोई ईमेल ऐप नहीं मिला</string>
+    <string name="thanks_support">आपके समर्थन के लिए धन्यवाद</string>
 </resources>
