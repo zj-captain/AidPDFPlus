@@ -26,6 +26,7 @@ import com.ysdc.aidpdf.reminder.model.ReminderSource
 import com.ysdc.aidpdf.reminder.notice.ReminderNotificationCenter
 import com.ysdc.aidpdf.reminder.ReminderEventTracker
 import com.ysdc.aidpdf.reminder.store.ReminderNavigationStore
+import com.ysdc.aidpdf.store.requestSysNotificationCount
 import com.ysdc.aidpdf.ui.MainActivity
 import com.ysdc.aidpdf.ui.basic.BaseActivity
 import com.ysdc.aidpdf.ui.language.LanguageActivity
@@ -41,7 +42,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.milliseconds
 
-class LaunchLoadingActivity : BaseActivity<ActivityLaunchLoadingBinding>(ActivityLaunchLoadingBinding::inflate) {
+class LaunchLoadingActivity :
+    BaseActivity<ActivityLaunchLoadingBinding>(ActivityLaunchLoadingBinding::inflate) {
 
     private var launchJob: Job? = null
     private var launchRequestIndex = 0
@@ -59,7 +61,7 @@ class LaunchLoadingActivity : BaseActivity<ActivityLaunchLoadingBinding>(Activit
     override fun setupViews(savedInstanceState: Bundle?) {
         reportLaunchView()
         captureReminderNavigation()
-        onBackPressedDispatcher.addCallback(this){}
+        onBackPressedDispatcher.addCallback(this) {}
         requestNotificationThenStart()
     }
 
@@ -86,6 +88,7 @@ class LaunchLoadingActivity : BaseActivity<ActivityLaunchLoadingBinding>(Activit
             OpenAdGate.prepare(this)
         }
         if (shouldRequestNotificationPermission()) {
+            requestSysNotificationCount ++
             AidEventHub.track(TrackingEventNames.SYSTEM_NOTIFICATION_POPUP_VIEW)
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
@@ -95,8 +98,9 @@ class LaunchLoadingActivity : BaseActivity<ActivityLaunchLoadingBinding>(Activit
 
     private fun shouldRequestNotificationPermission(): Boolean {
         return !launchedForUninstall &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            !canPostNotifications()
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                !canPostNotifications() &&
+                requestSysNotificationCount < 2
     }
 
     private fun beginOpenAdFlow(requestIndex: Int) {
@@ -133,10 +137,10 @@ class LaunchLoadingActivity : BaseActivity<ActivityLaunchLoadingBinding>(Activit
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             })
             finish()
-        }  else if (isFirstRun) {
+        } else if (isFirstRun) {
             startActivity(LanguageActivity.firstRunIntent(this))
             finish()
-        }else if (shouldShowOverlayPermissionPage()) {
+        } else if (shouldShowOverlayPermissionPage()) {
             startActivity(Intent(this, OverlayPermissionActivity::class.java).apply {
                 putExtra(OverlayPermissionActivity.EXTRA_FIRST_RUN_FLOW, isFirstRun)
                 putExtra(OverlayPermissionActivity.EXTRA_LAUNCH_FLOW, true)
@@ -158,13 +162,14 @@ class LaunchLoadingActivity : BaseActivity<ActivityLaunchLoadingBinding>(Activit
                 Log.e(
                     "TAG",
                     "shouldShowOverlayPermissionPage: $this"
-                ) }
+                )
+            }
         )
     }
 
     private fun launchedFromAppIcon(): Boolean {
         return intent?.action == Intent.ACTION_MAIN &&
-            intent?.hasCategory(Intent.CATEGORY_LAUNCHER) == true
+                intent?.hasCategory(Intent.CATEGORY_LAUNCHER) == true
     }
 
     private fun launchAdTrackingScene(): String {
@@ -183,6 +188,7 @@ class LaunchLoadingActivity : BaseActivity<ActivityLaunchLoadingBinding>(Activit
             ReminderSource.SYSTEM,
             ReminderSource.FLOATING,
             ReminderSource.MEDIA -> ReminderEventTracker.triggerScene(intent)
+
             ReminderSource.ALWAYS,
             null -> null
         }
@@ -197,6 +203,7 @@ class LaunchLoadingActivity : BaseActivity<ActivityLaunchLoadingBinding>(Activit
                 NativeAdGate.prepare(this, AdScene.UninstallFirstNative)
                 NativeAdGate.prepare(this, AdScene.UninstallSecondNative)
             }
+
             else -> {
                 InterstitialAdGate.prepareStartupInventory(this)
                 NativeAdGate.prepare(this, AdScene.MainNative)

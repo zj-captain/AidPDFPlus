@@ -182,4 +182,11 @@
     <string name="notification_permission_title">アプリからの重要なお知らせを受け取る</string>
     <string name="notification_permission_message">重要な文書の更新やリマインダーを受け取るには、通知をオンにしてください。</string>
     <string name="skip">スキップ</string>
+    <string name="we_glad">アプリを気に入っていただけてうれしいです。ご支援ありがとうございます</string>
+    <string name="have_suggestions">ご提案がありますか？ 貴重なフィードバックをお送りください</string>
+    <string name="feedback_subject">AidPDF フィードバック</string>
+    <string name="feedback_body">AidPDF チーム様、アプリについてのフィードバックをお送りしたいと思います。</string>
+    <string name="send_feedback">フィードバックを送信</string>
+    <string name="no_email_app">メールアプリが見つかりません</string>
+    <string name="thanks_support">ご支援ありがとうございます</string>
 </resources>

@@ -128,4 +128,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.6")
 
     implementation("com.facebook.android:facebook-android-sdk:18.2.3")
+
+    // Google Play in-app review
+    implementation("com.google.android.play:review:2.0.1")
 }

@@ -182,4 +182,19 @@
     <string name="notification_permission_title">Get alerted with important app notices</string>
     <string name="notification_permission_message">Turn on notifications to receive important document updates and reminders.</string>
     <string name="skip">skip</string>
+    <string name="rate_us" translatable="false">rate us</string>
+    <string name="rating_star_5" translatable="false">rating star 5</string>
+    <string name="rating_star_4" translatable="false">rating star 4</string>
+    <string name="rating_star_3" translatable="false">rating star 3</string>
+    <string name="rating_star_2" translatable="false">rating star 2</string>
+    <string name="rating_star_1" translatable="false">rating star 1</string>
+    <string name="ok" translatable="false">OK</string>
+
+    <string name="we_glad">We’re glad you love our app, appreciate your support</string>
+    <string name="have_suggestions">Have suggestions? Send us your valuable feedback</string>
+    <string name="feedback_subject">AidPDF feedback</string>
+    <string name="feedback_body">Hello AidPDF team, I would like to share some feedback about the app.</string>
+    <string name="send_feedback">Send feedback</string>
+    <string name="no_email_app">No email app found</string>
+    <string name="thanks_support">Thanks for your support</string>
 </resources>

@@ -182,4 +182,11 @@
     <string name="notification_permission_title">รับการแจ้งเตือนสำคัญจากแอป</string>
     <string name="notification_permission_message">เปิดการแจ้งเตือนเพื่อรับข้อมูลอัปเดตและการเตือนความจำเกี่ยวกับเอกสารที่สำคัญ</string>
     <string name="skip">ข้าม</string>
+    <string name="we_glad">เรายินดีที่คุณรักแอปของเรา ขอบคุณสำหรับการสนับสนุน</string>
+    <string name="have_suggestions">มีคำแนะนำหรือไม่? ส่งข้อเสนอแนะอันมีค่าของคุณถึงเรา</string>
+    <string name="feedback_subject">ข้อเสนอแนะ AidPDF</string>
+    <string name="feedback_body">สวัสดีทีม AidPDF ฉันต้องการแชร์ข้อเสนอแนะเกี่ยวกับแอป</string>
+    <string name="send_feedback">ส่งข้อเสนอแนะ</string>
+    <string name="no_email_app">ไม่พบแอปอีเมล</string>
+    <string name="thanks_support">ขอบคุณสำหรับการสนับสนุน</string>
 </resources>

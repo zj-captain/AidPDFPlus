@@ -11,6 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/imageClose"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:contentDescription="@string/close"
+            android:padding="5dp"
+            android:src="@mipmap/close"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <com.google.android.gms.ads.nativead.MediaView
             android:id="@+id/adMedia"
             android:layout_width="92dp"
@@ -18,7 +29,7 @@
             android:background="#F3F4F6"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/imageClose" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/adIcon"
@@ -50,8 +61,8 @@
             android:id="@+id/adBadge"
             android:layout_width="wrap_content"
             android:layout_height="16dp"
-            android:layout_marginTop="4dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
             android:background="@drawable/bg_ad_badge"
             android:gravity="center"
             android:includeFontPadding="false"

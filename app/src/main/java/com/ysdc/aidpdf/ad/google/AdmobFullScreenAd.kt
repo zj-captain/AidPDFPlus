@@ -21,6 +21,12 @@ import com.ysdc.aidpdf.ad.core.AdRenderRequest
 import com.ysdc.aidpdf.ad.core.CachedAd
 import com.ysdc.aidpdf.ad.remote.AdRemoteBridge
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdClick
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdClose
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdLoaded
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdShow
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdShowFailed
+import com.ysdc.aidpdf.tracking.AidEventHub.reportStartLoading
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -31,16 +37,30 @@ class AdmobFullScreenAd(
     override val requestId: String = UUID.randomUUID().toString().replace("-", ""),
     override var loadedAtMillis: Long = System.currentTimeMillis()
 ) : CachedAd {
-
     private val request = AdRequest.Builder().build()
     private var sdkAd: Any? = null
     private var displayed = false
+    private var trackingType: String? = null
 
     override fun load(context: Context, callback: (AdLoadResult) -> Unit) {
         AdEventTracker.reportLoadStarted(sceneName)
         when (config.format) {
-            AdFormat.Open -> loadAppOpen(context, callback)
-            AdFormat.Interstitial -> loadInterstitial(context, callback)
+            AdFormat.Open -> {
+                reportStartLoading(5, "splash", sceneName, config.unitId, requestId)
+                loadAppOpen(context, callback)
+            }
+
+            AdFormat.Interstitial -> {
+                reportStartLoading(
+                    3,
+                    "interstitial",
+                    sceneName,
+                    config.unitId,
+                    requestId
+                )
+                loadInterstitial(context, callback)
+            }
+
             else -> {
                 val reason = "Unsupported full-screen format."
                 AdEventTracker.reportLoadFailed(sceneName, INTERNAL_ERROR_CODE, reason)
@@ -55,7 +75,8 @@ class AdmobFullScreenAd(
             activity = request.activity,
             trackingType = request.trackingType,
             onPresented = request.onPresented,
-            onFinished = request.onFinished
+            onFinished = request.onFinished,
+            sdkAd is AppOpenAd
         )
         when (val ad = sdkAd) {
             is AppOpenAd -> {
@@ -99,16 +120,39 @@ class AdmobFullScreenAd(
             override fun onAdLoaded(ad: AppOpenAd) {
                 ad.setOnPaidEventListener { value ->
                     AidAdHub.log("$sceneName paid value=${value.valueMicros} currency=${value.currencyCode}")
+                    reportAdShow(
+                        5, "splash", sceneName,
+                        ad.adUnitId, value.valueMicros / 1_000_000.0 * 1000,
+                        ad.responseInfo.loadedAdapterResponseInfo?.adSourceName ?: "Admob",
+                        200, "", requestId, trackingType
+                    )
                     AdEventTracker.reportPaidValue(sceneName, config, value, ad.responseInfo)
                 }
                 sdkAd = ad
                 loadedAtMillis = System.currentTimeMillis()
-                AdEventTracker.reportLoadSucceeded(sceneName)
+                reportAdLoaded(
+                    5, "splash", sceneName,
+                    config.unitId, 0.0,
+                    ad.responseInfo.loadedAdapterResponseInfo?.adSourceName ?: "Admob",
+                    200, "", requestId
+                )
+//                AdEventTracker.reportLoadSucceeded(sceneName)
                 callback(AdLoadResult.Loaded)
             }
 
             override fun onAdFailedToLoad(error: LoadAdError) {
-                AdEventTracker.reportLoadFailed(sceneName, error.code, error.message)
+                reportAdLoaded(
+                    5,
+                    "splash",
+                    sceneName,
+                    config.unitId,
+                    0.0,
+                    "Admob",
+                    error.code,
+                    error.message,
+                    requestId
+                )
+//                AdEventTracker.reportLoadFailed(sceneName, error.code, error.message)
                 callback(AdLoadResult.Failed(error.message))
             }
         })
@@ -120,16 +164,32 @@ class AdmobFullScreenAd(
             override fun onAdLoaded(ad: InterstitialAd) {
                 ad.setOnPaidEventListener { value ->
                     AidAdHub.log("$sceneName paid value=${value.valueMicros} currency=${value.currencyCode}")
+                    reportAdShow(
+                        3, "interstitial", sceneName,
+                        ad.adUnitId, value.valueMicros / 1_000_000.0 * 1000,
+                        ad.responseInfo.loadedAdapterResponseInfo?.adSourceName ?: "Admob",
+                        200, "", requestId
+                    )
                     AdEventTracker.reportPaidValue(sceneName, config, value, ad.responseInfo)
                 }
                 sdkAd = ad
                 loadedAtMillis = System.currentTimeMillis()
-                AdEventTracker.reportLoadSucceeded(sceneName)
+                reportAdLoaded(
+                    3, "interstitial", sceneName,
+                    config.unitId, 0.0,
+                    ad.responseInfo.loadedAdapterResponseInfo?.adSourceName ?: "Admob",
+                    200, "", requestId
+                )
+//                AdEventTracker.reportLoadSucceeded(sceneName)
                 callback(AdLoadResult.Loaded)
             }
 
             override fun onAdFailedToLoad(error: LoadAdError) {
-                AdEventTracker.reportLoadFailed(sceneName, error.code, error.message)
+                reportAdLoaded(
+                    3, "interstitial", sceneName,
+                    config.unitId, 0.0, "Admob", error.code, error.message, requestId
+                )
+//                AdEventTracker.reportLoadFailed(sceneName, error.code, error.message)
                 callback(AdLoadResult.Failed(error.message))
             }
         })
@@ -139,8 +199,10 @@ class AdmobFullScreenAd(
         activity: AppCompatActivity,
         trackingType: String?,
         onPresented: () -> Unit,
-        onFinished: () -> Unit
+        onFinished: () -> Unit,
+        isAppOpen: Boolean
     ): FullScreenContentCallback {
+        this.trackingType = trackingType
         return object : FullScreenContentCallback() {
             override fun onAdShowedFullScreenContent() {
                 displayed = true
@@ -150,8 +212,29 @@ class AdmobFullScreenAd(
             }
 
             override fun onAdClicked() {
-                AdEventTracker.reportClick(sceneName)
-                ReminderTriggerCenter.onAdClicked()
+//                AdEventTracker.reportClick(sceneName)
+                runCatching {
+                    if (isAppOpen) {
+                        reportAdClick(
+                            5, "splash", sceneName,
+                            config.unitId, 0.0,
+                            (sdkAd as AppOpenAd).responseInfo.loadedAdapterResponseInfo?.adSourceName
+                                ?: "Admob", requestId
+                        )
+                    } else {
+                        reportAdClick(
+                            3,
+                            "interstitial",
+                            sceneName,
+                            config.unitId,
+                            0.0,
+                            (sdkAd as InterstitialAd).responseInfo.loadedAdapterResponseInfo?.adSourceName
+                                ?: "Admob",
+                            requestId
+                        )
+                    }
+                }
+//                ReminderTriggerCenter.onAdClicked()
             }
 
             override fun onAdDismissedFullScreenContent() {
@@ -159,13 +242,52 @@ class AdmobFullScreenAd(
                     AidAdHub.markFullScreenClosed()
                 }
                 AidAdHub.log("$sceneName closed id=$requestId")
-                AdEventTracker.reportClose(sceneName)
+//                AdEventTracker.reportClose(sceneName)
+                runCatching {
+                    if (isAppOpen) {
+                        reportAdClose(
+                            5, "splash", sceneName,
+                            config.unitId, 0,
+                            (sdkAd as AppOpenAd).responseInfo.loadedAdapterResponseInfo?.adSourceName
+                                ?: "Admob", requestId
+                        )
+                    } else {
+                        reportAdClose(
+                            3,
+                            "interstitial",
+                            sceneName,
+                            config.unitId,
+                            0,
+                            (sdkAd as InterstitialAd).responseInfo.loadedAdapterResponseInfo?.adSourceName
+                                ?: "Admob", requestId
+                        )
+                    }
+                }
                 continueWhenResumed(activity, onFinished)
             }
 
             override fun onAdFailedToShowFullScreenContent(error: AdError) {
                 AidAdHub.log("$sceneName show failed id=$requestId reason=${error.message}")
-                AdEventTracker.reportImpressionFailed(sceneName, error.code, error.message)
+                runCatching {
+                    if (isAppOpen) {
+                        reportAdShowFailed(
+                            5, "splash", sceneName,
+                            config.unitId, 0,
+                            (sdkAd as AppOpenAd).responseInfo.loadedAdapterResponseInfo?.adSourceName
+                                ?: "Admob",
+                            error.code, error.message, requestId
+                        )
+                    } else {
+                        reportAdShowFailed(
+                            3, "interstitial", sceneName,
+                            config.unitId, 0,
+                            (sdkAd as InterstitialAd).responseInfo.loadedAdapterResponseInfo?.adSourceName
+                                ?: "Admob",
+                            error.code, error.message, requestId
+                        )
+                    }
+                }
+//                AdEventTracker.reportImpressionFailed(sceneName, error.code, error.message)
                 continueWhenResumed(activity, onFinished)
             }
         }

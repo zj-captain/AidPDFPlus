@@ -158,7 +158,7 @@ object ReminderTriggerCenter {
     private fun canShow(context: Context, trigger: ReminderTrigger): Boolean {
         val config = ReminderConfigRepository.current
         if (!ReminderEligibilityPolicy.canSend(context)) return false
-        ReminderEventTracker.reportDetectionPass(TrackingEventNames.SHIELD_DETECTION_PASS)
+//        ReminderEventTracker.reportDetectionPass(TrackingEventNames.SHIELD_DETECTION_PASS)
         if (
             ReminderQuietHours.contains(
                 Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
@@ -166,11 +166,11 @@ object ReminderTriggerCenter {
                 config.base.quietEndHour
             )
         ) return false
-        ReminderEventTracker.reportDetectionPass(TrackingEventNames.PERIOD_DETECTION_PASS)
+//        ReminderEventTracker.reportDetectionPass(TrackingEventNames.PERIOD_DETECTION_PASS)
         if (!config.isEnabled(trigger)) return false
-        ReminderEventTracker.reportDetectionPass(TrackingEventNames.SWITCH_DETECTION_PASS)
+//        ReminderEventTracker.reportDetectionPass(TrackingEventNames.SWITCH_DETECTION_PASS)
         if (isAppInForeground()) return false
-        ReminderEventTracker.reportDetectionPass(TrackingEventNames.BACK_DETECTION_PASS)
+//        ReminderEventTracker.reportDetectionPass(TrackingEventNames.BACK_DETECTION_PASS)
         if (trigger.requiresInteractiveScreen && !screenIsInteractive(context)) return false
         val stats = ReminderStatsStore.read(trigger)
         val interval = config.intervalMinutes(trigger)
@@ -178,10 +178,10 @@ object ReminderTriggerCenter {
             val elapsed = System.currentTimeMillis() - stats.lastShownAt
             if (elapsed < interval * MINUTE_MILLIS) return false
         }
-        ReminderEventTracker.reportDetectionPass(TrackingEventNames.INTERVAL_DETECTION_PASS)
+//        ReminderEventTracker.reportDetectionPass(TrackingEventNames.INTERVAL_DETECTION_PASS)
         val limit = config.dailyLimit(trigger)
         if (limit <= 0 || stats.count >= limit) return false
-        ReminderEventTracker.reportDetectionPass(TrackingEventNames.DAILY_DETECTION_PASS)
+//        ReminderEventTracker.reportDetectionPass(TrackingEventNames.DAILY_DETECTION_PASS)
         return true
     }
 

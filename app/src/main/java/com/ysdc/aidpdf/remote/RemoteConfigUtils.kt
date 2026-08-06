@@ -8,6 +8,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.Gson
 import com.ysdc.aidpdf.BuildConfig
 import com.ysdc.aidpdf.ad.remote.AdRemoteBridge
+import com.ysdc.aidpdf.ad.remote.NatConfig
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderOverlayConfigRepository
@@ -53,8 +54,15 @@ object RemoteConfigUtils {
             "interval":2
         }
     """
+    private const val DEFAULT_AC_NAT_CONFIG = """
+        {
+          "switch_open":1,
+          "jump_percent":50
+        }
+        """
 
     private const val virtual_block_switch = "virtual_block_switch"
+    private const val AC_NAT_CONFIG = "ac_nat_config"
     private var initialized = false
 
     fun initRemoteConfig(application: Application, onApplied: () -> Unit = {}) {
@@ -76,7 +84,8 @@ object RemoteConfigUtils {
                             REFERRER_CONFIG_KEY to DEFAULT_REFERRER_CONFIG,
                             BLOCKED_REFERRER_KEY to DEFAULT_BLOCKED_REFERRERS,
                             ADB_BLOCK_SWITCH_KEY to "1",
-                            POP_REFRESH to DEFAULT_POP_REFRESH
+                            POP_REFRESH to DEFAULT_POP_REFRESH,
+                            AC_NAT_CONFIG to DEFAULT_AC_NAT_CONFIG
                         )
                     )
                     putAll(ReminderConfigRepository.defaultJsonValues())
@@ -179,6 +188,16 @@ object RemoteConfigUtils {
         }
     }
 
+    private fun applyAcNatConfig(){
+        val raw = getString(AC_NAT_CONFIG).ifBlank { DEFAULT_AC_NAT_CONFIG }
+        runCatching {
+            AdRemoteBridge.natConfig = Gson().fromJson(raw, NatConfig::class.java)
+        }.onFailure {
+            AdRemoteBridge.natConfig =
+                Gson().fromJson(DEFAULT_AC_NAT_CONFIG, NatConfig::class.java)
+        }
+    }
+
     private fun applyBlockedReferrers() {
         val raw = getString(BLOCKED_REFERRER_KEY).ifBlank { DEFAULT_BLOCKED_REFERRERS }
         runCatching {
@@ -209,6 +228,7 @@ object RemoteConfigUtils {
 
     private fun getAdConfig() {
         runCatching { AdRemoteBridge.readRemoteAdConfig() }.onFailure { log("Remote ad config failed: ${it.message}") }
+        runCatching { applyAcNatConfig() }
     }
 
     private fun log(message: String) {

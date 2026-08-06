@@ -182,4 +182,11 @@
     <string name="notification_permission_title">احصل على تنبيهات التطبيق المهمة</string>
     <string name="notification_permission_message">فعّل الإشعارات لتلقي تحديثات المستندات والتذكيرات المهمة.</string>
     <string name="skip">تخطي</string>
+    <string name="we_glad">يسعدنا أن تُحب تطبيقنا، نقدر دعمك</string>
+    <string name="have_suggestions">لديك اقتراحات؟ أرسل إلينا ملاحظاتك القيّمة</string>
+    <string name="feedback_subject">ملاحظات AidPDF</string>
+    <string name="feedback_body">فريق AidPDF المحترم، أود مشاركة بعض الملاحظات حول التطبيق.</string>
+    <string name="send_feedback">إرسال الملاحظات</string>
+    <string name="no_email_app">لم يتم العثور على تطبيق بريد إلكتروني</string>
+    <string name="thanks_support">شكرًا لدعمك</string>
 </resources>

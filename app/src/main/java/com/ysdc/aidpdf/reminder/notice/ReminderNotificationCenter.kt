@@ -2,11 +2,13 @@ package com.ysdc.aidpdf.reminder.notice
 
 import android.annotation.SuppressLint
 import android.app.Notification
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.PowerManager
 import android.support.v4.media.session.MediaSessionCompat
+import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
@@ -27,6 +29,7 @@ import com.ysdc.aidpdf.reminder.model.ReminderSource
 import com.ysdc.aidpdf.reminder.overlay.ReminderOverlayController
 import com.ysdc.aidpdf.reminder.store.ReminderStatsStore
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
+import com.ysdc.aidpdf.store.appInstance
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +37,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 object ReminderNotificationCenter {
@@ -53,6 +57,10 @@ object ReminderNotificationCenter {
     private var mediaSession: MediaSessionCompat? = null
 
     lateinit var popRefresh: PopRefresh //通知刷新配置
+
+    val notificationManager: NotificationManager by lazy {
+        appInstance.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    }
 
     fun showSystem(context: Context, message: ReminderMessage): Boolean {
         val appContext = context.applicationContext
@@ -163,8 +171,10 @@ object ReminderNotificationCenter {
             noticeId = id,
             source = ReminderSource.SYSTEM
         )
-        val expanded = remoteView(context, R.layout.layout_reminder_notice_expanded, message, clickIntent)
-        val compact = remoteView(context, R.layout.layout_reminder_notice_compact, message, clickIntent)
+        val expanded =
+            remoteView(context, R.layout.layout_reminder_notice_expanded, message, clickIntent)
+        val compact =
+            remoteView(context, R.layout.layout_reminder_notice_compact, message, clickIntent)
         val tiny = remoteView(context, R.layout.layout_reminder_notice_tiny, message, clickIntent)
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_notification_small)
@@ -185,6 +195,56 @@ object ReminderNotificationCenter {
         return builder.build().also { notification ->
 //            notification.flags = notification.flags or Notification.FLAG_ONGOING_EVENT or Notification.FLAG_NO_CLEAR
         }
+    }
+
+    private fun buildRefreshSystemNotification(
+        context: Context,
+        channelId: String,
+        id: Int,
+        message: ReminderMessage,
+    ): Notification {
+        Log.e("TAG", "buildRefreshSystemNotification: $channelId")
+        val clickIntent = ReminderIntents.pendingOpenIntent(
+            context = context,
+            requestCode = id,
+            target = message.content.target,
+            trigger = message.trigger,
+            noticeId = id,
+            source = ReminderSource.SYSTEM
+        )
+        val expanded =
+            remoteView(context, R.layout.layout_reminder_notice_expanded, message, clickIntent)
+        val compact =
+            remoteView(context, R.layout.layout_reminder_notice_compact, message, clickIntent)
+        val tiny = remoteView(context, R.layout.layout_reminder_notice_tiny, message, clickIntent)
+        NotificationManagerCompat.from(context).createNotificationChannel(
+            NotificationChannelCompat.Builder(
+                channelId,
+                NotificationManagerCompat.IMPORTANCE_MAX
+            )
+                .apply {
+                    setSound(null, null)
+                    setVibrationEnabled(false)
+                    setLightsEnabled(false)
+                }
+                .setShowBadge(true)
+                .setName(channelId)
+                .build()
+        )
+
+        val builder = NotificationCompat.Builder(context, channelId)
+            .apply {
+                setSmallIcon(R.drawable.ic_notification_small)
+                setGroupSummary(false)
+                setGroup("")
+                setAutoCancel(true)
+                setContentIntent(clickIntent)
+                setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                setPriority(NotificationCompat.PRIORITY_MAX)
+                setOngoing(false)
+            }
+        configureCustomViews(builder, expanded, compact, tiny)
+        return builder.build()
     }
 
     private fun configureCustomViews(
@@ -240,11 +300,16 @@ object ReminderNotificationCenter {
         stopSystemRefresh()
         if (!canStartSystemRefresh(context)) return
         refreshJob = refreshScope.launch {
+            val refreshNotification =
+                buildRefreshSystemNotification(context, REFRESH_CHANNEL_ID, id, message)
             repeat(popRefresh.times - 1) {
                 delay(popRefresh.interval * 1_000L)
                 if (!canContinueSystemRefresh(context)) return@launch
-                ensureRefreshChannel(context)
-                publish(context, id, buildSystemNotification(context, REFRESH_CHANNEL_ID, id, message))
+//                ensureRefreshChannel(context)
+                Log.e("TAG", "scheduleSystemRefresh: id = $id")
+                withContext(Dispatchers.Main) {
+                    notificationManager.notify(id, refreshNotification)
+                }
             }
         }
     }

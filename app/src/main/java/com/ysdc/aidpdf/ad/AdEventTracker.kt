@@ -31,12 +31,12 @@ object AdEventTracker {
     }
 
     fun reportChance(scene: String, type: String? = null) {
-        report(TrackingEventNames.AD_CHANCE, scene, typeParameters(type))
+        report(TrackingEventNames.AD_CHANCE, scene, typeParameters(type ?: "start"))
     }
 
     fun reportImpression(scene: String, type: String? = null) {
         val parameters = typeParameters(type)
-        report(TrackingEventNames.AD_IMPRESSION, scene, parameters)
+//        report(TrackingEventNames.AD_IMPRESSION, scene, parameters)
         report(TrackingEventNames.ADMOB_IMPRESSION, scene)
     }
 

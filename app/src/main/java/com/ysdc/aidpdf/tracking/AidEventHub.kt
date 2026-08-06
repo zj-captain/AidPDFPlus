@@ -10,6 +10,13 @@ import com.loft.vertsdk.VertConfiguration
 import com.loft.vertsdk.VertSDK
 import com.ysdc.aidpdf.BuildConfig
 import com.ysdc.aidpdf.tracking.TrackingEventNames.ADMOB_IMPRESSION
+import com.ysdc.aidpdf.tracking.TrackingEventNames.AD_CLICK
+import com.ysdc.aidpdf.tracking.TrackingEventNames.AD_CLOSE
+import com.ysdc.aidpdf.tracking.TrackingEventNames.AD_IMPRESSION
+import com.ysdc.aidpdf.tracking.TrackingEventNames.AD_IMPRESSION_ERROR
+import com.ysdc.aidpdf.tracking.TrackingEventNames.AD_PLACEMENT_REQUEST
+import com.ysdc.aidpdf.tracking.TrackingEventNames.AD_SOURCE_ERROR
+import com.ysdc.aidpdf.tracking.TrackingEventNames.AD_SOURCE_REQUEST
 import org.json.JSONObject
 
 enum class EventDelivery {
@@ -180,4 +187,184 @@ object AidEventHub {
             Log.e(tag, message)
         }
     }
+
+    fun reportStartLoading(
+        adType: Int,
+        adTypeName: String,
+        scene: String,
+        adId: String,
+        sessionId: String
+    ) {
+        track(
+            AD_PLACEMENT_REQUEST, mapOf(
+                "ad_type" to adType,
+                "ad_type_name" to adTypeName,
+                "scene" to scene,
+                "ad_mediation" to "Admob",
+                "ad_placement_id" to adId,
+                "session_id" to sessionId
+            ), EventDelivery.Batched
+        )
+    }
+
+    fun reportAdLoaded(
+        adType: Int,
+        adTypeName: String,
+        scene: String,
+        adId: String,
+        adEcpmNumber: Double,
+        adSource: String,
+        resultCode: Int,
+        resultInfo: String,
+        sessionId: String
+    ) = runCatching {
+        track(
+            if (resultCode == 200) AD_SOURCE_REQUEST else AD_SOURCE_ERROR,
+            mapOf(
+                "ad_type" to adType,
+                "ad_type_name" to adTypeName,
+                "scene" to scene,
+                "ad_mediation" to "Admob",
+                "ad_placement_name" to "",
+                "ad_placement_id" to adId,
+                "ad_ecpm_number" to adEcpmNumber,
+                "ad_source" to adSource,
+                "ad_source_id" to adId,
+                "result_code" to resultCode,
+                "result_info" to resultInfo,
+                "session_id" to sessionId
+            ),EventDelivery.Batched
+        )
+    }
+
+
+    fun reportAdShow(
+        adType: Int,
+        adTypeName: String,
+        scene: String,
+        adId: String,
+        adEcpmNumber: Double,
+        adSource: String,
+        resultCode: Int,
+        resultInfo: String,
+        sessionId: String,
+        type: String? = null
+    ) = runCatching {
+        if (type == null) {
+            track(
+                AD_IMPRESSION, mapOf(
+                    "ad_type" to adType,
+                    "ad_type_name" to adTypeName,
+                    "scene" to scene,
+                    "ad_mediation" to "Admob",
+                    "ad_placement_name" to "",
+                    "ad_placement_id" to adId,
+                    "ad_ecpm_number" to adEcpmNumber,
+                    "ad_source" to adSource,
+                    "ad_source_id" to adId,
+                    "result_code" to resultCode,
+                    "result_info" to resultInfo,
+                    "session_id" to sessionId
+                ),EventDelivery.Batched
+            )
+        } else {
+            track(
+                AD_IMPRESSION, mapOf(
+                    "ad_type" to adType,
+                    "ad_type_name" to adTypeName,
+                    "scene" to scene,
+                    "ad_mediation" to "Admob",
+                    "ad_placement_name" to "",
+                    "ad_placement_id" to adId,
+                    "ad_ecpm_number" to adEcpmNumber,
+                    "ad_source" to adSource,
+                    "ad_source_id" to adId,
+                    "result_code" to resultCode,
+                    "result_info" to resultInfo,
+                    "session_id" to sessionId,
+                    "type" to type
+                ),EventDelivery.Batched
+            )
+        }
+    }
+
+    fun reportAdShowFailed(
+        adType: Int,
+        adTypeName: String,
+        scene: String,
+        adId: String,
+        adEcpmNumber: Long,
+        adSource: String,
+        resultCode: Int,
+        resultInfo: String,
+        sessionId: String
+    ) = runCatching {
+        track(
+            AD_IMPRESSION_ERROR, mapOf(
+                "ad_type" to adType,
+                "ad_type_name" to adTypeName,
+                "scene" to scene,
+                "ad_mediation" to "Admob",
+                "ad_placement_name" to "",
+                "ad_placement_id" to adId,
+                "ad_ecpm_number" to adEcpmNumber,
+                "ad_source" to adSource,
+                "ad_source_id" to adId,
+                "result_code" to resultCode,
+                "result_info" to resultInfo,
+                "session_id" to sessionId
+            ),EventDelivery.Batched
+        )
+    }
+
+    fun reportAdClick(
+        adType: Int,
+        adTypeName: String,
+        scene: String,
+        adId: String,
+        adEcpmNumber: Double,
+        adSource: String,
+        sessionId: String
+    ) = runCatching {
+        track(
+            AD_CLICK, mapOf(
+                "ad_type" to adType,
+                "ad_type_name" to adTypeName,
+                "scene" to scene,
+                "ad_mediation" to "Admob",
+                "ad_placement_name" to "",
+                "ad_placement_id" to adId,
+                "ad_ecpm_number" to adEcpmNumber,
+                "ad_source" to adSource,
+                "ad_source_id" to adId,
+                "session_id" to sessionId
+            ),EventDelivery.Batched
+        )
+    }
+
+    fun reportAdClose(
+        adType: Int,
+        adTypeName: String,
+        scene: String,
+        adId: String,
+        adEcpmNumber: Long,
+        adSource: String,
+        sessionId: String
+    ) = runCatching {
+        track(
+            AD_CLOSE, mapOf(
+                "ad_type" to adType,
+                "ad_type_name" to adTypeName,
+                "scene" to scene,
+                "ad_mediation" to "Admob",
+                "ad_placement_name" to "",
+                "ad_placement_id" to adId,
+                "ad_ecpm_number" to adEcpmNumber,
+                "ad_source" to adSource,
+                "ad_source_id" to adId,
+                "session_id" to sessionId
+            ),EventDelivery.Batched
+        )
+    }
+
 }

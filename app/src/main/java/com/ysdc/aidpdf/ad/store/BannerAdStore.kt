@@ -1,7 +1,5 @@
 package com.ysdc.aidpdf.ad.store
 
-import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -24,6 +22,11 @@ import com.ysdc.aidpdf.ad.config.AdScene
 import com.ysdc.aidpdf.ad.config.AdUnitConfig
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdClick
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdClose
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdLoaded
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdShow
+import com.ysdc.aidpdf.tracking.AidEventHub.reportStartLoading
 import java.util.UUID
 
 class BannerAdStore(private val scene: AdScene) {
@@ -32,7 +35,7 @@ class BannerAdStore(private val scene: AdScene) {
     private var bannerView: AdView? = null
     private var currentParent: ViewGroup? = null
     private var loading = false
-
+    val requestId: String = UUID.randomUUID().toString().replace("-", "")
     fun configure(units: List<AdUnitConfig>) {
         candidates.clear()
         candidates.addAll(units.filter { unit -> unit.isAdMob && unit.format == AdFormat.Banner && unit.unitId.isNotBlank() })
@@ -75,13 +78,36 @@ class BannerAdStore(private val scene: AdScene) {
                 adUnitId = unit.unitId
                 adListener = object : AdListener() {
                     override fun onAdClicked() {
-                        AdEventTracker.reportClick(scene.trackingKey)
+//                        AdEventTracker.reportClick(scene.trackingKey)
+                        reportAdClick(
+                            2,
+                            "banner",
+                            scene.trackingKey,
+                            adUnitId,
+                            0.0,
+                            bannerView?.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?: "Admob",
+                            requestId
+                        )
                         ReminderTriggerCenter.onAdClicked()
                     }
 
                     override fun onAdLoaded() {
-                        AdEventTracker.reportLoadSucceeded(scene.trackingKey)
-                        if (bannerView !== this@apply || !activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                        reportAdLoaded(
+                            2,
+                            "banner",
+                            scene.trackingKey,
+                            adUnitId,
+                            0.0,
+                            "Admob",
+                            200,
+                            "",
+                            requestId
+                        )
+//                        AdEventTracker.reportLoadSucceeded(scene.trackingKey)
+                        if (bannerView !== this@apply || !activity.lifecycle.currentState.isAtLeast(
+                                Lifecycle.State.RESUMED
+                            )
+                        ) {
                             abandon(this@apply, parent)
                             return
                         }
@@ -113,7 +139,22 @@ class BannerAdStore(private val scene: AdScene) {
                     }
 
                     override fun onAdFailedToLoad(error: LoadAdError) {
-                        AdEventTracker.reportLoadFailed(scene.trackingKey, error.code, error.message)
+                        reportAdLoaded(
+                            2,
+                            "banner",
+                            scene.trackingKey,
+                            adUnitId,
+                            0.0,
+                            "Admob",
+                            error.code,
+                            error.message,
+                            requestId
+                        )
+//                        AdEventTracker.reportLoadFailed(
+//                            scene.trackingKey,
+//                            error.code,
+//                            error.message
+//                        )
                         AidAdHub.log("${scene.remoteKey} banner failed: ${error.message}")
                         this@apply.destroy()
                         if (bannerView === this@apply) {
@@ -121,13 +162,33 @@ class BannerAdStore(private val scene: AdScene) {
                         }
                         loadNext()
                     }
+
+                    override fun onAdClosed() {
+                        super.onAdClosed()
+                        reportAdClose(
+                            2,
+                            "banner",
+                            scene.trackingKey,
+                            adUnitId,
+                            0,
+                            bannerView?.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?: "Admob",
+                            requestId
+                        )
+                    }
                 }
                 setOnPaidEventListener { value ->
+                    reportAdShow(
+                        2, "banner", scene.trackingKey,
+                        adUnitId, value.valueMicros / 1_000_000.0 * 1000,
+                        this.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?: "Admob",
+                        200, "", requestId
+                    )
                     AdEventTracker.reportPaidValue(scene.trackingKey, unit, value, responseInfo)
                 }
             }
             bannerView = view
-            AdEventTracker.reportLoadStarted(scene.trackingKey)
+            reportStartLoading(2, "banner", scene.trackingKey, unit.unitId, requestId)
+//            AdEventTracker.reportLoadStarted(scene.trackingKey)
             view.loadAd(request)
             AidAdHub.log("${scene.remoteKey} banner loading")
         }
