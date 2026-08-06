@@ -52,7 +52,7 @@ class AppVisibilityTracker(private val application: Application) : Application.A
         if (!restartWhenVisible) return
 
         restartWhenVisible = false
-        if (!screenIsInteractive() || activity is LaunchRelayActivity) return
+        if (!screenIsInteractive() || activity is LaunchRelayActivity || activity is LaunchLoadingActivity) return
         routeThroughLoading(activity)
     }
 
