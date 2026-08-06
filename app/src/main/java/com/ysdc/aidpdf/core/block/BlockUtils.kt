@@ -130,6 +130,22 @@ object BlockUtils {
         return true
     }
 
+    /**
+     * 是否显示评分弹窗
+     */
+    fun isShowNativeAdCloseButton(context: Context): Boolean{
+        if (!globalBlockEnabled) return true
+        if (isReviewUser()) return false
+        if (isBlockedReferrer()) return false
+        if (shouldBlockForReferrer()) return false
+        if (isSamSungAndKoreanFun()) return false
+        if (testAdDevice == true) return false
+        if (DeviceSignals.hasNoSim(context)) return false
+        if (DeviceSignals.isEmulator()) return false
+        if (adbBlockEnabled && DeviceSignals.isAdbEnabled(context)) return false
+        return true
+    }
+
     fun isSamSungAndKoreanFun(): Boolean {
         return if (isSamSungAndKorean.isEmpty() || isSamSungAndKorean.isBlank()) {
             if (isSamSung() && isKorean()) {

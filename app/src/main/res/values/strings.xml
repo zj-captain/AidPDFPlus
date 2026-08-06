@@ -182,14 +182,14 @@
     <string name="notification_permission_title">Get alerted with important app notices</string>
     <string name="notification_permission_message">Turn on notifications to receive important document updates and reminders.</string>
     <string name="skip">skip</string>
-    <string name="rate_us">rate us</string>
+    <string name="rate_us" translatable="false">rate us</string>
+    <string name="rating_star_5" translatable="false">rating star 5</string>
+    <string name="rating_star_4" translatable="false">rating star 4</string>
+    <string name="rating_star_3" translatable="false">rating star 3</string>
+    <string name="rating_star_2" translatable="false">rating star 2</string>
+    <string name="rating_star_1" translatable="false">rating star 1</string>
+    <string name="ok" translatable="false">OK</string>
     <string name="we_glad">We’re glad you love our app, appreciate your support</string>
-    <string name="rating_star_5">rating star 5</string>
-    <string name="rating_star_4">rating star 4</string>
-    <string name="rating_star_3">rating star 3</string>
-    <string name="rating_star_2">rating star 2</string>
-    <string name="rating_star_1">rating star 1</string>
-    <string name="ok">OK</string>
     <string name="have_suggestions">Have suggestions? Send us your valuable feedback</string>
     <string name="feedback_subject">FClear feedback</string>
     <string name="feedback_body">Hello FClear team, I would like to share some feedback about the app.</string>

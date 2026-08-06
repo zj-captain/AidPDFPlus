@@ -10,14 +10,23 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
+        <ImageView
+            android:id="@+id/imageClose"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:contentDescription="@string/close"
+            android:padding="5dp"
+            android:src="@mipmap/close"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/adIcon"
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageClose"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/img_launch_logo" />
 

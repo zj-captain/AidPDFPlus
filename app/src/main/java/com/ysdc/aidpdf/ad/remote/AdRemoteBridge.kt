@@ -13,6 +13,9 @@ object AdRemoteBridge {
 
     @Volatile
     var virtual_block_switch = 1  //隐藏虚拟按键逻辑开关
+
+    var natConfig: NatConfig? = null    //原生广告误触配置
+
     private const val REMOTE_AD_CONFIG_KEY = "ac_ad_config"
 
     const val DEFAULT_AD_CONFIG_JSON = """

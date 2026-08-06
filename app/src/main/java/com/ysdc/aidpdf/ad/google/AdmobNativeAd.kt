@@ -1,7 +1,9 @@
 package com.ysdc.aidpdf.ad.google
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -21,12 +23,19 @@ import com.ysdc.aidpdf.ad.config.AdUnitConfig
 import com.ysdc.aidpdf.ad.core.AdLoadResult
 import com.ysdc.aidpdf.ad.core.AdRenderRequest
 import com.ysdc.aidpdf.ad.core.CachedAd
+import com.ysdc.aidpdf.ad.remote.AdRemoteBridge
 import com.ysdc.aidpdf.databinding.LayoutAdNativeLargeBinding
 import com.ysdc.aidpdf.databinding.LayoutAdNativeMediumBinding
 import com.ysdc.aidpdf.databinding.LayoutAdNativeTinyBinding
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdClick
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdClose
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdLoaded
+import com.ysdc.aidpdf.tracking.AidEventHub.reportAdShow
+import com.ysdc.aidpdf.tracking.AidEventHub.reportStartLoading
 import java.util.UUID
+import kotlin.random.Random
 
 class AdmobNativeAd(
     override var sceneName: String,
@@ -34,7 +43,6 @@ class AdmobNativeAd(
     override val requestId: String = UUID.randomUUID().toString().replace("-", ""),
     override var loadedAtMillis: Long = System.currentTimeMillis()
 ) : CachedAd {
-
     private val request = AdRequest.Builder().build()
     private var nativeAd: NativeAd? = null
     private var impressionSent = false
@@ -42,7 +50,8 @@ class AdmobNativeAd(
 
     override fun load(context: Context, callback: (AdLoadResult) -> Unit) {
         AidAdHub.log("$sceneName native loading id=$requestId")
-        AdEventTracker.reportLoadStarted(sceneName)
+//        AdEventTracker.reportLoadStarted(sceneName)
+        reportStartLoading(7, "native", sceneName, config.unitId, requestId)
         AdLoader.Builder(context, config.unitId)
             .forNativeAd { ad ->
                 if (BlockUtils.shouldCheckTestAdDevice()) {
@@ -53,12 +62,27 @@ class AdmobNativeAd(
                 nativeAd?.destroy()
                 nativeAd = ad
                 loadedAtMillis = System.currentTimeMillis()
-                AdEventTracker.reportLoadSucceeded(sceneName)
+                reportAdLoaded(
+                    7, "native", sceneName,
+                    config.unitId, 0.0,
+                    nativeAd?.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?: "Admob",
+                    200, "", requestId
+                )
+//                AdEventTracker.reportLoadSucceeded(sceneName)
                 callback(AdLoadResult.Loaded)
             }
             .withAdListener(object : AdListener() {
                 override fun onAdClicked() {
-                    AdEventTracker.reportClick(sceneName)
+//                    AdEventTracker.reportClick(sceneName)
+                    reportAdClick(
+                        7,
+                        "native",
+                        sceneName,
+                        config.unitId,
+                        0.0,
+                        nativeAd?.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?: "Admob",
+                        requestId
+                    )
                     ReminderTriggerCenter.onAdClicked()
                 }
 
@@ -68,8 +92,33 @@ class AdmobNativeAd(
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
-                    AdEventTracker.reportLoadFailed(sceneName, error.code, error.message)
+                    reportAdLoaded(
+                        7,
+                        "native",
+                        sceneName,
+                        config.unitId,
+                        0.0,
+                        "Admob",
+                        error.code,
+                        error.message,
+                        requestId
+                    )
+//                    AdEventTracker.reportLoadFailed(sceneName, error.code, error.message)
                     callback(AdLoadResult.Failed(error.message))
+                }
+
+                override fun onAdClosed() {
+                    super.onAdClosed()
+                    reportAdClose(
+                        7,
+                        "native",
+                        sceneName,
+                        config.unitId,
+                        0,
+                        nativeAd?.responseInfo?.loadedAdapterResponseInfo?.adSourceName
+                            ?: "Admob",
+                        requestId
+                    )
                 }
             })
             .withNativeAdOptions(
@@ -88,6 +137,12 @@ class AdmobNativeAd(
         impressionCallback = request.onImpression
         ad.setOnPaidEventListener { value ->
             AidAdHub.log("$sceneName paid value=${value.valueMicros} currency=${value.currencyCode}")
+            reportAdShow(
+                7, "native", sceneName,
+                config.unitId, value.valueMicros / 1_000_000.0 * 1000,
+                ad.responseInfo?.loadedAdapterResponseInfo?.adSourceName ?: "Admob",
+                200, "", requestId
+            )
             AdEventTracker.reportPaidValue(sceneName, config, value, ad.responseInfo)
         }
         val adView = createView(
@@ -117,27 +172,64 @@ class AdmobNativeAd(
     ): NativeAdView {
         return when (size) {
             NativeAdSize.Large -> {
-                val binding = LayoutAdNativeLargeBinding.inflate(LayoutInflater.from(activity), parent, false)
-                binding.root.bindNativeAd(ad, binding.adIcon, binding.adHeadline, binding.adBody, binding.adAction, binding.adMedia)
+                val binding =
+                    LayoutAdNativeLargeBinding.inflate(LayoutInflater.from(activity), parent, false)
+                binding.root.bindNativeAd(
+                    parent,
+                    ad,
+                    binding.adIcon,
+                    binding.adHeadline,
+                    binding.adBody,
+                    binding.adAction,
+                    binding.adMedia,
+                    binding.imageClose
+                )
             }
+
             NativeAdSize.Medium -> {
-                val binding = LayoutAdNativeMediumBinding.inflate(LayoutInflater.from(activity), parent, false)
-                binding.root.bindNativeAd(ad, binding.adIcon, binding.adHeadline, binding.adBody, binding.adAction, binding.adMedia)
+                val binding = LayoutAdNativeMediumBinding.inflate(
+                    LayoutInflater.from(activity),
+                    parent,
+                    false
+                )
+                binding.root.bindNativeAd(
+                    parent,
+                    ad,
+                    binding.adIcon,
+                    binding.adHeadline,
+                    binding.adBody,
+                    binding.adAction,
+                    binding.adMedia,
+                    binding.imageClose
+                )
             }
+
             NativeAdSize.Tiny -> {
-                val binding = LayoutAdNativeTinyBinding.inflate(LayoutInflater.from(activity), parent, false)
-                binding.root.bindNativeAd(ad, binding.adIcon, binding.adHeadline, binding.adBody, binding.adAction, null)
+                val binding =
+                    LayoutAdNativeTinyBinding.inflate(LayoutInflater.from(activity), parent, false)
+                binding.root.bindNativeAd(
+                    parent,
+                    ad,
+                    binding.adIcon,
+                    binding.adHeadline,
+                    binding.adBody,
+                    binding.adAction,
+                    null,
+                    binding.imageClose
+                )
             }
         }
     }
 
     private fun NativeAdView.bindNativeAd(
+        parent: ViewGroup,
         ad: NativeAd,
         icon: ImageView,
         headline: TextView,
         body: TextView,
         action: TextView,
-        media: MediaView?
+        media: MediaView?,
+        imageClose: ImageView
     ): NativeAdView {
         iconView = icon.apply {
             val iconDrawable = ad.icon?.drawable
@@ -160,6 +252,27 @@ class AdmobNativeAd(
                 mediaContent = ad.mediaContent
                 setImageScaleType(ImageView.ScaleType.CENTER_CROP)
             }
+        }
+        if (AdRemoteBridge.natConfig?.switchOpen == 1) {
+            if (BlockUtils.isShowNativeAdCloseButton(context)) {
+                imageClose.visibility = View.VISIBLE
+                imageClose.setOnClickListener {
+                    val isOpen =
+                        Random.nextInt(100) < AdRemoteBridge.natConfig!!.jumpPercent
+                    Log.e("TAG", "bindNativeAd: isOpen = $isOpen")
+                    if (isOpen) {
+                        //打开广告
+                        action.performClick()
+                    } else {
+                        parent.removeAllViews()
+                        parent.visibility = View.GONE
+                    }
+                }
+            } else {
+                imageClose.visibility = View.GONE
+            }
+        } else {
+            imageClose.visibility = View.GONE
         }
         setNativeAd(ad)
         return this
