@@ -223,3 +223,6 @@ var additionalReminderSystemNoticeSlot by SharedPreferencesDelegates.int(0, "add
 
 var lastRateShowTime by SharedPreferencesDelegates.long(0L, "last_rate_show_time")
 var rateValue by SharedPreferencesDelegates.int(0, "user_rate_value")
+
+var requestSysNotificationCount by SharedPreferencesDelegates.int(0, "request_sys_notify_count")
+var isFirstJudgeShowCustomNotify by SharedPreferencesDelegates.boolean(true, "is_first_judge_show_custom")

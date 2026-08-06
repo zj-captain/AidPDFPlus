@@ -100,8 +100,12 @@ object ReminderBarManager {
 //                it.flags = it.flags or Notification.FLAG_ONGOING_EVENT or Notification.FLAG_NO_CLEAR
             }
         runCatching {
-            NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
-            ReminderEventTracker.reportAlwaysTriggered()
+            val isShowing = context.isNotificationShowing(NOTIFICATION_ID)
+            if (!isShowing){
+                NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+                ReminderEventTracker.reportAlwaysTriggered()
+            }
+
         }
         return notification
     }
@@ -155,4 +159,11 @@ object ReminderBarManager {
             .build()
         NotificationManagerCompat.from(context).createNotificationChannel(channel)
     }
+}
+
+//检查指定id的通知是否显示
+fun Context.isNotificationShowing(notifyId: Int): Boolean {
+    return NotificationManagerCompat.from(this)
+        .activeNotifications
+        .any { it.id == notifyId }
 }

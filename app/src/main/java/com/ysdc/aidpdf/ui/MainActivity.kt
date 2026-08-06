@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -56,8 +57,10 @@ import com.ysdc.aidpdf.databinding.ActivityMainBinding
 import com.ysdc.aidpdf.reminder.model.ReminderTarget
 import com.ysdc.aidpdf.reminder.store.ReminderNavigationStore
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
+import com.ysdc.aidpdf.store.isFirstJudgeShowCustomNotify
 import com.ysdc.aidpdf.store.lastRateShowTime
 import com.ysdc.aidpdf.store.rateValue
+import com.ysdc.aidpdf.store.requestSysNotificationCount
 import com.ysdc.aidpdf.ui.basic.BaseActivity
 import com.ysdc.aidpdf.ui.dialog.ConfirmDialogFragment
 import com.ysdc.aidpdf.ui.dialog.TextInputDialogFragment
@@ -394,9 +397,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             retryHomePermissionChecks()
             return
         }
-//        if (showOverlayPermissionIfNeeded()) return
         if (requestNotificationPermissionIfNeeded()) return
+        Log.e("TAG", "continueHomePermissionChecks: 999999")
         if (showNotificationGuideIfNeeded()) return
+        Log.e("TAG", "continueHomePermissionChecks: 000000")
         checkRateUsDialogShow()
     }
 
@@ -437,13 +441,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         if (canPostNotifications()) return false
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return false
         if (systemNotificationPromptHandled) return false
+        if (requestSysNotificationCount > 1) return false
         AidEventHub.track(TrackingEventNames.SYSTEM_NOTIFICATION_POPUP_VIEW)
+        requestSysNotificationCount ++
         notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         return true
     }
 
     private fun showNotificationGuideIfNeeded(): Boolean {
         if (canPostNotifications() || notificationGuideShownThisProcess) return false
+        if (isFirstJudgeShowCustomNotify && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            isFirstJudgeShowCustomNotify = false
+            return false
+        }
         if (supportFragmentManager.isStateSaved) return false
         notificationGuideShownThisProcess = true
         NotificationPermissionDialogFragment().apply {
@@ -1141,11 +1151,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         val favorites: List<LocalDocument>
     )
 
+    private var notificationGuideShownThisProcess = false
     private companion object {
         private const val TAG_OVERLAY_PERMISSION = "overlay_permission"
         private const val TAG_NOTIFICATION_PERMISSION = "notification_permission"
         private const val HOME_PERMISSION_RETRY_MILLIS = 300L
-        private var notificationGuideShownThisProcess = false
     }
 
 
