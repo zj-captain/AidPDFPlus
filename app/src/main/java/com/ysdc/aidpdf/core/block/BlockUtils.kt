@@ -130,9 +130,6 @@ object BlockUtils {
         return true
     }
 
-    /**
-     * 是否显示评分弹窗
-     */
     fun isShowNativeAdCloseButton(context: Context): Boolean{
         if (!globalBlockEnabled) return true
         if (isReviewUser()) return false

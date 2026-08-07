@@ -46,8 +46,10 @@ class RateUsDialogFragment : BaseDialogFragment<DialogRateUsBinding>(DialogRateU
             rateValue = 1
             if (currentRating < 4.5f) {
                 openFeedbackEmail()
+                dismiss()
             } else {
                 launchInAppReview()
+                dismiss()
             }
         }
     }
@@ -128,39 +130,35 @@ class RateUsDialogFragment : BaseDialogFragment<DialogRateUsBinding>(DialogRateU
             startActivity(Intent.createChooser(intent, getString(R.string.send_feedback)))
         } catch (e: Throwable) {
             Toast.makeText(context, getString(R.string.no_email_app), Toast.LENGTH_SHORT).show()
-        } finally {
-            dismiss()
         }
     }
 
     private fun launchInAppReview() {
+        val ctx = context
+        val thanksText = ctx.getString(R.string.thanks_support)
         try {
-            val manager = ReviewManagerFactory.create(context)
+            val manager = ReviewManagerFactory.create(ctx)
             manager.requestReviewFlow().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     runCatching {
                         manager.launchReviewFlow(mainActivity, task.result).addOnCompleteListener {
-                            Toast.makeText(
-                                context,
-                                getString(R.string.thanks_support),
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+                            Toast.makeText(ctx, thanksText, Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else {
+                    val packageName = mainActivity.packageName
                     val marketIntent =
                         Intent(
                             Intent.ACTION_VIEW,
-                            "market://details?id=${mainActivity.packageName}".toUri()
+                            "market://details?id=$packageName".toUri()
                         )
                     try {
-                        startActivity(marketIntent)
+                        ctx.startActivity(marketIntent)
                     } catch (_: Exception) {
-                        startActivity(
+                        ctx.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                "https://play.google.com/store/apps/details?id=${mainActivity.packageName}".toUri()
+                                "https://play.google.com/store/apps/details?id=$packageName".toUri()
                             )
                         )
                     }
@@ -168,9 +166,6 @@ class RateUsDialogFragment : BaseDialogFragment<DialogRateUsBinding>(DialogRateU
             }
         } catch (t: Throwable) {
             Log.e("TAG", "launchInAppReview: $t")
-        } finally {
-            dismiss()
         }
-
     }
 }

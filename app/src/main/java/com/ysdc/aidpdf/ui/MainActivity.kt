@@ -398,9 +398,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             return
         }
         if (requestNotificationPermissionIfNeeded()) return
-        Log.e("TAG", "continueHomePermissionChecks: 999999")
         if (showNotificationGuideIfNeeded()) return
-        Log.e("TAG", "continueHomePermissionChecks: 000000")
         checkRateUsDialogShow()
     }
 
@@ -450,7 +448,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     private fun showNotificationGuideIfNeeded(): Boolean {
         if (canPostNotifications() || notificationGuideShownThisProcess) return false
-        if (isFirstJudgeShowCustomNotify && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+        if (isFirstJudgeShowCustomNotify && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             isFirstJudgeShowCustomNotify = false
             return false
         }
@@ -620,7 +618,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
-    private fun setTabState(active: Boolean, icon: ImageView, label: TextView, activeIcon: Int, inactiveIcon: Int) {
+    private fun setTabState(
+        active: Boolean,
+        icon: ImageView,
+        label: TextView,
+        activeIcon: Int,
+        inactiveIcon: Int
+    ) {
         icon.setImageResource(if (active) activeIcon else inactiveIcon)
         label.setTextColor(getColor(if (active) R.color.text_primary else R.color.tab_inactive))
         label.setTypeface(Typeface.DEFAULT, if (active) Typeface.BOLD else Typeface.NORMAL)
@@ -763,7 +767,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     private fun openWithSystemViewer(document: LocalDocument) {
         runCatching {
-            val uri = FileProvider.getUriForFile(this, "$packageName.fileProvider", File(document.path))
+            val uri =
+                FileProvider.getUriForFile(this, "$packageName.fileProvider", File(document.path))
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(uri, document.mimeType.ifBlank { "*/*" })
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -951,7 +956,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             CreatedPdfStore.deleteTemporary(this@MainActivity, pdfUri)
             if (document == null) {
                 loadingDialog.dismissAllowingStateLoss()
-                Toast.makeText(this@MainActivity, R.string.create_pdf_failed, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, R.string.create_pdf_failed, Toast.LENGTH_SHORT)
+                    .show()
                 return@launch
             }
             refreshDocuments(forcePermissionCheck = false)
@@ -995,7 +1001,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 gravity = Gravity.CENTER
                 maxLines = 1
                 ellipsize = android.text.TextUtils.TruncateAt.END
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
                     topMargin = 6.dp()
                 }
             })
@@ -1014,7 +1023,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             onConfirm = { text, handled ->
                 val result = documentLibrary.rename(document, text)
                 if (result.document == null) {
-                    Toast.makeText(this@MainActivity, result.errorRes ?: R.string.rename_failed, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        result.errorRes ?: R.string.rename_failed,
+                        Toast.LENGTH_SHORT
+                    ).show()
                     handled(false)
                 } else {
                     applyRenamedDocument(document.path, result.document)
@@ -1025,8 +1038,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun showDeleteDialog(document: LocalDocument) {
-        val titleRes = if (activeSection == HomeSection.RECENT) R.string.remove_recent_title else R.string.delete_title
-        val messageRes = if (activeSection == HomeSection.RECENT) R.string.remove_recent_message else R.string.delete_message
+        val titleRes =
+            if (activeSection == HomeSection.RECENT) R.string.remove_recent_title else R.string.delete_title
+        val messageRes =
+            if (activeSection == HomeSection.RECENT) R.string.remove_recent_message else R.string.delete_message
         ConfirmDialogFragment.newInstance(
             titleRes = titleRes,
             messageRes = messageRes,
@@ -1046,7 +1061,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     if (deleted) {
                         refreshDocuments(forcePermissionCheck = false)
                     } else {
-                        Toast.makeText(this@MainActivity, R.string.delete_failed, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@MainActivity,
+                            R.string.delete_failed,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     deleted
                 }
@@ -1056,7 +1075,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     private fun shareDocument(document: LocalDocument) {
         runCatching {
-            val uri = FileProvider.getUriForFile(this, "$packageName.fileProvider", File(document.path))
+            val uri =
+                FileProvider.getUriForFile(this, "$packageName.fileProvider", File(document.path))
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = document.mimeType.ifBlank { "*/*" }
                 putExtra(Intent.EXTRA_STREAM, uri)
@@ -1075,7 +1095,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             Environment.isExternalStorageManager()
         } else {
             legacyPermissions().all { permission ->
-                ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+                ContextCompat.checkSelfPermission(
+                    this,
+                    permission
+                ) == PackageManager.PERMISSION_GRANTED
             }
         }
     }
@@ -1112,7 +1135,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 clearExternalFlowSkip()
                 startActivity(
                     Intent(this@MainActivity, MainActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                     }
                 )
                 refreshDocuments(forcePermissionCheck = false)
@@ -1152,6 +1176,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     )
 
     private var notificationGuideShownThisProcess = false
+
     private companion object {
         private const val TAG_OVERLAY_PERMISSION = "overlay_permission"
         private const val TAG_NOTIFICATION_PERMISSION = "notification_permission"
@@ -1159,13 +1184,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
 
-    private fun checkRateUsDialogShow(){
+    private fun checkRateUsDialogShow() {
         runCatching {
-            if (BlockUtils.isShowRateDialog(this)){
-                if (rateValue == 0){//没有评分的用户
-                    if (!lastRateShowTime.isToday()){
-                        RateUsDialogFragment().show(supportFragmentManager, "rate_dialog")
-                    }
+            if (BlockUtils.shouldBlockAds(this)) {
+                return
+            }
+            if (rateValue == 0) {//没有评分的用户
+                if (!lastRateShowTime.isToday()) {
+                    RateUsDialogFragment().show(supportFragmentManager, "rate_dialog")
                 }
             }
         }
