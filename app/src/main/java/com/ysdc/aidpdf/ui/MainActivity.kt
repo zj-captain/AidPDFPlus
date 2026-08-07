@@ -398,9 +398,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             return
         }
         if (requestNotificationPermissionIfNeeded()) return
-        Log.e("TAG", "continueHomePermissionChecks: 999999")
         if (showNotificationGuideIfNeeded()) return
-        Log.e("TAG", "continueHomePermissionChecks: 000000")
         checkRateUsDialogShow()
     }
 

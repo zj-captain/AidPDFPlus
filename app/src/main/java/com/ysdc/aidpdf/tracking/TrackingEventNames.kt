@@ -59,4 +59,5 @@ object TrackingEventNames {
     const val AD_IMPRESSION_REVENUE = "ad_impression_revenue"
 
     const val HOMEPAGE_VIEW = "hompage_view"
+    const val USER_VPN = "user_vpn"
 }
