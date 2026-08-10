@@ -43,7 +43,7 @@ class AdmobFullScreenAd(
     private var trackingType: String? = null
 
     override fun load(context: Context, callback: (AdLoadResult) -> Unit) {
-        AdEventTracker.reportLoadStarted(sceneName)
+//        AdEventTracker.reportLoadStarted(sceneName)
         when (config.format) {
             AdFormat.Open -> {
                 reportStartLoading(5, "splash", sceneName, config.unitId, requestId)

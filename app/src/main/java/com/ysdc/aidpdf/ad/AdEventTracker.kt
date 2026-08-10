@@ -31,7 +31,7 @@ object AdEventTracker {
     }
 
     fun reportChance(scene: String, type: String? = null) {
-        report(TrackingEventNames.AD_CHANCE, scene, typeParameters(type ?: "start"))
+        report(TrackingEventNames.AD_CHANCE, scene, typeParameters(type))
     }
 
     fun reportImpression(scene: String, type: String? = null) {

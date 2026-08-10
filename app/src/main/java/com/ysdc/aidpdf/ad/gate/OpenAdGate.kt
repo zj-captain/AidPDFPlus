@@ -1,6 +1,7 @@
 package com.ysdc.aidpdf.ad.gate
 
 import android.content.Context
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.ysdc.aidpdf.ad.AdEventTracker
 import com.ysdc.aidpdf.ad.AidAdHub
@@ -24,7 +25,7 @@ object OpenAdGate {
         onShown: () -> Unit = {},
         next: () -> Unit
     ) {
-        AdEventTracker.reportChance(trackingScene, trackingType)
+        AdEventTracker.reportChance(trackingScene, trackingType ?: "start")
         AidAdHub.showFullScreen(
             activity = activity,
             scene = AdScene.Launch,

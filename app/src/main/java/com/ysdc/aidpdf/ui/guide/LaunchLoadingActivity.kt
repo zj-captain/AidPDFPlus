@@ -110,10 +110,10 @@ class LaunchLoadingActivity :
             AidAdHub.resetFullScreenInterval()
             OpenAdGate.prepare(this@LaunchLoadingActivity)
             prepareNextPageInventory()
-            waitForStartupReady(timeout = 15_000L, interval = 200L)
+            waitForStartupReady(timeout = 15_000L, interval = 200L,requestIndex)
             keepSplashVisible(startedAt, minimumTime = 1_800L)
             if (requestIndex != launchRequestIndex) return@launch
-            OpenAdGate.showThenContinue(
+            /*OpenAdGate.showThenContinue(
                 activity = this@LaunchLoadingActivity,
                 trackingScene = launchAdTrackingScene(),
                 trackingType = launchAdTrackingType(),
@@ -126,7 +126,7 @@ class LaunchLoadingActivity :
                 if (requestIndex != launchRequestIndex) return@showThenContinue
                 prepareNextPageInventory()
                 openNextPage()
-            }
+            }*/
         }
     }
 
@@ -239,11 +239,28 @@ class LaunchLoadingActivity :
         super.onDestroy()
     }
 
-    private suspend fun waitForStartupReady(timeout: Long, interval: Long): Boolean {
+    private suspend fun waitForStartupReady(timeout: Long, interval: Long,requestIndex: Int): Boolean {
         return withTimeoutOrNull(timeout.milliseconds) {
-            while (!OpenAdGate.ready(this@LaunchLoadingActivity)) {
+            /*while (!OpenAdGate.ready(this@LaunchLoadingActivity)) {
                 delay(interval.milliseconds)
                 OpenAdGate.prepare(this@LaunchLoadingActivity)
+            }*/
+            while (OpenAdGate.ready(this@LaunchLoadingActivity)) {
+                Log.e("TAG", "waitForStartupReady: 222")
+                OpenAdGate.showThenContinue(
+                    activity = this@LaunchLoadingActivity,
+                    trackingScene = launchAdTrackingScene(),
+                    trackingType = launchAdTrackingType(),
+                    onShown = {
+                        if (requestIndex == launchRequestIndex) {
+                            prepareNextPageInventory()
+                        }
+                    }
+                ) {
+                    if (requestIndex != launchRequestIndex) return@showThenContinue
+                    prepareNextPageInventory()
+                    openNextPage()
+                }
             }
             true
         } ?: false

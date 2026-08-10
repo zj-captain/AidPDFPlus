@@ -19,11 +19,7 @@ internal object AdjustInitializer {
     private var initialized = false
 
     fun initialize(application: Application, customerUserId: String?) {
-        val appToken = BuildConfig.ADJUST_APP_TOKEN.trim()
-        if (appToken.isEmpty()) {
-            debugLog("Adjust is disabled because no app token is configured")
-            return
-        }
+        val appToken = ""
 
         runCatching {
             customerUserId
