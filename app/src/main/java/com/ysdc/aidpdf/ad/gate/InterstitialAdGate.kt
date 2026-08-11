@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
+import kotlin.time.Duration.Companion.milliseconds
 
 object InterstitialAdGate {
 
@@ -191,7 +192,7 @@ object InterstitialAdGate {
             val ready = if (AidAdHub.fullScreenHasReady(scene)) {
                 true
             } else {
-                withTimeoutOrNull(UNINSTALL_LOAD_TIMEOUT_MILLIS) {
+                withTimeoutOrNull(UNINSTALL_LOAD_TIMEOUT_MILLIS.milliseconds) {
                     awaitFullScreenReady(activity, scene)
                 } == true
             }
