@@ -11,6 +11,7 @@ import com.ysdc.aidpdf.store.appInstance
 object OpenAdGate {
 
     fun prepare(context: Context = appInstance) {
+        Log.e("TAG", "prepare:1111", )
         AidAdHub.loadFullScreen(context, AdScene.Launch)
     }
 
@@ -25,7 +26,6 @@ object OpenAdGate {
         onShown: () -> Unit = {},
         next: () -> Unit
     ) {
-        AdEventTracker.reportChance(trackingScene, trackingType ?: "start")
         AidAdHub.showFullScreen(
             activity = activity,
             scene = AdScene.Launch,

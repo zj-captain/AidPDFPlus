@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import com.ysdc.aidpdf.ad.AdEventTracker
 import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.ad.config.AdScene
 import com.ysdc.aidpdf.ad.config.AdTrackingScene
@@ -63,6 +64,7 @@ class LaunchLoadingActivity :
         captureReminderNavigation()
         onBackPressedDispatcher.addCallback(this) {}
         requestNotificationThenStart()
+        AdEventTracker.reportChance(launchAdTrackingScene(), launchAdTrackingType() ?: "start")
     }
 
     override fun onAttachedToWindow() {
@@ -74,19 +76,20 @@ class LaunchLoadingActivity :
         launchJob?.cancel()
         launchJob = null
         val requestIndex = ++launchRequestIndex
-        if (AidUmpGate.canLoadAdsBeforeConsent()) {
-            OpenAdGate.prepare(this)
-        }
+        /*if (AidUmpGate.canLoadAdsBeforeConsent()) {
+            OpenAdGate.prepare()
+        }*/
         AidUmpGate.requestBeforeAds(this) {
+            Log.e("TAG", "startLaunchFlow: requestIndex = $requestIndex  launchRequestIndex = $launchRequestIndex")
             if (requestIndex != launchRequestIndex || isFinishing || isDestroyed) return@requestBeforeAds
             beginOpenAdFlow(requestIndex)
         }
     }
 
     private fun requestNotificationThenStart() {
-        if (AidUmpGate.canLoadAdsBeforeConsent()) {
-            OpenAdGate.prepare(this)
-        }
+        /*if (AidUmpGate.canLoadAdsBeforeConsent()) {
+            OpenAdGate.prepare()
+        }*/
         if (shouldRequestNotificationPermission()) {
             requestSysNotificationCount ++
             AidEventHub.track(TrackingEventNames.SYSTEM_NOTIFICATION_POPUP_VIEW)
@@ -108,11 +111,19 @@ class LaunchLoadingActivity :
         launchJob = lifecycleScope.launch {
             val startedAt = SystemClock.elapsedRealtime()
             AidAdHub.resetFullScreenInterval()
-            OpenAdGate.prepare(this@LaunchLoadingActivity)
+            OpenAdGate.prepare()
             prepareNextPageInventory()
             waitForStartupReady(timeout = 15_000L, interval = 200L,requestIndex)
             keepSplashVisible(startedAt, minimumTime = 1_800L)
-            if (requestIndex != launchRequestIndex) return@launch
+            delay(3000L.milliseconds)
+            Log.e("TAG", "beginOpenAdFlow:requestIndex = $requestIndex   launchRequestIndex = $launchRequestIndex")
+            Log.e("TAG", "beginOpenAdFlow: isShowingAd = $isShowingAd  $isLoaded")
+            if (requestIndex == launchRequestIndex && isShowingAd && isLoaded) {
+                return@launch
+            }
+            prepareNextPageInventory()
+            openNextPage()
+
             /*OpenAdGate.showThenContinue(
                 activity = this@LaunchLoadingActivity,
                 trackingScene = launchAdTrackingScene(),
@@ -195,7 +206,8 @@ class LaunchLoadingActivity :
     }
 
     private fun prepareNextPageInventory() {
-        when {
+        //todo
+        /*when {
             launchedForUninstall -> {
                 InterstitialAdGate.prepare(this, AdScene.UninstallFirstInterstitial)
                 InterstitialAdGate.prepare(this, AdScene.UninstallSecondInterstitial)
@@ -209,7 +221,7 @@ class LaunchLoadingActivity :
                 NativeAdGate.prepare(this, AdScene.MainNative)
                 NativeAdGate.prepare(this, AdScene.ResultNative)
             }
-        }
+        }*/
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -239,27 +251,36 @@ class LaunchLoadingActivity :
         super.onDestroy()
     }
 
+    private var isShowingAd = false
+    private var isLoaded = false
     private suspend fun waitForStartupReady(timeout: Long, interval: Long,requestIndex: Int): Boolean {
         return withTimeoutOrNull(timeout.milliseconds) {
             /*while (!OpenAdGate.ready(this@LaunchLoadingActivity)) {
                 delay(interval.milliseconds)
+                Log.e("TAG", "waitForStartupReady: 00", )
                 OpenAdGate.prepare(this@LaunchLoadingActivity)
             }*/
-            while (OpenAdGate.ready(this@LaunchLoadingActivity)) {
-                Log.e("TAG", "waitForStartupReady: 222")
-                OpenAdGate.showThenContinue(
-                    activity = this@LaunchLoadingActivity,
-                    trackingScene = launchAdTrackingScene(),
-                    trackingType = launchAdTrackingType(),
-                    onShown = {
-                        if (requestIndex == launchRequestIndex) {
-                            prepareNextPageInventory()
+            while (true) {
+                delay(interval.milliseconds)
+                if (OpenAdGate.ready(this@LaunchLoadingActivity)){
+                    isLoaded = true
+                    OpenAdGate.showThenContinue(
+                        activity = this@LaunchLoadingActivity,
+                        trackingScene = launchAdTrackingScene(),
+                        trackingType = launchAdTrackingType(),
+                        onShown = {
+                            Log.e("TAG", "waitForStartupReady: showing")
+                            isShowingAd = true
+                            if (requestIndex == launchRequestIndex) {
+                                prepareNextPageInventory()
+                            }
                         }
+                    ) {
+                        if (requestIndex != launchRequestIndex) return@showThenContinue
+                        prepareNextPageInventory()
+                        openNextPage()
                     }
-                ) {
-                    if (requestIndex != launchRequestIndex) return@showThenContinue
-                    prepareNextPageInventory()
-                    openNextPage()
+                    break
                 }
             }
             true

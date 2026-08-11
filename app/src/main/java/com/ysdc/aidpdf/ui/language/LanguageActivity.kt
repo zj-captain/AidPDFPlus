@@ -92,7 +92,8 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
     }
 
     private fun prepareAds() {
-        InterstitialAdGate.prepare(this, AdScene.TopInterstitial)
+        //todo
+        /*InterstitialAdGate.prepare(this, AdScene.TopInterstitial)
         NativeAdGate.prepare(this, AdScene.MainNative)
         if (fromFirstRun) {
             InterstitialAdGate.prepare(this, AdScene.BottomInterstitial)
@@ -100,7 +101,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
         } else {
             InterstitialAdGate.prepareStartupInventory(this)
             NativeAdGate.prepare(this, AdScene.MainNative)
-        }
+        }*/
     }
 
     private fun showNativeAd() {
