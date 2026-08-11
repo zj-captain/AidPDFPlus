@@ -31,7 +31,7 @@ object OpenAdGate {
             scene = AdScene.Launch,
             loadingDelayMillis = 0L,
             trackingScene = trackingScene,
-            trackingType = trackingType,
+            trackingType = trackingType?:"start",
             onShown = onShown,
             onClosed = next
         )

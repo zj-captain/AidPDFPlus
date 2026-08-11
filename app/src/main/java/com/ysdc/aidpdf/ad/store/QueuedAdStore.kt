@@ -3,6 +3,8 @@ package com.ysdc.aidpdf.ad.store
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
+import com.blankj.utilcode.util.NetworkUtils
 import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.ad.config.AdScene
 import com.ysdc.aidpdf.ad.config.AdUnitConfig
@@ -47,6 +49,10 @@ abstract class QueuedAdStore<T : CachedAd>(
     }
 
     fun load(context: Context) {
+        if (!NetworkUtils.isConnected()) {
+            AidAdHub.log("[广告位] ${scene.remoteKey} 当前网络连接异常，无法加载广告")
+            return
+        }
         if (loading || candidates.isEmpty()) return
         discardExpired()
         if (cachedAds.isNotEmpty()) return
@@ -98,7 +104,7 @@ abstract class QueuedAdStore<T : CachedAd>(
     fun clear() {
         cachedAds.forEach { it.release() }
         cachedAds.clear()
-        loading = false
+//        loading = false
         notifyLoadCallbacks(false)
     }
 

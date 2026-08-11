@@ -109,7 +109,7 @@ class LaunchLoadingActivity :
     private fun beginOpenAdFlow(requestIndex: Int) {
         launchJob?.cancel()
         launchJob = lifecycleScope.launch {
-            val startedAt = SystemClock.elapsedRealtime()
+            val startedAt = System.currentTimeMillis()
             AidAdHub.resetFullScreenInterval()
             OpenAdGate.prepare()
             prepareNextPageInventory()
@@ -288,7 +288,7 @@ class LaunchLoadingActivity :
     }
 
     private suspend fun keepSplashVisible(startedAt: Long, minimumTime: Long) {
-        val elapsed = SystemClock.elapsedRealtime() - startedAt
+        val elapsed = System.currentTimeMillis() - startedAt
         if (elapsed < minimumTime) {
             delay((minimumTime - elapsed).milliseconds)
         }

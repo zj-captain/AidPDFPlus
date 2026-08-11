@@ -258,7 +258,7 @@ object InterstitialAdGate {
             trackingScene = trackingScene,
             onShown = {
                 if (enforceNavigationCooldown) {
-                    lastNavigationShownAt = SystemClock.elapsedRealtime()
+                    lastNavigationShownAt = System.currentTimeMillis()
                 }
             },
             onClosed = {
@@ -322,12 +322,12 @@ object InterstitialAdGate {
     }
 
     private fun elapsedSince(startedAtMillis: Long): Long {
-        return SystemClock.elapsedRealtime() - startedAtMillis
+        return System.currentTimeMillis() - startedAtMillis
     }
 
     private fun navigationCooldownReady(): Boolean {
         if (lastNavigationShownAt <= 0L) return true
-        return SystemClock.elapsedRealtime() - lastNavigationShownAt >= NAVIGATION_COOLDOWN_MILLIS
+        return System.currentTimeMillis() - lastNavigationShownAt >= NAVIGATION_COOLDOWN_MILLIS
     }
 
     private fun canContinue(activity: AppCompatActivity): Boolean {

@@ -18,6 +18,7 @@ class ReminderBarService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         showForegroundBar()
         return START_STICKY
     }
@@ -25,10 +26,10 @@ class ReminderBarService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun showForegroundBar() {
-        if (!ReminderBarManager.isAllowed(this)) {
-            stopSelf()
-            return
-        }
+//        if (!ReminderBarManager.isAllowed(this)) {
+//            stopSelf()
+//            return
+//        }
         try {
             startForeground(
                 ReminderBarManager.NOTIFICATION_ID,
