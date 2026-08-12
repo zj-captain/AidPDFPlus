@@ -92,6 +92,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
     }
 
     private fun prepareAds() {
+        InterstitialAdGate.prepare(this, AdScene.TopInterstitial)
         //todo
         /*InterstitialAdGate.prepare(this, AdScene.TopInterstitial)
         NativeAdGate.prepare(this, AdScene.MainNative)

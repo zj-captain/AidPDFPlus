@@ -153,7 +153,8 @@ class AdmobFullScreenAd(
                     requestId
                 )
 //                AdEventTracker.reportLoadFailed(sceneName, error.code, error.message)
-                callback(AdLoadResult.Failed(error.message))
+                callback(AdLoadResult.Failed(error.message,error.code))
+//                callback(AdLoadResult.Failed("No fill.",3))
             }
         })
     }
@@ -190,7 +191,8 @@ class AdmobFullScreenAd(
                     config.unitId, 0.0, "Admob", error.code, error.message, requestId
                 )
 //                AdEventTracker.reportLoadFailed(sceneName, error.code, error.message)
-                callback(AdLoadResult.Failed(error.message))
+                callback(AdLoadResult.Failed(error.message,error.code))
+//                callback(AdLoadResult.Failed("No fill.",3))
             }
         })
     }

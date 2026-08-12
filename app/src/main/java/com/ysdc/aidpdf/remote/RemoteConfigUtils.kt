@@ -7,6 +7,8 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.Gson
 import com.ysdc.aidpdf.BuildConfig
+import com.ysdc.aidpdf.ad.AdUnitFuseManager
+import com.ysdc.aidpdf.ad.DEFAULT_AD_FUSE_CONFIG_JSON
 import com.ysdc.aidpdf.ad.remote.AdRemoteBridge
 import com.ysdc.aidpdf.ad.remote.NatConfig
 import com.ysdc.aidpdf.core.block.BlockUtils
@@ -26,6 +28,7 @@ object RemoteConfigUtils {
     private const val REFERRER_CONFIG_KEY = "gsbnnsk"
     private const val BLOCKED_REFERRER_KEY = "ac_black_refer_user"
     private const val ADB_BLOCK_SWITCH_KEY = "adb_block_switch"
+    private const val REMOTE_AD_FUSE_CONFIG_KEY = "fuse_count"
     private const val DEFAULT_REFERRER_CONFIG = """
         {
           "active": 1,
@@ -81,6 +84,7 @@ object RemoteConfigUtils {
                     putAll(
                         mapOf(
                             GLOBAL_BLOCK_SWITCH_KEY to "1",
+                            REMOTE_AD_FUSE_CONFIG_KEY to DEFAULT_AD_FUSE_CONFIG_JSON,
                             REFERRER_CONFIG_KEY to DEFAULT_REFERRER_CONFIG,
                             BLOCKED_REFERRER_KEY to DEFAULT_BLOCKED_REFERRERS,
                             ADB_BLOCK_SWITCH_KEY to "1",
@@ -141,7 +145,14 @@ object RemoteConfigUtils {
         )
         ReminderTriggerCenter.onConfigUpdated()
     }
-
+    private fun applyAdFuseConfig() {
+        runCatching {
+            val json = getString(REMOTE_AD_FUSE_CONFIG_KEY).ifBlank { DEFAULT_AD_FUSE_CONFIG_JSON }
+            AdUnitFuseManager.applyConfig(json)
+        }.onFailure {
+            AdUnitFuseManager.applyConfig(DEFAULT_AD_FUSE_CONFIG_JSON)
+        }
+    }
     private fun getBlockConfigs() {
         BlockUtils.applyGlobalSwitch(readSwitch(GLOBAL_BLOCK_SWITCH_KEY, defaultValue = true))
         BlockUtils.applyAdbSwitch(readSwitch(ADB_BLOCK_SWITCH_KEY, defaultValue = true))
@@ -149,6 +160,7 @@ object RemoteConfigUtils {
         applyBlockedReferrers()
         applyPopRefresh()
         applyVirtualBlockSwitch()
+        applyAdFuseConfig()//熔断配置
     }
 
     private fun applyReferrerConfig() {

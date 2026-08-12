@@ -5,11 +5,15 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.blankj.utilcode.util.NetworkUtils
+import com.ysdc.aidpdf.ad.AdUnitFuseManager
 import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.ad.config.AdScene
 import com.ysdc.aidpdf.ad.config.AdUnitConfig
 import com.ysdc.aidpdf.ad.core.AdLoadResult
 import com.ysdc.aidpdf.ad.core.CachedAd
+import com.ysdc.aidpdf.tracking.AidEventHub
+import kotlin.compareTo
+
 /**
  * 重试策略配置。
  *
@@ -22,7 +26,10 @@ data class RetryPolicy(
 abstract class QueuedAdStore<T : CachedAd>(
     private val scene: AdScene
 ) {
-
+    companion object {
+        private const val ADMOB_NO_FILL_ERROR_CODE = 3
+        private const val ADMOB_NO_FILL_ERROR_MSG = "No fill."
+    }
     var onLoadComplete: ((Boolean) -> Unit)? = null
 
     private val candidates = mutableListOf<AdUnitConfig>()
@@ -114,7 +121,17 @@ abstract class QueuedAdStore<T : CachedAd>(
             scheduleRetryOrComplete(context)
             return
         }
-
+        if (!AdUnitFuseManager.canRequest(unit.unitId)) {
+            val state = AdUnitFuseManager.getState(unit.unitId)
+            val reason = if (state.permanentlyFused) {
+                "已永久熔断"
+            } else {
+                "冷却中，截止时间=${state.cooldownUntilMillis}"
+            }
+            AidAdHub.log("${scene.remoteKey} 跳过广告源 ${unit.unitId}，原因：$reason")
+            loadCandidate(context, index + 1)
+            return
+        }
         val ad = createAd(unit)
         if (ad == null) {
             loadCandidate(context, index + 1)
@@ -125,12 +142,29 @@ abstract class QueuedAdStore<T : CachedAd>(
             when (result) {
                 AdLoadResult.Loaded -> {
                     cancelPendingRetries()
+                    AdUnitFuseManager.recordSuccess(unit.unitId)
                     cachedAds.addLast(ad)
                     AidAdHub.log("${scene.remoteKey} loaded request=${ad.requestId}")
                     finishLoading(true)
                 }
                 is AdLoadResult.Failed -> {
                     AidAdHub.log("${scene.remoteKey} failed request=${ad.requestId}: ${result.reason}")
+                    if (result.errorCode == ADMOB_NO_FILL_ERROR_CODE && result.reason == ADMOB_NO_FILL_ERROR_MSG && scene.remoteKey != "ac_launch") {
+                        AdUnitFuseManager.recordNoFill(unit.unitId)
+                        val state = AdUnitFuseManager.getState(unit.unitId)
+                        val stateDesc = when {
+                            state.permanentlyFused -> {
+                                "永久熔断"
+                            }
+                            state.cooldownUntilMillis > System.currentTimeMillis() -> "进入冷却期，截止时间=${state.cooldownUntilMillis}"
+                            else -> "连续无填充次数=${state.consecutiveNoFillCount}"
+                        }
+                        //数据上报
+                        if (state.permanentlyFused) {
+                            AidEventHub.track("perminent_fuse", mapOf("id" to unit.unitId))
+                        }
+                        AidAdHub.log("${scene.remoteKey} 广告源 ${unit.unitId} 触发无填充统计，当前状态：$stateDesc")
+                    }
                     ad.release()
                     loadCandidate(context, index + 1)
                 }

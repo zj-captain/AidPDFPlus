@@ -80,7 +80,10 @@ class LaunchLoadingActivity :
             OpenAdGate.prepare()
         }*/
         AidUmpGate.requestBeforeAds(this) {
-            Log.e("TAG", "startLaunchFlow: requestIndex = $requestIndex  launchRequestIndex = $launchRequestIndex")
+            Log.e(
+                "TAG",
+                "startLaunchFlow: requestIndex = $requestIndex  launchRequestIndex = $launchRequestIndex"
+            )
             if (requestIndex != launchRequestIndex || isFinishing || isDestroyed) return@requestBeforeAds
             beginOpenAdFlow(requestIndex)
         }
@@ -91,7 +94,7 @@ class LaunchLoadingActivity :
             OpenAdGate.prepare()
         }*/
         if (shouldRequestNotificationPermission()) {
-            requestSysNotificationCount ++
+            requestSysNotificationCount++
             AidEventHub.track(TrackingEventNames.SYSTEM_NOTIFICATION_POPUP_VIEW)
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
@@ -112,11 +115,15 @@ class LaunchLoadingActivity :
             val startedAt = System.currentTimeMillis()
             AidAdHub.resetFullScreenInterval()
             OpenAdGate.prepare()
+            InterstitialAdGate.prepareHvInterstitial()
             prepareNextPageInventory()
-            waitForStartupReady(timeout = 15_000L, interval = 200L,requestIndex)
+            waitForStartupReady(timeout = 15_000L, interval = 200L, requestIndex)
             keepSplashVisible(startedAt, minimumTime = 1_800L)
             delay(3000L.milliseconds)
-            Log.e("TAG", "beginOpenAdFlow:requestIndex = $requestIndex   launchRequestIndex = $launchRequestIndex")
+            Log.e(
+                "TAG",
+                "beginOpenAdFlow:requestIndex = $requestIndex   launchRequestIndex = $launchRequestIndex"
+            )
             Log.e("TAG", "beginOpenAdFlow: isShowingAd = $isShowingAd  $isLoaded")
             if (requestIndex == launchRequestIndex && isShowingAd && isLoaded) {
                 return@launch
@@ -253,7 +260,11 @@ class LaunchLoadingActivity :
 
     private var isShowingAd = false
     private var isLoaded = false
-    private suspend fun waitForStartupReady(timeout: Long, interval: Long,requestIndex: Int): Boolean {
+    private suspend fun waitForStartupReady(
+        timeout: Long,
+        interval: Long,
+        requestIndex: Int
+    ): Boolean {
         return withTimeoutOrNull(timeout.milliseconds) {
             /*while (!OpenAdGate.ready(this@LaunchLoadingActivity)) {
                 delay(interval.milliseconds)
@@ -262,7 +273,26 @@ class LaunchLoadingActivity :
             }*/
             while (true) {
                 delay(interval.milliseconds)
-                if (OpenAdGate.ready(this@LaunchLoadingActivity)){
+                if (AidAdHub.fullScreenReady(this@LaunchLoadingActivity, AdScene.HvInterstitial)) {
+                    isLoaded = true
+                    InterstitialAdGate.showHvInterstitial(
+                        activity = this@LaunchLoadingActivity,
+                        trackingScene = launchAdTrackingScene(),
+                        trackingType = launchAdTrackingType(),
+                        onShown = {
+                            Log.e("TAG", "waitForStartupReady: showing")
+                            isShowingAd = true
+                            if (requestIndex == launchRequestIndex) {
+                                prepareNextPageInventory()
+                            }
+                        }
+                    ) {
+                        if (requestIndex != launchRequestIndex) return@showHvInterstitial
+                        prepareNextPageInventory()
+                        openNextPage()
+                    }
+                    break
+                } else if (OpenAdGate.ready(this@LaunchLoadingActivity)) {
                     isLoaded = true
                     OpenAdGate.showThenContinue(
                         activity = this@LaunchLoadingActivity,

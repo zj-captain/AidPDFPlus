@@ -88,12 +88,7 @@ object ReminderTriggerCenter {
     }
 
     fun onForegroundCountChanged(count: Int, triggerExit: Boolean = true) {
-        Log.e("unlockReceiver", "111111111111111")
         foregroundCount = count.coerceAtLeast(0)
-        if (foregroundCount==0){
-            Log.e("unlockReceiver", "000000000000000")
-            scheduleDelayed(ReminderTrigger.APP_EXIT)
-        }
         if (foregroundCount > 0) {
             enteredForeground = true
             exitJob?.cancel()
@@ -105,7 +100,7 @@ object ReminderTriggerCenter {
             exitJob?.cancel()
             return
         }
-
+        scheduleDelayed(ReminderTrigger.APP_EXIT)
     }
 
     fun onUserLeaveHint() {
