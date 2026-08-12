@@ -18,7 +18,7 @@ internal object AdjustInitializer {
     @Volatile
     private var initialized = false
 
-    fun initialize(application: Application, customerUserId: String?) {
+    fun initialize(application: Application, customerUserId: String?=null) {
         val appToken = ""
 
         runCatching {

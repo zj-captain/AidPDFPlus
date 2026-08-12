@@ -136,7 +136,7 @@ object AdRemoteBridge {
       "ad_unit_id": "ca-app-pub-9270792764224532/7606229097",
       "ad_paltfrom": "admob",
       "ad_type": "nat",
-      "ad_timelimit": 1200
+      "ad_timelimit": 3000
     }
   ],
   "ac_uninstall1_int": [
@@ -165,16 +165,16 @@ object AdRemoteBridge {
   ],
   "ac_int_hv": [
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+      "ad_unit_id": "ca-app-pub-9270792764224532/6158980123",
       "ad_paltfrom": "admob",
       "ad_type": "int",
-      "ad_timelimit": 3000
+      "ad_timelimit": 13800
     },
     {
-      "ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+      "ad_unit_id": "ca-app-pub-9270792764224532/2958101718",
       "ad_paltfrom": "admob",
       "ad_type": "int",
-      "ad_timelimit": 3000
+      "ad_timelimit": 13800
     }
   ]
 }"""
