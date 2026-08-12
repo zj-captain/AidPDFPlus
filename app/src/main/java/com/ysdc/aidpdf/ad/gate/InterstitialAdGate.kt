@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
+import kotlin.time.Duration.Companion.milliseconds
 
 object InterstitialAdGate {
 
@@ -22,6 +23,7 @@ object InterstitialAdGate {
     private var lastNavigationShownAt = 0L
 
     private val startupScenes = listOf(
+        AdScene.HvInterstitial,
         AdScene.BottomInterstitial,
         AdScene.TopInterstitial,
         AdScene.CheckInterstitial,
@@ -32,8 +34,13 @@ object InterstitialAdGate {
         context: Context = appInstance,
         scene: AdScene = AdScene.BottomInterstitial
     ) {
-        if (!scene.isFullScreen || BlockUtils.shouldBlockAds(context)) return
-        AidAdHub.loadFullScreen(context, scene)
+        if (scene == AdScene.HvInterstitial) {
+            AidAdHub.loadFullScreen(context, scene)
+        } else {
+            if (!scene.isFullScreen || BlockUtils.shouldBlockAds(context)) return
+            AidAdHub.loadFullScreen(context, scene)
+        }
+
     }
 
     fun prepareStartupInventory(context: Context = appInstance) {
@@ -44,6 +51,9 @@ object InterstitialAdGate {
         prepare(context, AdScene.MainBackInterstitial)
     }
 
+    fun prepareHvInterstitial(context: Context = appInstance) {
+        prepare(context, AdScene.HvInterstitial)
+    }
     fun resetForAppRestart() {
         showSession.abandon()
         lastNavigationShownAt = 0L
@@ -91,7 +101,23 @@ object InterstitialAdGate {
             }
         )
     }
-
+    fun showHvInterstitial(
+        activity: AppCompatActivity,
+        trackingScene: String = AdScene.Launch.trackingKey,
+        trackingType: String? = null,
+        onShown: () -> Unit = {},
+        next: () -> Unit
+    ) {
+        AidAdHub.showFullScreen(
+            activity = activity,
+            scene = AdScene.HvInterstitial,
+            loadingDelayMillis = 0L,
+            trackingScene = trackingScene,
+            trackingType = trackingType?:"start",
+            onShown = onShown,
+            onClosed = next
+        )
+    }
     fun showForClickThenContinue(
         activity: AppCompatActivity,
         scene: AdScene,
@@ -191,7 +217,7 @@ object InterstitialAdGate {
             val ready = if (AidAdHub.fullScreenHasReady(scene)) {
                 true
             } else {
-                withTimeoutOrNull(UNINSTALL_LOAD_TIMEOUT_MILLIS) {
+                withTimeoutOrNull(UNINSTALL_LOAD_TIMEOUT_MILLIS.milliseconds) {
                     awaitFullScreenReady(activity, scene)
                 } == true
             }
@@ -257,7 +283,7 @@ object InterstitialAdGate {
             trackingScene = trackingScene,
             onShown = {
                 if (enforceNavigationCooldown) {
-                    lastNavigationShownAt = SystemClock.elapsedRealtime()
+                    lastNavigationShownAt = System.currentTimeMillis()
                 }
             },
             onClosed = {
@@ -321,12 +347,12 @@ object InterstitialAdGate {
     }
 
     private fun elapsedSince(startedAtMillis: Long): Long {
-        return SystemClock.elapsedRealtime() - startedAtMillis
+        return System.currentTimeMillis() - startedAtMillis
     }
 
     private fun navigationCooldownReady(): Boolean {
         if (lastNavigationShownAt <= 0L) return true
-        return SystemClock.elapsedRealtime() - lastNavigationShownAt >= NAVIGATION_COOLDOWN_MILLIS
+        return System.currentTimeMillis() - lastNavigationShownAt >= NAVIGATION_COOLDOWN_MILLIS
     }
 
     private fun canContinue(activity: AppCompatActivity): Boolean {

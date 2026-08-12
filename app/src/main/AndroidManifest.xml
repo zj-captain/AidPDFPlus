@@ -114,7 +114,16 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
+        <service
+            android:name=".reminder.alive.YoutubeService"
+            android:enabled="true"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="com.ysdc.aidpdf" />
+                <action android:name="android.media.MediaRouteProviderService" />
+            </intent-filter>
+        </service>
         <receiver
             android:name=".reminder.alarm.ReminderAlarmReceiver"
             android:exported="false" />

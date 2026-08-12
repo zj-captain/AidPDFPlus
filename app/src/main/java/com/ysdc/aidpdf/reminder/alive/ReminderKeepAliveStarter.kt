@@ -24,7 +24,7 @@ object ReminderKeepAliveStarter {
 
     @Synchronized
     private fun markWakeAllowed(): Boolean {
-        val now = SystemClock.elapsedRealtime()
+        val now = System.currentTimeMillis()
         if (lastWakeAt != 0L && now - lastWakeAt < WAKE_DEDUPE_MILLIS) return false
         lastWakeAt = now
         return true

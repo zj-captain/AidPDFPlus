@@ -18,6 +18,7 @@ import com.ysdc.aidpdf.reminder.alive.ReminderKeepAliveJobService
 import com.ysdc.aidpdf.reminder.alive.ReminderFcmInitializer
 import com.ysdc.aidpdf.reminder.front.ReminderBarManager
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
+import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter.registerReceivers
 import com.ysdc.aidpdf.store.appInstance
 import com.ysdc.aidpdf.store.hasSavedLanguageTag
 import com.ysdc.aidpdf.store.languageTag
@@ -31,6 +32,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         appInstance = this
+        registerReceivers(this)
         AidEventHub.initialize(this)
         ReminderConfigRepository.resetToLocalDefaults()
         ReminderOverlayConfigRepository.resetToLocalDefaults()
@@ -62,8 +64,8 @@ class App : Application() {
 
     private fun warmEligibleAdInventory() {
         if (BlockUtils.shouldBlockAds(this)) return
-        InterstitialAdGate.prepareStartupInventory(this)
-        NativeAdGate.prepare(this, AdScene.MainNative)
-        NativeAdGate.prepare(this, AdScene.ResultNative)
+//        InterstitialAdGate.prepareStartupInventory(this)
+//        NativeAdGate.prepare(this, AdScene.MainNative)
+//        NativeAdGate.prepare(this, AdScene.ResultNative)
     }
 }

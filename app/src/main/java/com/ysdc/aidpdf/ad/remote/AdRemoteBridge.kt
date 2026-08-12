@@ -162,6 +162,20 @@ object AdRemoteBridge {
       "ad_type": "int",
       "ad_timelimit": 3000
     }
+  ],
+  "ac_int_hv": [
+    {
+      "ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+      "ad_paltfrom": "admob",
+      "ad_type": "int",
+      "ad_timelimit": 3000
+    },
+    {
+      "ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+      "ad_paltfrom": "admob",
+      "ad_type": "int",
+      "ad_timelimit": 3000
+    }
   ]
 }"""
 

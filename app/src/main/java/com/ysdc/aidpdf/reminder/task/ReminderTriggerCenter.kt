@@ -71,7 +71,6 @@ object ReminderTriggerCenter {
         application = app
         if (started) return
         started = true
-        registerReceivers(app)
         startMinuteChecks()
         ReminderAlarmScheduler.scheduleNext(app)
     }
@@ -202,10 +201,10 @@ object ReminderTriggerCenter {
         }
     }
 
-    private fun registerReceivers(context: Context) {
+     fun registerReceivers(context: Context) {
         unlockReceiver = object : BroadcastReceiver() {
             override fun onReceive(receiverContext: Context?, intent: Intent?) {
-                Log.e("TAG", "scheduleDelayed: unlockReceiver")
+                Log.e("unlockReceiver", "scheduleDelayed: unlockReceiver")
                 if (intent?.action != Intent.ACTION_USER_PRESENT) return
                 scope.launch {
                     delay(800L)
@@ -222,6 +221,7 @@ object ReminderTriggerCenter {
 
         systemDialogReceiver = object : BroadcastReceiver() {
             override fun onReceive(receiverContext: Context?, intent: Intent?) {
+                Log.e("unlockReceiver", "scheduleDelayed: unlockReceiver")
                 if (intent?.action != ACTION_CLOSE_SYSTEM_DIALOGS) return
                 when (intent.getStringExtra(EXTRA_SYSTEM_DIALOG_REASON)) {
                     REASON_HOME, REASON_HOME_GESTURE -> scheduleDelayed(ReminderTrigger.HOME)

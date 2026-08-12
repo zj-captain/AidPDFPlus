@@ -33,7 +33,7 @@ object ReminderEventTracker {
             ReminderSource.MEDIA -> TrackingEventNames.MEDIA_NOTIFICATION_TRIGGER
             ReminderSource.ALWAYS -> TrackingEventNames.ALWAYS_NOTIFICATION_TRIGGER
         }
-        AidEventHub.track(triggerEvent, mapOf("scene" to trigger.trackingValue))
+        AidEventHub.track(triggerEvent, mapOf("type" to trigger.trackingValue))
     }
 
     fun reportFloatingView() {

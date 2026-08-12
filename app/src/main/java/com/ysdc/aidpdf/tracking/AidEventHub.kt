@@ -31,7 +31,6 @@ object AidEventHub {
     @Volatile
     private var initialized = false
     private var firebaseAnalytics: FirebaseAnalytics? = null
-    private var vertAvailable = false
 
     fun initialize(application: Application) {
         if (initialized) return
@@ -58,20 +57,20 @@ object AidEventHub {
             return
         }
 
-        val value = if (parameters.keys.isNotEmpty()) {
-            val temp = StringBuffer()
-            parameters.values.forEach {
-                temp.append(it).append("  ")
-            }
-            temp.toString()
-        } else {
-            null
-        }
-        if (value == null) {
-            myLog(TAG, "reportEvent: eventName = $eventName")
-        } else {
-            myLog(TAG, "reportEvent: eventName = $eventName value = $value")
-        }
+//        val value = if (parameters.keys.isNotEmpty()) {
+//            val temp = StringBuffer()
+//            parameters.values.forEach {
+//                temp.append(it).append("  ")
+//            }
+//            temp.toString()
+//        } else {
+//            null
+//        }
+//        if (value == null) {
+//            myLog(TAG, "reportEvent: eventName = $eventName")
+//        } else {
+//            myLog(TAG, "reportEvent: eventName = $eventName value = $value")
+//        }
 
         reportToFirebase(event)
         reportToVert(event, delivery)
@@ -98,13 +97,13 @@ object AidEventHub {
 
     private fun initializeVert(application: Application) {
         val productId = "5110105"
-        val host = "https://commerce.aurastudioi.com"
 
         runCatching {
-            val configuration = VertConfiguration.Builder(productId, host)
+            val configuration = VertConfiguration.Builder(productId, "https://commerce.aurastudioi.com")
                 .channel("138")
-                .debugMode(false)
-                .enableLog(false)
+                .debugMode(true)
+                .enableLog(true)
+                .analyticsProperties(JSONObject().put("prd_id", productId))
                 .build()
 
             VertSDK.initialize(application, configuration, object : InitializationCallback {
@@ -118,7 +117,6 @@ object AidEventHub {
                     debugLog("Vert tracking authentication failed: $error")
                 }
             })
-            vertAvailable = true
         }.onFailure {
             debugLog("Vert tracking initialization failed: ${it.message}")
         }
@@ -128,7 +126,7 @@ object AidEventHub {
         if (BuildConfig.DEBUG) return
         val analytics = firebaseAnalytics ?: return
         runCatching {
-            if (event.name != ADMOB_IMPRESSION){
+            if (event.name != ADMOB_IMPRESSION) {
                 analytics.logEvent(event.name, event.parameters.toBundle())
             }
         }.onFailure {
@@ -137,14 +135,13 @@ object AidEventHub {
     }
 
     private fun vertDistinctId(): String? {
-        if (!vertAvailable) return null
         return runCatching(VertSDK::getDistinctId).getOrNull()
     }
 
     private fun reportToVert(event: EventPayload, delivery: EventDelivery) {
-        if (!vertAvailable) return
         runCatching {
             val properties = event.parameters.toJson()
+            Log.e(TAG, "reportToVert: name:${event.name}  value:$properties  delivery:$delivery")
             when (delivery) {
                 EventDelivery.Immediate -> VertSDK.trackEvent(event.name, properties)
                 EventDelivery.Batched -> VertSDK.trackBatchEvent(event.name, properties)
@@ -178,8 +175,8 @@ object AidEventHub {
         if (BuildConfig.DEBUG) Log.d(TAG, message)
     }
 
-    fun myLog(tag: String,message: String){
-        if (BuildConfig.DEBUG){
+    fun myLog(tag: String, message: String) {
+        if (BuildConfig.DEBUG) {
             Log.e(tag, message)
         }
     }
@@ -229,7 +226,7 @@ object AidEventHub {
                 "result_code" to resultCode,
                 "result_info" to resultInfo,
                 "session_id" to sessionId
-            ),EventDelivery.Batched
+            ), EventDelivery.Batched
         )
     }
 
@@ -261,7 +258,7 @@ object AidEventHub {
                     "result_code" to resultCode,
                     "result_info" to resultInfo,
                     "session_id" to sessionId
-                ),EventDelivery.Batched
+                ), EventDelivery.Batched
             )
         } else {
             track(
@@ -279,7 +276,7 @@ object AidEventHub {
                     "result_info" to resultInfo,
                     "session_id" to sessionId,
                     "type" to type
-                ),EventDelivery.Batched
+                ), EventDelivery.Batched
             )
         }
     }
@@ -309,7 +306,7 @@ object AidEventHub {
                 "result_code" to resultCode,
                 "result_info" to resultInfo,
                 "session_id" to sessionId
-            ),EventDelivery.Batched
+            ), EventDelivery.Batched
         )
     }
 
@@ -334,7 +331,7 @@ object AidEventHub {
                 "ad_source" to adSource,
                 "ad_source_id" to adId,
                 "session_id" to sessionId
-            ),EventDelivery.Batched
+            ), EventDelivery.Batched
         )
     }
 
@@ -359,7 +356,7 @@ object AidEventHub {
                 "ad_source" to adSource,
                 "ad_source_id" to adId,
                 "session_id" to sessionId
-            ),EventDelivery.Batched
+            ), EventDelivery.Batched
         )
     }
 

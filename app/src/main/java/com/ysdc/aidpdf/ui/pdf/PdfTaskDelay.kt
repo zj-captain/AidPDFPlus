@@ -7,10 +7,10 @@ object PdfTaskDelay {
 
     private const val MIN_LOADING_DURATION_MS = 2_000L
 
-    fun startedAt(): Long = SystemClock.elapsedRealtime()
+    fun startedAt(): Long = System.currentTimeMillis()
 
     suspend fun waitUntilSatisfied(startedAt: Long) {
-        val left = MIN_LOADING_DURATION_MS - (SystemClock.elapsedRealtime() - startedAt)
+        val left = MIN_LOADING_DURATION_MS - (System.currentTimeMillis() - startedAt)
         if (left > 0L) delay(left)
     }
 }

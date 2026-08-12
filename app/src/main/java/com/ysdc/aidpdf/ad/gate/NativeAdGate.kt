@@ -94,10 +94,10 @@ object NativeAdGate {
     }
 
     private suspend fun waitUntilVisible(activity: AppCompatActivity, parent: ViewGroup): Boolean {
-        val startedAt = SystemClock.elapsedRealtime()
+        val startedAt = System.currentTimeMillis()
         while (!canContinue(activity, parent)) {
             if (activity.isFinishing || activity.isDestroyed) return false
-            if (SystemClock.elapsedRealtime() - startedAt >= VIEW_READY_TIMEOUT_MILLIS) return false
+            if (System.currentTimeMillis() - startedAt >= VIEW_READY_TIMEOUT_MILLIS) return false
             delay(RESUME_POLL_MILLIS)
         }
         return true

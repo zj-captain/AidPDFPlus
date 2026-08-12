@@ -5,10 +5,11 @@ enum class AdScene(
     val expectedFormat: AdFormat
 ) {
     Launch("ac_launch", AdFormat.Open),
+    HvInterstitial("ac_int_hv", AdFormat.Interstitial),
     BottomInterstitial("ac_bottom_int", AdFormat.Interstitial),
     TopInterstitial("ac_top_int", AdFormat.Interstitial),
     CheckInterstitial("ac_check_int", AdFormat.Interstitial),
-    MainBackInterstitial("ac_mainback_int", AdFormat.Interstitial),
+    MainBackInterstitial("ac_back_int", AdFormat.Interstitial),
     MainNative("ac_main_nat", AdFormat.Native),
     MainBanner("ac_main_banner", AdFormat.Banner),
     UninstallFirstNative("ac_uninstall1_nat", AdFormat.Native),

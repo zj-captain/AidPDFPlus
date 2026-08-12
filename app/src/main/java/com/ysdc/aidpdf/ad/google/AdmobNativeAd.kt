@@ -104,7 +104,8 @@ class AdmobNativeAd(
                         requestId
                     )
 //                    AdEventTracker.reportLoadFailed(sceneName, error.code, error.message)
-                    callback(AdLoadResult.Failed(error.message))
+                    callback(AdLoadResult.Failed(error.message,error.code))
+//                    callback(AdLoadResult.Failed("No fill.",3))
                 }
 
                 override fun onAdClosed() {
