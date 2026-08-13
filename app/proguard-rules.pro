@@ -22,3 +22,16 @@
 
 -dontwarn com.gemalto.jp2.JP2Decoder
 -dontwarn com.gemalto.jp2.JP2Encoder
+
+# ── Gson ──────────────────────────────────────────────────────────
+# 保留泛型签名，TypeToken 需要在运行时读取泛型参数
+-keepattributes Signature
+-keepattributes *Annotation*
+
+# 保留 TypeToken 及其所有子类（包括匿名内部类），防止 R8 擦除泛型信息
+-keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
+-keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+
+# 保留通过 Gson 反序列化的数据类字段
+-keep class com.ysdc.aidpdf.reminder.notice.PopRefresh { *; }
+-keep class com.ysdc.aidpdf.ad.remote.NatConfig { *; }
