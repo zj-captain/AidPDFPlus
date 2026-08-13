@@ -36,6 +36,14 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        // 仅打包 64-bit so：
+        // com.tom-roush:pdfbox-android:2.0.27.0 的 32-bit pdfium 库未按 16 KB ELF 段对齐，
+        // 在 16 KB page size 设备上会触发 dlopen/mmap 失败，表现为 NoClassDefFoundError。
+        // Google Play 16 KB 合规性仅要求 64-bit 设备，64-bit 版本的这些 so 已正确对齐。
+        ndk {
+            abiFilters 'arm64-v8a', 'x86_64'
+        }
     }
 
     buildTypes {
@@ -84,7 +92,7 @@ dependencies {
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'androidx.media:media:1.7.0'
     implementation 'io.github.oothp:android-pdf-viewer:3.2.0-beta06'
-    implementation 'com.github.seapeak233:AndroidDocViewer:0.0.3'
+    implementation 'com.github.seapeak233:AndroidDocViewer:0.3.1'
     implementation 'com.tom-roush:pdfbox-android:2.0.27.0'
     implementation 'com.google.android.gms:play-services-mlkit-document-scanner:16.0.0'
     implementation platform('com.google.firebase:firebase-bom:34.15.0')
