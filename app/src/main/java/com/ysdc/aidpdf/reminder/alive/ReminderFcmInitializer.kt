@@ -10,7 +10,6 @@ object ReminderFcmInitializer {
     private const val TOPIC = "AidPDF"
 
     fun subscribeIfNeeded() {
-        if (BuildConfig.DEBUG || hasInitFcmTopic) return
         runCatching {
             Firebase.messaging.subscribeToTopic(TOPIC).addOnSuccessListener {
                 hasInitFcmTopic = true

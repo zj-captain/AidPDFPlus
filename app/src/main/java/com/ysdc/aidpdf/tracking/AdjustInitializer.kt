@@ -18,9 +18,7 @@ internal object AdjustInitializer {
     @Volatile
     private var initialized = false
 
-    fun initialize(application: Application, customerUserId: String?=null) {
-        val appToken = ""
-
+    fun initialize(application: Application) {
         runCatching {
             val customerUserId = VertSDK.getDistinctId()
             Adjust.addGlobalCallbackParameter("customer_user_id", customerUserId)

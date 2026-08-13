@@ -52,10 +52,10 @@ object AidEventHub {
             debugLog("Ignored invalid event name: $eventName")
             return
         }
-        if (!initialized) {
-            debugLog("Ignored event before initialization: ${event.name}")
-            return
-        }
+//        if (!initialized) {
+//            debugLog("Ignored event before initialization: ${event.name}")
+//            return
+//        }
 
 //        val value = if (parameters.keys.isNotEmpty()) {
 //            val temp = StringBuffer()
@@ -101,8 +101,8 @@ object AidEventHub {
         runCatching {
             val configuration = VertConfiguration.Builder(productId, "https://commerce.aurastudioi.com")
                 .channel("138")
-                .debugMode(true)
-                .enableLog(true)
+                .debugMode(false)
+                .enableLog(false)
                 .analyticsProperties(JSONObject().put("prd_id", productId))
                 .build()
 
@@ -141,7 +141,7 @@ object AidEventHub {
     private fun reportToVert(event: EventPayload, delivery: EventDelivery) {
         runCatching {
             val properties = event.parameters.toJson()
-            Log.e(TAG, "reportToVert: name:${event.name}  value:$properties  delivery:$delivery")
+//            Log.e(TAG, "reportToVert: name:${event.name}  value:$properties  delivery:$delivery")
             when (delivery) {
                 EventDelivery.Immediate -> VertSDK.trackEvent(event.name, properties)
                 EventDelivery.Batched -> VertSDK.trackBatchEvent(event.name, properties)
