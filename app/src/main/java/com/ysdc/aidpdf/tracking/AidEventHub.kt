@@ -102,7 +102,7 @@ object AidEventHub {
         runCatching {
             val configuration = VertConfiguration.Builder(productId, "https://commerce.aurastudioi.com")
                 .channel("138")
-                .debugMode(true)
+                .debugMode(false)
                 .enableLog(true)
                 .analyticsProperties(JSONObject().put("prd_id", productId))
                 .build()

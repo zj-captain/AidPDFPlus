@@ -8,6 +8,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.Gson
 import com.ysdc.aidpdf.BuildConfig
 import com.ysdc.aidpdf.ad.AdUnitFuseManager
+import com.ysdc.aidpdf.ad.AdsLimitManager
+import com.ysdc.aidpdf.ad.AidAdHub
+import com.ysdc.aidpdf.ad.DEFAULT_ADS_LIMIT_CONFIG_JSON
 import com.ysdc.aidpdf.ad.DEFAULT_AD_FUSE_CONFIG_JSON
 import com.ysdc.aidpdf.ad.remote.AdRemoteBridge
 import com.ysdc.aidpdf.ad.remote.NatConfig
@@ -29,6 +32,7 @@ object RemoteConfigUtils {
     private const val BLOCKED_REFERRER_KEY = "ac_black_refer_user"
     private const val ADB_BLOCK_SWITCH_KEY = "adb_block_switch"
     private const val REMOTE_AD_FUSE_CONFIG_KEY = "fuse_count"
+    private const val REMOTE_ADS_LIMIT_CONFIG_KEY = "ads_limit"
     private const val DEFAULT_REFERRER_CONFIG = """
         {
           "active": 1,
@@ -85,6 +89,7 @@ object RemoteConfigUtils {
                         mapOf(
                             GLOBAL_BLOCK_SWITCH_KEY to "1",
                             REMOTE_AD_FUSE_CONFIG_KEY to DEFAULT_AD_FUSE_CONFIG_JSON,
+                            REMOTE_ADS_LIMIT_CONFIG_KEY to DEFAULT_ADS_LIMIT_CONFIG_JSON,
                             REFERRER_CONFIG_KEY to DEFAULT_REFERRER_CONFIG,
                             BLOCKED_REFERRER_KEY to DEFAULT_BLOCKED_REFERRERS,
                             ADB_BLOCK_SWITCH_KEY to "1",
@@ -153,6 +158,15 @@ object RemoteConfigUtils {
             AdUnitFuseManager.applyConfig(DEFAULT_AD_FUSE_CONFIG_JSON)
         }
     }
+    private fun applyAdsLimitConfig() {
+        runCatching {
+            val json = getString(REMOTE_ADS_LIMIT_CONFIG_KEY).ifBlank { DEFAULT_ADS_LIMIT_CONFIG_JSON }
+            AdsLimitManager.applyConfig(json)
+        }.onFailure {
+            AdsLimitManager.applyConfig(DEFAULT_ADS_LIMIT_CONFIG_JSON)
+            AidAdHub.log("Remote ads limit config skipped: ${it.message}")
+        }
+    }
     private fun getBlockConfigs() {
         BlockUtils.applyGlobalSwitch(readSwitch(GLOBAL_BLOCK_SWITCH_KEY, defaultValue = true))
         BlockUtils.applyAdbSwitch(readSwitch(ADB_BLOCK_SWITCH_KEY, defaultValue = true))
@@ -161,6 +175,7 @@ object RemoteConfigUtils {
         applyPopRefresh()
         applyVirtualBlockSwitch()
         applyAdFuseConfig()//熔断配置
+        applyAdsLimitConfig()
     }
 
     private fun applyReferrerConfig() {

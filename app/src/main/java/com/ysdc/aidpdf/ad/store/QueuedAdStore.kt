@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.Log
 import com.blankj.utilcode.util.NetworkUtils
 import com.ysdc.aidpdf.ad.AdUnitFuseManager
+import com.ysdc.aidpdf.ad.AdsLimitManager
 import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.ad.config.AdScene
 import com.ysdc.aidpdf.ad.config.AdUnitConfig
@@ -58,6 +59,9 @@ abstract class QueuedAdStore<T : CachedAd>(
     fun load(context: Context) {
         if (!NetworkUtils.isConnected()) {
             AidAdHub.log("[广告位] ${scene.remoteKey} 当前网络连接异常，无法加载广告")
+            return
+        }
+        if (!AdsLimitManager.canShow()) {
             return
         }
         if (loading || candidates.isEmpty()) return
@@ -149,22 +153,22 @@ abstract class QueuedAdStore<T : CachedAd>(
                 }
                 is AdLoadResult.Failed -> {
                     AidAdHub.log("${scene.remoteKey} failed request=${ad.requestId}: ${result.reason}")
-                    if (result.errorCode == ADMOB_NO_FILL_ERROR_CODE && result.reason == ADMOB_NO_FILL_ERROR_MSG && scene.remoteKey != "ac_launch") {
-                        AdUnitFuseManager.recordNoFill(unit.unitId)
-                        val state = AdUnitFuseManager.getState(unit.unitId)
-                        val stateDesc = when {
-                            state.permanentlyFused -> {
-                                "永久熔断"
-                            }
-                            state.cooldownUntilMillis > System.currentTimeMillis() -> "进入冷却期，截止时间=${state.cooldownUntilMillis}"
-                            else -> "连续无填充次数=${state.consecutiveNoFillCount}"
-                        }
-                        //数据上报
-                        if (state.permanentlyFused) {
-                            AidEventHub.track("perminent_fuse", mapOf("id" to unit.unitId))
-                        }
-                        AidAdHub.log("${scene.remoteKey} 广告源 ${unit.unitId} 触发无填充统计，当前状态：$stateDesc")
-                    }
+//                    if (result.errorCode == ADMOB_NO_FILL_ERROR_CODE && result.reason == ADMOB_NO_FILL_ERROR_MSG && scene.remoteKey != "ac_launch") {
+//                        AdUnitFuseManager.recordNoFill(unit.unitId)
+//                        val state = AdUnitFuseManager.getState(unit.unitId)
+//                        val stateDesc = when {
+//                            state.permanentlyFused -> {
+//                                "永久熔断"
+//                            }
+//                            state.cooldownUntilMillis > System.currentTimeMillis() -> "进入冷却期，截止时间=${state.cooldownUntilMillis}"
+//                            else -> "连续无填充次数=${state.consecutiveNoFillCount}"
+//                        }
+//                        //数据上报
+//                        if (state.permanentlyFused) {
+//                            AidEventHub.track("perminent_fuse", mapOf("id" to unit.unitId))
+//                        }
+//                        AidAdHub.log("${scene.remoteKey} 广告源 ${unit.unitId} 触发无填充统计，当前状态：$stateDesc")
+//                    }
                     ad.release()
                     loadCandidate(context, index + 1)
                 }

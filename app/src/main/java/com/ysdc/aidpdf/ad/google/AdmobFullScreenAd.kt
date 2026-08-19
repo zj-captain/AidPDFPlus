@@ -173,8 +173,6 @@ class AdmobFullScreenAd(
                     )
                     AdEventTracker.reportPaidValue(sceneName, config, value, ad.responseInfo)
                 }
-                sdkAd = ad
-                loadedAtMillis = System.currentTimeMillis()
                 reportAdLoaded(
                     3, "interstitial", sceneName,
                     config.unitId, 0.0,

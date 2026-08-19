@@ -115,7 +115,7 @@ class LaunchLoadingActivity :
             val startedAt = System.currentTimeMillis()
             AidAdHub.resetFullScreenInterval()
             OpenAdGate.prepare()
-            InterstitialAdGate.prepareHvInterstitial()
+//            InterstitialAdGate.prepareHvInterstitial()
             prepareNextPageInventory()
             waitForStartupReady(timeout = 15_000L, interval = 200L, requestIndex)
             keepSplashVisible(startedAt, minimumTime = 1_800L)

@@ -16,6 +16,7 @@ import android.os.Build
 import android.util.DisplayMetrics
 import com.google.android.gms.ads.LoadAdError
 import com.ysdc.aidpdf.ad.AdEventTracker
+import com.ysdc.aidpdf.ad.AdsLimitManager
 import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.ad.config.AdFormat
 import com.ysdc.aidpdf.ad.config.AdScene
@@ -49,7 +50,11 @@ class BannerAdStore(private val scene: AdScene) {
             parent.visibility = View.VISIBLE
             return
         }
-
+        if (!AdsLimitManager.canShow()) {
+            val state = AdsLimitManager.getState()
+            AidAdHub.log("广告位=${scene.remoteKey} showNativeAd: 已达到每日广告展示上限，dayKey=${state.dayKey}, shownCount=${state.shownCount}, limit=${AdsLimitManager.config.ac_ads_limit}")
+            return
+        }
         destroy(parent)
         currentParent = parent
         parent.visibility = View.GONE

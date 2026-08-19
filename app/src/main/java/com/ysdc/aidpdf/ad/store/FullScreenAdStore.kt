@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.ysdc.aidpdf.R
+import com.ysdc.aidpdf.ad.AdsLimitManager
 import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.ad.config.AdFormat
 import com.ysdc.aidpdf.ad.config.AdScene
@@ -43,7 +44,12 @@ class FullScreenAdStore(private val scene: AdScene) : QueuedAdStore<AdmobFullScr
             load(activity)
             return
         }
-
+        if (!AdsLimitManager.canShow()) {
+            val state = AdsLimitManager.getState()
+            AidAdHub.log("${scene.remoteKey} showFullAd: 已达到每日广告展示上限，dayKey=${state.dayKey}, shownCount=${state.shownCount}, limit=${AdsLimitManager.config.ac_ads_limit}")
+            onClosed()
+            return
+        }
         val ad = take()
         if (ad == null) {
             onClosed()
@@ -56,6 +62,13 @@ class FullScreenAdStore(private val scene: AdScene) : QueuedAdStore<AdmobFullScr
             if (loadingDelayMillis > 0L) {
                 delay(loadingDelayMillis)
                 loadingDialog?.dismissAllowingStateLoss()
+            }
+            if (!AdsLimitManager.recordShow()) {
+                AidAdHub.log("${scene.remoteKey} showFullAd: 展示前记录次数失败，已达到每日广告展示上限")
+                ad.release()
+                onClosed()
+                load(activity)
+                return@launch
             }
             ad.present(
                 AdRenderRequest(
