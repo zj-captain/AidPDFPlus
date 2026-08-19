@@ -115,7 +115,7 @@ class LaunchLoadingActivity :
             val startedAt = System.currentTimeMillis()
             AidAdHub.resetFullScreenInterval()
             OpenAdGate.prepare()
-            InterstitialAdGate.prepareHvInterstitial()
+//            InterstitialAdGate.prepareHvInterstitial()
             prepareNextPageInventory()
             waitForStartupReady(timeout = 15_000L, interval = 200L, requestIndex)
             keepSplashVisible(startedAt, minimumTime = 1_800L)
@@ -273,26 +273,7 @@ class LaunchLoadingActivity :
             }*/
             while (true) {
                 delay(interval.milliseconds)
-                if (AidAdHub.fullScreenReady(this@LaunchLoadingActivity, AdScene.HvInterstitial)) {
-                    isLoaded = true
-                    InterstitialAdGate.showHvInterstitial(
-                        activity = this@LaunchLoadingActivity,
-                        trackingScene = launchAdTrackingScene(),
-                        trackingType = launchAdTrackingType(),
-                        onShown = {
-                            Log.e("TAG", "waitForStartupReady: showing")
-                            isShowingAd = true
-                            if (requestIndex == launchRequestIndex) {
-                                prepareNextPageInventory()
-                            }
-                        }
-                    ) {
-                        if (requestIndex != launchRequestIndex) return@showHvInterstitial
-                        prepareNextPageInventory()
-                        openNextPage()
-                    }
-                    break
-                } else if (OpenAdGate.ready(this@LaunchLoadingActivity)) {
+               if (OpenAdGate.ready(this@LaunchLoadingActivity)) {
                     isLoaded = true
                     OpenAdGate.showThenContinue(
                         activity = this@LaunchLoadingActivity,
