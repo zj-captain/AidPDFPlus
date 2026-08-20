@@ -21,7 +21,7 @@ object AdRemoteBridge {
     const val DEFAULT_AD_CONFIG_JSON = """{
   "ac_launch": [
     {
-      "ad_unit_id": "ca-app-pub-9270792764224532/6726437861",
+      "ad_unit_id": "ca-app-pub-9270792764224532/1501635531",
       "ad_paltfrom": "admob",
       "ad_type": "op",
       "ad_timelimit": 13800
@@ -161,20 +161,6 @@ object AdRemoteBridge {
       "ad_paltfrom": "admob",
       "ad_type": "int",
       "ad_timelimit": 3000
-    }
-  ],
-  "ac_int_hv": [
-    {
-      "ad_unit_id": "ca-app-pub-9270792764224532/6158980123",
-      "ad_paltfrom": "admob",
-      "ad_type": "int",
-      "ad_timelimit": 13800
-    },
-    {
-      "ad_unit_id": "ca-app-pub-9270792764224532/2958101718",
-      "ad_paltfrom": "admob",
-      "ad_type": "int",
-      "ad_timelimit": 13800
     }
   ]
 }"""
