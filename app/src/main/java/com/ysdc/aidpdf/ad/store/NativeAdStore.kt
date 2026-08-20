@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
+import com.ysdc.aidpdf.ad.AdsLimitManager
+import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.ad.config.AdFormat
 import com.ysdc.aidpdf.ad.config.AdScene
 import com.ysdc.aidpdf.ad.config.AdUnitConfig
@@ -38,8 +40,17 @@ class NativeAdStore(private val scene: AdScene) : QueuedAdStore<AdmobNativeAd>(s
         onShown: (AdLease) -> Unit = {}
     ) {
         if (!canShow(activity)) return
+        if (!AdsLimitManager.canShow()) {
+            val state = AdsLimitManager.getState()
+            AidAdHub.log("广告位=${scene.remoteKey} showNativeAd: 已达到每日广告展示上限，dayKey=${state.dayKey}, shownCount=${state.shownCount}, limit=${AdsLimitManager.config.ac_ads_limit}")
+            return
+        }
         val ad = take() ?: return
         ad.sceneName = sceneOverride
+        if (!AdsLimitManager.recordShow()) {
+            AidAdHub.log("广告位=${scene.remoteKey} showNativeAd: 展示前记录次数失败，已达到每日广告展示上限")
+            return
+        }
         parent.isVisible = true
         ad.present(
             AdRenderRequest(
