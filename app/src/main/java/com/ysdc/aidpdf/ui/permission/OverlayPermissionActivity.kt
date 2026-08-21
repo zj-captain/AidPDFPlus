@@ -40,6 +40,10 @@ class OverlayPermissionActivity : BaseActivity<ActivityOverlayPermissionBinding>
         AidEventHub.track(TrackingEventNames.FLOATING_NOTIFICATION_POPUP_VIEW)
         InterstitialAdGate.prepare(this, AdScene.MainBackInterstitial)
         startButtonPulse()
+
+        binding.permissionImage.imageAssetsFolder = "overlay/images/"
+        binding.permissionImage.setAnimation("overlay/data.json")
+        binding.permissionImage.playAnimation()
     }
 
     override fun bindActions() {
