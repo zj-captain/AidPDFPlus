@@ -65,6 +65,7 @@ class LaunchLoadingActivity :
         onBackPressedDispatcher.addCallback(this) {}
         requestNotificationThenStart()
         AdEventTracker.reportChance(launchAdTrackingScene(), launchAdTrackingType() ?: "start")
+        OpenAdGate.prepare()
     }
 
     override fun onAttachedToWindow() {
@@ -114,7 +115,8 @@ class LaunchLoadingActivity :
         launchJob = lifecycleScope.launch {
             val startedAt = System.currentTimeMillis()
             AidAdHub.resetFullScreenInterval()
-            OpenAdGate.prepare()
+//            OpenAdGate.prepare()  //提前加载
+
 //            InterstitialAdGate.prepareHvInterstitial()
             prepareNextPageInventory()
             waitForStartupReady(timeout = 15_000L, interval = 200L, requestIndex)
@@ -156,6 +158,7 @@ class LaunchLoadingActivity :
             })
             finish()
         } else if (isFirstRun) {
+            isFirstRun = false  //引导流程没走完就退出后，下次在进来就不走引导流程了
             startActivity(LanguageActivity.firstRunIntent(this))
             finish()
         } else if (shouldShowOverlayPermissionPage()) {
