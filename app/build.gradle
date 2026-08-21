@@ -7,6 +7,7 @@ plugins {
 
 if (file("google-services.json").exists()) {
     apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'com.google.firebase.crashlytics'
 }
 
 import com.github.megatronking.stringfog.plugin.StringFogMode
@@ -97,6 +98,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-mlkit-document-scanner:16.0.0'
     implementation platform('com.google.firebase:firebase-bom:34.15.0')
     implementation 'com.google.firebase:firebase-analytics'
+    implementation("com.google.firebase:firebase-crashlytics")
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.android.gms:play-services-ads-identifier:18.3.0'
