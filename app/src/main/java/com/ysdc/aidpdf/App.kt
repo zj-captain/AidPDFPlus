@@ -1,6 +1,9 @@
 package com.ysdc.aidpdf
 
 import android.app.Application
+import android.content.Intent
+import android.content.IntentFilter
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
@@ -16,6 +19,7 @@ import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderOverlayConfigRepository
 import com.ysdc.aidpdf.reminder.alive.ReminderKeepAliveJobService
 import com.ysdc.aidpdf.reminder.alive.ReminderFcmInitializer
+import com.ysdc.aidpdf.reminder.alive.ReminderKeepAliveReceiver
 import com.ysdc.aidpdf.reminder.front.ReminderBarManager
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter.registerReceivers
@@ -52,6 +56,8 @@ class App : Application() {
         }
         AidAdHub.initialize(this)
         RemoteConfigUtils.initRemoteConfig(this, ::warmEligibleAdInventory)
+
+        registerReceiver()
     }
 
     fun skipNextHotStart() {
@@ -67,5 +73,22 @@ class App : Application() {
 //        InterstitialAdGate.prepareStartupInventory(this)
 //        NativeAdGate.prepare(this, AdScene.MainNative)
 //        NativeAdGate.prepare(this, AdScene.ResultNative)
+    }
+
+    fun registerReceiver() {
+        // 仅保留动态注册，和 manifest 静态注册配合使用，避免重复接收
+        // 这里不再注册 USER_UNLOCKED，因为它在部分设备上不稳定，静态注册也未必会触发
+        // 由 PhoneLockRe 内部统一处理 SCREEN_ON / SCREEN_OFF / USER_PRESENT
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_USER_PRESENT)
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_SCREEN_OFF)
+        }
+
+        runCatching {
+            registerReceiver(ReminderKeepAliveReceiver(), filter)
+        }.onFailure {
+            Log.e("MyApplication", "registerReceiver failed", it)
+        }
     }
 }

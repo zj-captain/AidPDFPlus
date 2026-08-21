@@ -148,9 +148,12 @@
 
         <receiver
             android:name=".reminder.alive.ReminderKeepAliveReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
             android:exported="true">
             <intent-filter android:priority="2147483647">
                 <action android:name="android.intent.action.USER_UNLOCKED" />
+                <action android:name="android.intent.action.USER_PRESENT"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
