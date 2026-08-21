@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AidPDF</string>
+    <string name="app_name">\u00A0\u00A0AidPDF</string>
     <string name="reminder_channel_name">Document reminders</string>
     <string name="reminder_media_channel_name">Document media reminders</string>
     <string name="reminder_bar_channel_name">Document shortcuts</string>

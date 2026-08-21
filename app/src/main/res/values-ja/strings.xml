@@ -35,7 +35,7 @@
     <string name="cancel">キャンセル</string>
     <string name="confirm">確認</string>
     <string name="continue_action">続行</string>
-    <string name="app_name">AidPDF</string>
+    <string name="app_name">\u00A0\u00A0AidPDF</string>
     <string name="filter_pdf">PDF</string>
     <string name="filter_word">WORD</string>
     <string name="filter_excel">EXCEL</string>
