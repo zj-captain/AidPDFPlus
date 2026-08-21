@@ -27,14 +27,14 @@ object ReminderBarManager {
     private const val CHANNEL_ID = "aidpdf_document_bar"
 
     fun startIfAllowed(context: Context) {
-        if (!isAllowed(context)) {
+        /*if (!isAllowed(context)) {
             stop(context)
             return
-        }
-        if (ReminderDeviceCompat.isAndroid12AndAbove() && context is Application) {
+        }*/
+        /*if (ReminderDeviceCompat.isAndroid12AndAbove() && context is Application) {
             showNotification(context)
             return
-        }
+        }*/
         runCatching {
             if (ReminderBarService.isServiceRunning) {
                 val removed = NotificationManagerCompat.from(context)

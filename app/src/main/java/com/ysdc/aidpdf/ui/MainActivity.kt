@@ -89,6 +89,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.Calendar
+import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
@@ -470,6 +471,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         markExternalFlowSkip()
         runCatching {
             notificationSettingsLauncher.launch(notificationSettingsIntent())
+            lifecycleScope.launch {
+                var haveNotifyPermission = canPostNotifications()
+                while (!haveNotifyPermission) {
+                    delay(400.milliseconds)
+                    haveNotifyPermission = canPostNotifications()
+                }
+                val intent = Intent(this@MainActivity, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                intent.putExtra("customNotify", true)
+                startActivity(intent)
+            }
         }.onFailure {
             openingNotificationSettings = false
             clearExternalFlowSkip()

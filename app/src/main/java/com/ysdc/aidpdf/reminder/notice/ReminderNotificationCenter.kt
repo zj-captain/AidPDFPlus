@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.PowerManager
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
@@ -253,6 +254,24 @@ object ReminderNotificationCenter {
         compact: RemoteViews,
         tiny: RemoteViews,
     ) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            compact.setImageViewResource(R.id.anim_image, R.drawable.notify_small_btn_anim)
+        } else {
+            compact.setInt(R.id.reminder_action, "setBackgroundResource", R.drawable.bg_reminder_action_tiny)
+        }
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            tiny.setImageViewResource(R.id.anim_image, R.drawable.notify_small_btn_anim)
+        } else {
+            tiny.setInt(R.id.reminder_action, "setBackgroundResource", R.drawable.bg_reminder_action_tiny)
+        }
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            expanded.setImageViewResource(R.id.anim_image, R.drawable.notify_overlay_anim)
+        } else {
+            expanded.setInt(R.id.reminder_action, "setBackgroundResource", R.drawable.bg_reminder_action)
+        }
+
         if (ReminderDeviceCompat.isAndroid12AndAbove()) {
             if (ReminderDeviceCompat.isXiaomi()) {
                 builder.setCustomContentView(compact)

@@ -35,14 +35,9 @@ class ReminderBarService : Service() {
                 ReminderBarManager.NOTIFICATION_ID,
                 ReminderBarManager.showNotification(this)
             )
-        } catch (first: Exception) {
-            try {
-                startForeground(
-                    ReminderBarManager.NOTIFICATION_ID,
-                    ReminderBarManager.showNotification(this)
-                )
-            } catch (second: Exception) {
-                Log.e("ReminderBarService", "Failed to start foreground notification", second)
+        } catch (t: Throwable) {
+            Log.e("ReminderBarService", "Failed to start foreground notification")
+            runCatching {
                 stopSelf()
             }
         }

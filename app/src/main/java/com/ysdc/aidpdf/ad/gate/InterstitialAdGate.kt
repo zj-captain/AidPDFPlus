@@ -23,7 +23,6 @@ object InterstitialAdGate {
     private var lastNavigationShownAt = 0L
 
     private val startupScenes = listOf(
-        AdScene.HvInterstitial,
         AdScene.BottomInterstitial,
         AdScene.TopInterstitial,
         AdScene.CheckInterstitial,
@@ -34,12 +33,8 @@ object InterstitialAdGate {
         context: Context = appInstance,
         scene: AdScene = AdScene.BottomInterstitial
     ) {
-        if (scene == AdScene.HvInterstitial) {
-            AidAdHub.loadFullScreen(context, scene)
-        } else {
-            if (!scene.isFullScreen || BlockUtils.shouldBlockAds(context)) return
-            AidAdHub.loadFullScreen(context, scene)
-        }
+        if (!scene.isFullScreen || BlockUtils.shouldBlockAds(context)) return
+        AidAdHub.loadFullScreen(context, scene)
 
     }
 
@@ -49,10 +44,6 @@ object InterstitialAdGate {
 
     fun prepareBackMain(context: Context = appInstance) {
         prepare(context, AdScene.MainBackInterstitial)
-    }
-
-    fun prepareHvInterstitial(context: Context = appInstance) {
-        prepare(context, AdScene.HvInterstitial)
     }
     fun resetForAppRestart() {
         showSession.abandon()
@@ -99,23 +90,6 @@ object InterstitialAdGate {
             onClosed = {
                 finishSession(sessionId, next)
             }
-        )
-    }
-    fun showHvInterstitial(
-        activity: AppCompatActivity,
-        trackingScene: String = AdScene.Launch.trackingKey,
-        trackingType: String? = null,
-        onShown: () -> Unit = {},
-        next: () -> Unit
-    ) {
-        AidAdHub.showFullScreen(
-            activity = activity,
-            scene = AdScene.HvInterstitial,
-            loadingDelayMillis = 0L,
-            trackingScene = trackingScene,
-            trackingType = trackingType?:"start",
-            onShown = onShown,
-            onClosed = next
         )
     }
     fun showForClickThenContinue(
