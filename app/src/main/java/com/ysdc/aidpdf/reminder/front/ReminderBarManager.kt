@@ -35,7 +35,7 @@ object ReminderBarManager {
         }
         if (ReminderDeviceCompat.isAndroid12AndAbove() && context is Application) {
             showNotification(context)
-//            return
+            return
         }
         runCatching {
             if (ReminderBarService.isServiceRunning) {

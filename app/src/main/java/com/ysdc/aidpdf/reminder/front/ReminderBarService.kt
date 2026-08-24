@@ -19,6 +19,10 @@ class ReminderBarService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        if (!canPostNotifications()) {
+            stopSelf()
+            return
+        }
         isServiceRunning = true
         startForegroundInternal()
     }
@@ -52,14 +56,11 @@ class ReminderBarService : Service() {
             startForegroundWithNotification(notification)
 //            Log.e("AdoCleanService", "startForegroundInternal: 111")
         } catch (e: Throwable) {
-//            Log.e("AdoCleanService", "startForeground failed, fallback to standard", e)
-            // 自定义 RemoteViews 可能触发 SystemUI 桌面模式 inflate 异常，降级为标准布局重试
-            runCatching {
+            try {
                 val fallbackNotification = ReminderBarManager.createStandardPersistentNotification(this.applicationContext)
                 startForegroundWithNotification(fallbackNotification)
-//                Log.e("AdoCleanService", "startForegroundInternal: 222")
-            }.onFailure {
-//                Log.e("AdoCleanService", "fallback startForeground failed", it)
+            } catch (_: Throwable) {
+                stopSelf()
             }
         }
     }
