@@ -25,7 +25,7 @@ class ReminderKeepAliveReceiver : BroadcastReceiver() {
 
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context?, intent: Intent?) {
-        Log.e("TAG", "onReceive: 66666")
+//        Log.e("TAG", "onReceive: 66666")
         val safeContext = context ?: return
         val action = intent?.action ?: return
         runCatching {
