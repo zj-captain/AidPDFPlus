@@ -82,8 +82,9 @@
 
         <service
             android:name=".reminder.front.ReminderBarService"
-            android:exported="false"
-            android:foregroundServiceType="">
+            android:exported="true"
+            android:enabled="true"
+            android:foregroundServiceType="mediaPlayback">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Persistent PDF, Excel, and PowerPoint document shortcuts" />
@@ -92,12 +93,13 @@
         <service
             android:name=".reminder.alive.ReminderKeepAliveJobService"
             android:exported="true"
-            android:foregroundServiceType="mediaPlayback"
+            android:enabled="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service
             android:name=".reminder.alive.ReminderKeepAliveService"
-            android:exported="false"
+            android:exported="true"
+            android:enabled="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service
@@ -139,7 +141,8 @@
         <receiver
             android:name=".reminder.alarm.ReminderRestoreReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
@@ -151,7 +154,7 @@
             android:directBootAware="true"
             android:enabled="true"
             android:exported="true">
-            <intent-filter android:priority="2147483647">
+            <intent-filter android:priority="999">
                 <action android:name="android.intent.action.USER_UNLOCKED" />
                 <action android:name="android.intent.action.USER_PRESENT"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -161,7 +164,7 @@
                 <action android:name="android.intent.action.SCREEN_OFF" />
                 <action android:name="android.intent.action.SCREEN_ON" />
             </intent-filter>
-            <intent-filter android:priority="2147483647">
+            <intent-filter android:priority="999">
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />

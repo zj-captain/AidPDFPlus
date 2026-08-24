@@ -13,6 +13,8 @@ import androidx.core.content.ContextCompat
 import com.ysdc.aidpdf.R
 import com.ysdc.aidpdf.core.permission.canPostNotifications
 import com.ysdc.aidpdf.reminder.ReminderDeviceCompat
+import com.ysdc.aidpdf.reminder.ReminderDeviceCompat.isAndroid16AndAbove
+import com.ysdc.aidpdf.reminder.ReminderDeviceCompat.isOneNoticeDevice
 import com.ysdc.aidpdf.reminder.ReminderEligibilityPolicy
 import com.ysdc.aidpdf.reminder.ReminderIntents
 import com.ysdc.aidpdf.reminder.ReminderEventTracker
@@ -27,14 +29,14 @@ object ReminderBarManager {
     private const val CHANNEL_ID = "aidpdf_document_bar"
 
     fun startIfAllowed(context: Context) {
-        /*if (!isAllowed(context)) {
+        if (!context.canPostNotifications()) {
             stop(context)
             return
-        }*/
-        /*if (ReminderDeviceCompat.isAndroid12AndAbove() && context is Application) {
+        }
+        if (ReminderDeviceCompat.isAndroid12AndAbove() && context is Application) {
             showNotification(context)
-            return
-        }*/
+//            return
+        }
         runCatching {
             if (ReminderBarService.isServiceRunning) {
                 val removed = NotificationManagerCompat.from(context)
@@ -108,6 +110,51 @@ object ReminderBarManager {
 
         }
         return notification
+    }
+
+    /**
+     * 使用标准通知布局创建常驻通知（无自定义 RemoteViews），
+     * 用于自定义 RemoteViews 在部分机型 / Android 15 上 inflate 失败时的兜底。
+     */
+    fun createStandardPersistentNotification(context: Context): Notification {
+        // 确保通知渠道已创建
+        NotificationManagerCompat.from(context)
+            .createNotificationChannel(
+                NotificationChannelCompat.Builder(
+                    CHANNEL_ID,
+                    if (isOneNoticeDevice() && isAndroid16AndAbove()){
+                        NotificationManagerCompat.IMPORTANCE_MIN
+                    }else{
+                        NotificationManagerCompat.IMPORTANCE_DEFAULT
+                    }
+                )
+                    .setSound(null, null)
+                    .setLightsEnabled(false)
+                    .setVibrationEnabled(false)
+                    .setShowBadge(false)
+                    .setName(CHANNEL_ID)
+                    .build()
+            )
+
+        return NotificationCompat.Builder(context, CHANNEL_ID).apply {
+            setSmallIcon(R.drawable.ic_notification_small)
+            setContentTitle("AdoPDF")
+            setContentText(context.getString(R.string.reminder_bar_channel_name))
+            setPriority(
+                if (isOneNoticeDevice() && isAndroid16AndAbove()) {
+                    NotificationCompat.PRIORITY_MIN
+                } else {
+                    NotificationCompat.PRIORITY_DEFAULT
+                }
+            )
+            setCategory(NotificationCompat.CATEGORY_SERVICE)
+            setOngoing(true)
+            setOnlyAlertOnce(true)
+            setSound(null)
+            setVibrate(null)
+            setGroupSummary(false)
+            setGroup("")
+        }.build()
     }
 
     private fun remoteView(context: Context, layoutId: Int): RemoteViews {
