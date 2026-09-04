@@ -255,7 +255,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        ReminderTriggerCenter.onUserLeaveHint()
+        //无效触发场景
+//        ReminderTriggerCenter.onUserLeaveHint()
     }
 
     override fun onDestroy() {
@@ -442,7 +443,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         if (systemNotificationPromptHandled) return false
         if (requestSysNotificationCount > 1) return false
         AidEventHub.track(TrackingEventNames.SYSTEM_NOTIFICATION_POPUP_VIEW)
-        requestSysNotificationCount ++
+        requestSysNotificationCount++
         notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         return true
     }
@@ -530,7 +531,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         binding.filterIndicator.isVisible = showDocuments
         binding.homeDocumentPager.isVisible = showDocuments && activeSection == HomeSection.HOME
         binding.recentDocumentPager.isVisible = showDocuments && activeSection == HomeSection.RECENT
-        binding.favoritesDocumentPager.isVisible = showDocuments && activeSection == HomeSection.FAVORITES
+        binding.favoritesDocumentPager.isVisible =
+            showDocuments && activeSection == HomeSection.FAVORITES
         binding.createPdfButton.isVisible = activeSection == HomeSection.HOME && canReadDocuments()
         binding.settingsContent.isVisible = activeSection == HomeSection.SETTING
         binding.settingsButton.isVisible = activeSection == HomeSection.SETTING

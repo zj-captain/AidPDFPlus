@@ -1,7 +1,6 @@
 package com.ysdc.aidpdf.ad.google
 
 import android.content.Context
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -127,6 +126,7 @@ class AdmobFullScreenAd(
                         200, "", requestId, trackingType
                     )
                     AdEventTracker.reportPaidValue(sceneName, config, value, ad.responseInfo)
+                    AdEventTracker.reportTotalAdsRenenue001(value)
                 }
                 sdkAd = ad
                 loadedAtMillis = System.currentTimeMillis()
@@ -172,6 +172,7 @@ class AdmobFullScreenAd(
                         200, "", requestId
                     )
                     AdEventTracker.reportPaidValue(sceneName, config, value, ad.responseInfo)
+                    AdEventTracker.reportTotalAdsRenenue001(value)
                 }
                 sdkAd = ad
                 loadedAtMillis = System.currentTimeMillis()

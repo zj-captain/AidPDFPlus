@@ -228,3 +228,5 @@ var rateValue by SharedPreferencesDelegates.int(0, "user_rate_value")
 var adUnitFuseStatesJson by SharedPreferencesDelegates.string("[]", "ad_unit_fuse_states_json")
 var requestSysNotificationCount by SharedPreferencesDelegates.int(0, "request_sys_notify_count")
 var isFirstJudgeShowCustomNotify by SharedPreferencesDelegates.boolean(true, "is_first_judge_show_custom")
+
+var currentAdRevenue by SharedPreferencesDelegates.double(0.000000000000,"ad_revenue_total")

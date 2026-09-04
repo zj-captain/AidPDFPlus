@@ -168,7 +168,7 @@ object RemoteConfigUtils {
         }
     }
     private fun getBlockConfigs() {
-        BlockUtils.applyGlobalSwitch(readSwitch(GLOBAL_BLOCK_SWITCH_KEY, defaultValue = true))
+        BlockUtils.applyGlobalSwitch(readSwitch(GLOBAL_BLOCK_SWITCH_KEY, defaultValue = false))
         BlockUtils.applyAdbSwitch(readSwitch(ADB_BLOCK_SWITCH_KEY, defaultValue = true))
         applyReferrerConfig()
         applyBlockedReferrers()

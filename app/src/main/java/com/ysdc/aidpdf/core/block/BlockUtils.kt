@@ -102,10 +102,13 @@ object BlockUtils {
     }
 
     fun shouldBlockAds(context: Context): Boolean {
-        if (BuildConfig.DEBUG) return false
+        //todo
+//        if (BuildConfig.DEBUG) return false
+
         if (globalBlockEnabled) return true
+
         if (isReviewUser()) return true
-        if (testAdDevice == true) return true
+//        if (testAdDevice == true) return true
         if (isBlockedReferrer()) return true
         if (shouldBlockForReferrer()) return true
         if (DeviceSignals.hasNoSim(context)) return true

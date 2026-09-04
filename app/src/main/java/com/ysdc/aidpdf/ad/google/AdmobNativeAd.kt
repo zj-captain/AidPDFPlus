@@ -145,6 +145,7 @@ class AdmobNativeAd(
                 200, "", requestId
             )
             AdEventTracker.reportPaidValue(sceneName, config, value, ad.responseInfo)
+            AdEventTracker.reportTotalAdsRenenue001(value)
         }
         val adView = createView(
             activity = request.activity,

@@ -1,8 +1,11 @@
 package com.ysdc.aidpdf.ui.language
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
@@ -15,6 +18,7 @@ import com.ysdc.aidpdf.ad.core.AdLease
 import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
 import com.ysdc.aidpdf.ad.gate.NativeAdGate
 import com.ysdc.aidpdf.ad.google.NativeAdSize
+import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.databinding.ActivityLanguageBinding
 import com.ysdc.aidpdf.store.hasSavedLanguageTag
 import com.ysdc.aidpdf.store.languageTag
@@ -26,11 +30,14 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
 
     private lateinit var languageAdapter: LanguageOptionAdapter
     private var nativeAdLease: AdLease? = null
-    private var leaving = false
+//    private var leaving = false
     private val fromFirstRun: Boolean
         get() = intent.getBooleanExtra(EXTRA_FIRST_RUN_FLOW, false)
 
     override fun hideNavigationBar(): Boolean = true
+
+    private var secondCount = 5
+    private var isStop = false
 
     override fun setupViews(savedInstanceState: Bundle?) {
         val selectedTag = if (hasSavedLanguageTag) {
@@ -38,6 +45,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
         } else {
             AppLanguages.defaultForSystem().tag
         }
+        isStop = false
         val languages = AppLanguages.ordered(selectedTag)
         languageAdapter = LanguageOptionAdapter(languages, selectedTag)
         binding.languageList.adapter = languageAdapter
@@ -48,16 +56,50 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
         )
         prepareAds()
         showNativeAd()
-        onBackPressedDispatcher.addCallback(this) {
-            if (fromFirstRun.not()) {
+        /*onBackPressedDispatcher.addCallback(this) {
+            *//*if (fromFirstRun.not()) {
                 finish()
+            }*//*
+        }*/
+        if (fromFirstRun && !BlockUtils.shouldBlockAds(this)) {
+            updateSecondView(binding.nextButton, secondCount) {
+                binding.nextButton.callOnClick()
             }
         }
     }
 
     override fun bindActions() {
-        binding.backButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
-        binding.nextButton.setOnClickListener { applySelection() }
+        binding.backButton.setOnClickListener { finish() }
+        binding.nextButton.setOnClickListener {
+            timer?.cancel()
+            timer = null
+            applySelection()
+        }
+    }
+
+    private var timer: CountDownTimer? = null
+
+    @SuppressLint("SetTextI18n")
+    private fun updateSecondView(textView: TextView, second: Int, nextAction: () -> Unit) {
+        timer = object : CountDownTimer(second * 1000L, 1000L) {
+            override fun onTick(millisUntilFinished: Long) {
+                val remaining = (millisUntilFinished / 1000).toInt() + 1
+                textView.text =
+                    "${resources.getString(R.string.language_action_next)}(${remaining}S)"
+            }
+
+            override fun onFinish() {
+                textView.text = resources.getString(R.string.language_action_next)
+                nextAction()
+            }
+        }.start()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        isStop = true
+        timer?.cancel()
+        timer = null
     }
 
     override fun onDestroy() {
@@ -67,8 +109,8 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
     }
 
     private fun applySelection() {
-        if (leaving) return
-        leaving = true
+//        if (leaving) return
+//        leaving = true
         InterstitialAdGate.showForClickThenContinue(
             activity = this,
             scene = AdScene.TopInterstitial,
@@ -82,6 +124,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
         val selected = languageAdapter.selectedTag
         languageTag = selected
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(selected))
+        if (isFinishing || isDestroyed || isStop) return
         if (fromFirstRun) {
             openActivity<OnboardingActivity>(finishCurrent = true)
         } else {
@@ -93,8 +136,6 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
 
     private fun prepareAds() {
         InterstitialAdGate.prepare(this, AdScene.TopInterstitial)
-        //todo
-        /*InterstitialAdGate.prepare(this, AdScene.TopInterstitial)
         NativeAdGate.prepare(this, AdScene.MainNative)
         if (fromFirstRun) {
             InterstitialAdGate.prepare(this, AdScene.BottomInterstitial)
@@ -102,7 +143,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
         } else {
             InterstitialAdGate.prepareStartupInventory(this)
             NativeAdGate.prepare(this, AdScene.MainNative)
-        }*/
+        }
     }
 
     private fun showNativeAd() {
@@ -123,7 +164,10 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
         private const val EXTRA_FIRST_RUN_FLOW = "extra_first_run_flow"
 
         fun firstRunIntent(context: Context): Intent {
-            return Intent(context, LanguageActivity::class.java).putExtra(EXTRA_FIRST_RUN_FLOW, true)
+            return Intent(context, LanguageActivity::class.java).putExtra(
+                EXTRA_FIRST_RUN_FLOW,
+                true
+            )
         }
     }
 }
