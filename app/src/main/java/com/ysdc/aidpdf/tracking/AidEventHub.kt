@@ -38,6 +38,7 @@ object AidEventHub {
             if (initialized) return
             initializeFirebase(application)
             initializeVert(application)
+            AdjustInitializer.initialize(application)
             initialized = true
         }
     }
@@ -110,7 +111,6 @@ object AidEventHub {
                 override fun onSuccess(data: JSONObject?) {
                     debugLog("Vert tracking initialized")
                     VertSDK.setPublicProperties(JSONObject().put("prd_id", productId))
-                    AdjustInitializer.initialize(application)
                 }
 
                 override fun onFailure(error: String) {
