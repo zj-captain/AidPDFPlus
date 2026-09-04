@@ -99,15 +99,14 @@ object AdEventTracker {
     fun reportTotalAdsRenenue001(adValue: AdValue) {
         //新增Total_Ads_Renenue_001 投放事件上报
         runCatching {
-            //todo
-//            val revenueTemp = adValue.valueMicros / 1_000_000.0
-            val revenueTemp = Random.nextInt(900, 10000) / 1_000_000.0f
-            Log.e("AidEventHub", "onAdPaid: revenueTemp = $revenueTemp")
+            val revenueTemp = adValue.valueMicros / 1_000_000.0
+//            val revenueTemp = Random.nextInt(900, 10000) / 1_000_000.0f
+//            Log.e("AidEventHub", "onAdPaid: revenueTemp = $revenueTemp")
             var current = currentAdRevenue
             current += revenueTemp
-            Log.e("AidEventHub", "sendAdRevenue: current = $current")
+//            Log.e("AidEventHub", "sendAdRevenue: current = $current")
             if (current >= 0.01f) {
-                Log.e("AidEventHub", "reportTotalAdsRenenue001")
+//                Log.e("AidEventHub", "reportTotalAdsRenenue001")
                 val analytics = firebaseAnalytics ?: return
                 analytics.logEvent("Total_Ads_Renenue_001", Bundle().apply {
                     putDouble(FirebaseAnalytics.Param.VALUE, current)
