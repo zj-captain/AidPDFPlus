@@ -34,7 +34,7 @@ object ReminderBarManager {
             return
         }
         if (ReminderDeviceCompat.isAndroid12AndAbove() && context is Application) {
-            showNotification(context)
+            runCatching { showNotification(context) }
             return
         }
         runCatching {
@@ -44,11 +44,12 @@ object ReminderBarManager {
                     .none { it.id == NOTIFICATION_ID }
                 if (removed) showNotification(context)
                 return
+            } else {
+                ContextCompat.startForegroundService(
+                    context,
+                    Intent(context, ReminderBarService::class.java)
+                )
             }
-            ContextCompat.startForegroundService(
-                context,
-                Intent(context, ReminderBarService::class.java)
-            )
         }
     }
 
@@ -103,7 +104,7 @@ object ReminderBarManager {
             }
         runCatching {
             val isShowing = context.isNotificationShowing(NOTIFICATION_ID)
-            if (!isShowing){
+            if (!isShowing) {
                 NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
                 ReminderEventTracker.reportAlwaysTriggered()
             }
@@ -122,9 +123,9 @@ object ReminderBarManager {
             .createNotificationChannel(
                 NotificationChannelCompat.Builder(
                     CHANNEL_ID,
-                    if (isOneNoticeDevice() && isAndroid16AndAbove()){
+                    if (isOneNoticeDevice() && isAndroid16AndAbove()) {
                         NotificationManagerCompat.IMPORTANCE_MIN
-                    }else{
+                    } else {
                         NotificationManagerCompat.IMPORTANCE_DEFAULT
                     }
                 )
@@ -155,6 +156,33 @@ object ReminderBarManager {
             setGroupSummary(false)
             setGroup("")
         }.build()
+    }
+
+    /**
+     * 最简兜底通知：仅用于保证 startForeground() 一定能完成，避免
+     * startForegroundService() 后未调用 startForeground() 导致的 RemoteServiceException。
+     */
+    fun createMinimalNotification(context: Context): Notification {
+        NotificationManagerCompat.from(context)
+            .createNotificationChannel(
+                NotificationChannelCompat.Builder(
+                    CHANNEL_ID,
+                    if (isOneNoticeDevice() && isAndroid16AndAbove()) {
+                        NotificationManagerCompat.IMPORTANCE_MIN
+                    } else {
+                        NotificationManagerCompat.IMPORTANCE_DEFAULT
+                    }
+                )
+                    .setName(CHANNEL_ID)
+                    .build()
+            )
+
+        return NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification_small)
+            .setContentTitle("AdoPDF")
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setOngoing(true)
+            .build()
     }
 
     private fun remoteView(context: Context, layoutId: Int): RemoteViews {
