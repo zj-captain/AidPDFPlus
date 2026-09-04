@@ -83,7 +83,6 @@ class AppVisibilityTracker(private val application: Application) : Application.A
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
 
     override fun onActivityDestroyed(activity: Activity) {
-        Log.e("zoujiang", "onActivityDestroyed: $activity" )
         knownActivities.remove(activity)
         visibleActivities.remove(activity)
     }
