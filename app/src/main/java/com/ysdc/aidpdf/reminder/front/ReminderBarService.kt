@@ -19,11 +19,14 @@ class ReminderBarService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        if (!canPostNotifications()) {
-            stopSelf()
-            return
-        }
+        //没有权限，不进入ReminderBarService的启动
+//        if (!canPostNotifications()) {
+//            stopSelf()
+//            return
+//        }
         isServiceRunning = true
+        // 必须在 onCreate 内完成 startForeground()，否则会因
+        // "startForegroundService() did not then call Service.startForeground()" 崩溃
         startForegroundInternal()
     }
 
@@ -60,7 +63,14 @@ class ReminderBarService : Service() {
                 val fallbackNotification = ReminderBarManager.createStandardPersistentNotification(this.applicationContext)
                 startForegroundWithNotification(fallbackNotification)
             } catch (_: Throwable) {
-                stopSelf()
+                // 主、备通知都失败，用最简通知兜底，确保 startForeground() 一定成功
+                try {
+                    val minimalNotification = ReminderBarManager.createMinimalNotification(this)
+                    startForegroundWithNotification(minimalNotification)
+                } catch (_: Throwable) {
+                    // 最简通知也失败，已无可用通知：直接停服，交由系统处理
+                    stopSelf()
+                }
             }
         }
     }

@@ -157,7 +157,7 @@ class LaunchLoadingActivity :
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             })
             finish()
-        } else if (isFirstRun) {
+        } /*else if (isFirstRun) {
             isFirstRun = false  //引导流程没走完就退出后，下次在进来就不走引导流程了
             startActivity(LanguageActivity.firstRunIntent(this))
             finish()
@@ -170,6 +170,10 @@ class LaunchLoadingActivity :
             finish()
         } else {
             openActivity<MainActivity>(finishCurrent = true)
+        }*/
+        else{
+            startActivity(LanguageActivity.firstRunIntent(this))
+            finish()
         }
     }
 

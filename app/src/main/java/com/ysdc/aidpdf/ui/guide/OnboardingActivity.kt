@@ -60,7 +60,7 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
     }
 
     override fun setupViews(savedInstanceState: Bundle?) {
-        onBackPressedDispatcher.addCallback(this){}
+//        onBackPressedDispatcher.addCallback(this){}
         binding.guidePager.adapter = OnboardingImageAdapter(pages)
         binding.guidePager.offscreenPageLimit = pages.size - 1
         binding.guidePager.isUserInputEnabled = true
@@ -136,7 +136,7 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
     }
 
     private fun finishGuide() {
-        if (isFirstRun){
+        /*if (isFirstRun){
             isFirstRun = false
             if (shouldShowOverlayPermissionPage()) {
                 startActivity(Intent(this, OverlayPermissionActivity::class.java).apply {
@@ -154,6 +154,9 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
             openActivity<MainActivity>(finishCurrent = true) {
                 addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
+        }*/
+        openActivity<MainActivity>(finishCurrent = true) {
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
     }
 

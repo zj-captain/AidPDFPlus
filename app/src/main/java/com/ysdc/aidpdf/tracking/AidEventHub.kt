@@ -30,7 +30,7 @@ object AidEventHub {
 
     @Volatile
     private var initialized = false
-    private var firebaseAnalytics: FirebaseAnalytics? = null
+    var firebaseAnalytics: FirebaseAnalytics? = null
 
     fun initialize(application: Application) {
         if (initialized) return

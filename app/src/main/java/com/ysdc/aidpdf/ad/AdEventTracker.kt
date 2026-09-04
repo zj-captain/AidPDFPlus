@@ -1,16 +1,24 @@
 package com.ysdc.aidpdf.ad
 
+import android.os.Bundle
+import android.util.Log
 import com.facebook.appevents.AppEventsLogger
 import com.google.android.gms.ads.AdValue
 import com.google.android.gms.ads.ResponseInfo
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.loft.vertsdk.VertSDK
 import com.ysdc.aidpdf.ad.config.AdFormat
 import com.ysdc.aidpdf.ad.config.AdUnitConfig
 import com.ysdc.aidpdf.store.appInstance
+import com.ysdc.aidpdf.store.currentAdRevenue
 import com.ysdc.aidpdf.tracking.AdjustInitializer
 import com.ysdc.aidpdf.tracking.AidEventHub
+import com.ysdc.aidpdf.tracking.AidEventHub.firebaseAnalytics
 import com.ysdc.aidpdf.tracking.EventDelivery
 import com.ysdc.aidpdf.tracking.TrackingEventNames
+import org.json.JSONObject
 import java.util.Currency
+import kotlin.random.Random
 
 object AdEventTracker {
 
@@ -86,7 +94,35 @@ object AdEventTracker {
                 Currency.getInstance("USD")
             )
         }
+    }
 
+    fun reportTotalAdsRenenue001(adValue: AdValue) {
+        //新增Total_Ads_Renenue_001 投放事件上报
+        runCatching {
+            val revenueTemp = adValue.valueMicros / 1_000_000.0
+//            val revenueTemp = Random.nextInt(900, 10000) / 1_000_000.0f
+//            Log.e("AidEventHub", "onAdPaid: revenueTemp = $revenueTemp")
+            var current = currentAdRevenue
+            current += revenueTemp
+//            Log.e("AidEventHub", "sendAdRevenue: current = $current")
+            if (current >= 0.01f) {
+//                Log.e("AidEventHub", "reportTotalAdsRenenue001")
+                val analytics = firebaseAnalytics ?: return
+                analytics.logEvent("Total_Ads_Renenue_001", Bundle().apply {
+                    putDouble(FirebaseAnalytics.Param.VALUE, current)
+                    putString(FirebaseAnalytics.Param.CURRENCY, "USD")
+                })
+
+                val jsonObject = JSONObject()
+                jsonObject.put(FirebaseAnalytics.Param.VALUE, current)
+                jsonObject.put(FirebaseAnalytics.Param.CURRENCY, "USD")
+                VertSDK.trackEvent("Total_Ads_Renenue_001", jsonObject)
+
+                currentAdRevenue = 0.000000000000
+            } else {
+                currentAdRevenue = current
+            }
+        }
     }
 
     internal fun firebaseRevenueParameters(

@@ -2,6 +2,7 @@ package com.ysdc.aidpdf.ad.gate
 
 import android.content.Context
 import android.os.SystemClock
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -33,7 +34,11 @@ object InterstitialAdGate {
         context: Context = appInstance,
         scene: AdScene = AdScene.BottomInterstitial
     ) {
-        if (!scene.isFullScreen || BlockUtils.shouldBlockAds(context)) return
+        if (scene == AdScene.CheckInterstitial) {
+            if (!scene.isFullScreen) return
+        } else {
+            if (!scene.isFullScreen || BlockUtils.shouldBlockAds(context)) return
+        }
         AidAdHub.loadFullScreen(context, scene)
 
     }
@@ -45,6 +50,7 @@ object InterstitialAdGate {
     fun prepareBackMain(context: Context = appInstance) {
         prepare(context, AdScene.MainBackInterstitial)
     }
+
     fun resetForAppRestart() {
         showSession.abandon()
         lastNavigationShownAt = 0L
@@ -92,6 +98,7 @@ object InterstitialAdGate {
             }
         )
     }
+
     fun showForClickThenContinue(
         activity: AppCompatActivity,
         scene: AdScene,
@@ -228,9 +235,16 @@ object InterstitialAdGate {
         enforceNavigationCooldown: Boolean,
         next: () -> Unit
     ) {
-        if (showSession.isActive || !scene.isFullScreen || BlockUtils.shouldBlockAds(activity)) {
-            next()
-            return
+        if (scene == AdScene.CheckInterstitial) {  //放开点击查看文件的插屏屏蔽逻辑
+            if (showSession.isActive || !scene.isFullScreen) {
+                next()
+                return
+            }
+        } else {
+            if (showSession.isActive || !scene.isFullScreen || BlockUtils.shouldBlockAds(activity)) {
+                next()
+                return
+            }
         }
         if (enforceNavigationCooldown && !navigationCooldownReady()) {
             prepare(activity, scene)

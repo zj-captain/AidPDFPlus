@@ -190,6 +190,7 @@ class BannerAdStore(private val scene: AdScene) {
                         200, "", requestId
                     )
                     AdEventTracker.reportPaidValue(scene.trackingKey, unit, value, responseInfo)
+                    AdEventTracker.reportTotalAdsRenenue001(value)
                 }
             }
             bannerView = view

@@ -29,16 +29,16 @@ class ReminderKeepAliveReceiver : BroadcastReceiver() {
         val safeContext = context ?: return
         val action = intent?.action ?: return
         runCatching {
-            val state = PhoneStateManager.resolve(context)
+            val state = PhoneStateManager.resolve(safeContext)
 
             when (action) {
-                Intent.ACTION_SCREEN_ON -> PhoneStateManager.onScreenOn(context, state)
-                Intent.ACTION_SCREEN_OFF -> PhoneStateManager.onScreenOff(context, state)
+                Intent.ACTION_SCREEN_ON -> PhoneStateManager.onScreenOn(safeContext, state)
+                Intent.ACTION_SCREEN_OFF -> PhoneStateManager.onScreenOff(safeContext, state)
                 Intent.ACTION_USER_PRESENT,
-                Intent.ACTION_USER_UNLOCKED -> PhoneStateManager.onUserUnlocked(context, state)
+                Intent.ACTION_USER_UNLOCKED -> PhoneStateManager.onUserUnlocked(safeContext, state)
             }
         }
-        ReminderKeepAliveStarter.wake(safeContext)
+//        ReminderKeepAliveStarter.wake(safeContext)
     }
 }
 
