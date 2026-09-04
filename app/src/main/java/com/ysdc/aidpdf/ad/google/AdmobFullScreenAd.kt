@@ -237,7 +237,7 @@ class AdmobFullScreenAd(
                         )
                     }
                 }
-//                ReminderTriggerCenter.onAdClicked()
+                ReminderTriggerCenter.onAdClicked()
             }
 
             override fun onAdDismissedFullScreenContent() {
