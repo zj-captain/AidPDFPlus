@@ -34,6 +34,7 @@ dependencyResolutionManagement {
                 includeGroup "com.aliyun.ams"
             }
         }
+        maven { url = uri("https://artifact.bytedance.com/repository/pangle") }
         maven {
             allowInsecureProtocol = true
             url = uri("http://dev.yingzhongshare.com/nexus/content/groups/public/")

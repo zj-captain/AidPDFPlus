@@ -2,10 +2,6 @@ package com.ysdc.aidpdf.ad.remote
 
 import android.util.Log
 import com.ysdc.aidpdf.ad.AidAdHub
-import com.ysdc.aidpdf.ad.config.AdCatalog
-import com.ysdc.aidpdf.ad.config.AdFormat
-import com.ysdc.aidpdf.ad.config.AdScene
-import com.ysdc.aidpdf.ad.config.AdUnitConfig
 import com.ysdc.aidpdf.remote.RemoteConfigUtils
 import org.json.JSONObject
 
