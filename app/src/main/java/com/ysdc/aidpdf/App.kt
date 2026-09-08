@@ -7,7 +7,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
-import com.ysdc.aidpdf.ad.AidAdHub
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsConfigBridge
 import com.ysdc.aidpdf.app.AppVisibilityTracker
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.block.InstallReferrerRepository
@@ -47,6 +48,11 @@ class App : Application() {
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(languageTag))
         }
         PDFBoxResourceLoader.init(this)
+        //广告初始化
+        Ads.initialize(this)
+        Ads.configure(AdsConfigBridge.localCatalog())
+
+
         InstallReferrerRepository.refreshIfMissing(this) {
             CoreEventTracker.reportReferrerUsers()
             warmEligibleAdInventory()
