@@ -7,6 +7,7 @@
 //import com.google.android.libraries.ads.mobile.sdk.common.ResponseInfo
 //import com.google.firebase.analytics.FirebaseAnalytics
 //import com.loft.vertsdk.VertSDK
+//import com.tradplus.ads.common.AdFormat
 //import com.ysdc.aidpdf.ad.config.AdFormat
 //import com.ysdc.aidpdf.ad.config.AdUnitConfig
 //import com.ysdc.aidpdf.store.appInstance
