@@ -6,7 +6,7 @@ import com.tradplus.ads.open.TradPlusSdk
 import com.ysdc.aidpdf.ads.core.AdsLogger
 
 object TradPlusInitializer {
-    private const val TRAD_PLUS_APP_ID = "TODO_TRADPLUS_APP_ID"
+    private const val TRAD_PLUS_APP_ID = "3BA470A2B9FED0E184DD0A0C8329B811"
 
     @Volatile
     private var initialized = false
