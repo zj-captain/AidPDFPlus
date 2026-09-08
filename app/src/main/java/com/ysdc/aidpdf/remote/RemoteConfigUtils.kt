@@ -12,8 +12,6 @@ import com.ysdc.aidpdf.ad.AdsLimitManager
 import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.ad.DEFAULT_ADS_LIMIT_CONFIG_JSON
 import com.ysdc.aidpdf.ad.DEFAULT_AD_FUSE_CONFIG_JSON
-import com.ysdc.aidpdf.ad.remote.AdRemoteBridge
-import com.ysdc.aidpdf.ad.remote.NatConfig
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderOverlayConfigRepository
@@ -126,7 +124,7 @@ object RemoteConfigUtils {
     private fun getAllConfigs(onApplied: () -> Unit) {
         getBlockConfigs()
         getReminderConfigs()
-        getAdConfig()
+//        getAdConfig()
         runCatching(onApplied).onFailure { log("Config applied callback failed: ${it.message}") }
     }
 
@@ -173,7 +171,7 @@ object RemoteConfigUtils {
         applyReferrerConfig()
         applyBlockedReferrers()
         applyPopRefresh()
-        applyVirtualBlockSwitch()
+//        applyVirtualBlockSwitch()
         applyAdFuseConfig()//熔断配置
         applyAdsLimitConfig()
     }
@@ -207,23 +205,23 @@ object RemoteConfigUtils {
         }
     }
 
-    private fun applyVirtualBlockSwitch() {
-        if (readSwitch(virtual_block_switch, defaultValue = true)) {
-            AdRemoteBridge.virtual_block_switch = 1
-        } else {
-            AdRemoteBridge.virtual_block_switch = 0
-        }
-    }
-
-    private fun applyAcNatConfig(){
-        val raw = getString(AC_NAT_CONFIG).ifBlank { DEFAULT_AC_NAT_CONFIG }
-        runCatching {
-            AdRemoteBridge.natConfig = Gson().fromJson(raw, NatConfig::class.java)
-        }.onFailure {
-            AdRemoteBridge.natConfig =
-                Gson().fromJson(DEFAULT_AC_NAT_CONFIG, NatConfig::class.java)
-        }
-    }
+//    private fun applyVirtualBlockSwitch() {
+//        if (readSwitch(virtual_block_switch, defaultValue = true)) {
+//            AdRemoteBridge.virtual_block_switch = 1
+//        } else {
+//            AdRemoteBridge.virtual_block_switch = 0
+//        }
+//    }
+//
+//    private fun applyAcNatConfig(){
+//        val raw = getString(AC_NAT_CONFIG).ifBlank { DEFAULT_AC_NAT_CONFIG }
+//        runCatching {
+//            AdRemoteBridge.natConfig = Gson().fromJson(raw, NatConfig::class.java)
+//        }.onFailure {
+//            AdRemoteBridge.natConfig =
+//                Gson().fromJson(DEFAULT_AC_NAT_CONFIG, NatConfig::class.java)
+//        }
+//    }
 
     private fun applyBlockedReferrers() {
         val raw = getString(BLOCKED_REFERRER_KEY).ifBlank { DEFAULT_BLOCKED_REFERRERS }
@@ -253,10 +251,10 @@ object RemoteConfigUtils {
         }
     }
 
-    private fun getAdConfig() {
-        runCatching { AdRemoteBridge.readRemoteAdConfig() }.onFailure { log("Remote ad config failed: ${it.message}") }
-        runCatching { applyAcNatConfig() }
-    }
+//    private fun getAdConfig() {
+//        runCatching { AdRemoteBridge.readRemoteAdConfig() }.onFailure { log("Remote ad config failed: ${it.message}") }
+//        runCatching { applyAcNatConfig() }
+//    }
 
     private fun log(message: String) {
         if (BuildConfig.DEBUG) {
