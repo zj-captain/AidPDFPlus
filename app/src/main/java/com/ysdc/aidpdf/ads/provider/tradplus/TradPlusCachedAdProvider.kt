@@ -53,7 +53,7 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         config: AdsUnitConfig,
         callback: (Result<Any>) -> Unit
     ) {
-        val splash = TPSplash(activity, config.unitId)
+        val splash = TradPlusHolderRegistry.getOrCreateSplash(activity, config.unitId)
         splash.setAdListener(object : SplashAdListener() {
             override fun onAdClicked(tpAdInfo: TPAdInfo) = Unit
 
@@ -77,7 +77,7 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         config: AdsUnitConfig,
         callback: (Result<Any>) -> Unit
     ) {
-        val interstitial = TPInterstitial(activity, config.unitId)
+        val interstitial = TradPlusHolderRegistry.getOrCreateInterstitial(activity, config.unitId)
         interstitial.setAdListener(object : InterstitialAdListener {
             override fun onAdLoaded(tpAdInfo: TPAdInfo) {
                 callback(Result.success(TradPlusInterstitialPayload(config, interstitial)))
@@ -107,7 +107,7 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         config: AdsUnitConfig,
         callback: (Result<Any>) -> Unit
     ) {
-        val nativeAd = TPNative(activity, config.unitId)
+        val nativeAd = TradPlusHolderRegistry.getOrCreateNative(activity, config.unitId)
         nativeAd.setAdListener(object : NativeAdListener() {
             override fun onAdLoaded(tpAdInfo: TPAdInfo, tpBaseAd: TPBaseAd) {
                 callback(Result.success(TradPlusNativePayload(config, nativeAd)))
@@ -274,9 +274,9 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
     override fun destroyPayload(payload: Any) {
         when (payload) {
-            is TradPlusOpenPayload -> payload.ad.onDestroy()
-            is TradPlusInterstitialPayload -> payload.ad.onDestroy()
-            is TradPlusNativePayload -> payload.ad.onDestroy()
+            is TradPlusOpenPayload -> TradPlusHolderRegistry.destroy(payload.config.unitId, AdsFormat.Open)
+            is TradPlusInterstitialPayload -> TradPlusHolderRegistry.destroy(payload.config.unitId, AdsFormat.Interstitial)
+            is TradPlusNativePayload -> TradPlusHolderRegistry.destroy(payload.config.unitId, AdsFormat.Native)
         }
     }
 }

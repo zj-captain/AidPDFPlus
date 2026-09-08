@@ -26,7 +26,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId "com.up.test"
+        applicationId "com.ysdc.aidpdf"
         minSdk 26
         targetSdk 36
         versionCode 100

@@ -6,6 +6,7 @@ import com.ysdc.aidpdf.ads.provider.admob.AdMobBannerProvider
 import com.ysdc.aidpdf.ads.provider.admob.AdMobCachedAdProvider
 import com.ysdc.aidpdf.ads.provider.tradplus.TradPlusBannerProvider
 import com.ysdc.aidpdf.ads.provider.tradplus.TradPlusCachedAdProvider
+import com.ysdc.aidpdf.ads.provider.tradplus.TradPlusHolderRegistry
 
 object ProviderFactory {
     private val admobCachedProvider = AdMobCachedAdProvider()
@@ -25,5 +26,10 @@ object ProviderFactory {
             AdsPlatform.AdMob -> admobBannerProvider
             AdsPlatform.TradPlus -> tradPlusBannerProvider
         }
+    }
+
+    fun destroyAll() {
+        // 当前只有 TradPlus 维护了内部广告对象复用池，需要在全局销毁时一并清理，避免旧对象残留。
+        TradPlusHolderRegistry.destroyAll()
     }
 }

@@ -232,6 +232,7 @@ class CachedAdsRepository(
             }
             displayRegistry.snapshotHandles().forEach { it.destroy() }
             displayRegistry.clear()
+            ProviderFactory.destroyAll()
         }
     }
 
