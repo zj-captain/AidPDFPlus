@@ -37,6 +37,11 @@ object Ads {
         banner.configure(catalog)
     }
 
+    fun load(scene: AdsScene, activity: Activity? = null) {
+        load(scene, AdsPlatform.AdMob, activity)
+        load(scene, AdsPlatform.TradPlus, activity)
+    }
+
     fun load(scene: AdsScene, platform: AdsPlatform, activity: Activity? = null) {
         cachedRepository?.load(scene, platform, activity)
     }
@@ -66,7 +71,16 @@ object Ads {
         onImpression: () -> Unit = {},
         onFailed: (AdsExceptionInfo) -> Unit = {}
     ): AdDisplayHandle? {
-        return cachedRepository?.showNative(scene, platform, activity, parent, request, onShown, onImpression, onFailed)
+        return cachedRepository?.showNative(
+            scene,
+            platform,
+            activity,
+            parent,
+            request,
+            onShown,
+            onImpression,
+            onFailed
+        )
     }
 
     fun showBanner(
@@ -78,7 +92,15 @@ object Ads {
         onImpression: () -> Unit = {},
         onFailed: (AdsExceptionInfo) -> Unit = {}
     ): AdDisplayHandle? {
-        return bannerCoordinator?.showBanner(scene, platform, activity, parent, request, onImpression, onFailed)
+        return bannerCoordinator?.showBanner(
+            scene,
+            platform,
+            activity,
+            parent,
+            request,
+            onImpression,
+            onFailed
+        )
     }
 
     fun invalidate(scene: AdsScene, platform: AdsPlatform, activity: Activity? = null) {
