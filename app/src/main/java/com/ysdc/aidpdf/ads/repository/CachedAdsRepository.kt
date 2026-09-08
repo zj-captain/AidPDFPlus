@@ -293,6 +293,14 @@ class CachedAdsRepository(
             runtime.state = AdsState.Suspended
             return
         }
+        if (runtime.retryStage > RetryPolicy.MAX_RETRY_STAGE) {
+            // 业务明确要求重试只执行 1s / 2s / 4s 三次，最后一次结束后停止继续重试。
+            runtime.retryJob?.cancel()
+            runtime.retryJob = null
+            runtime.state = AdsState.Idle
+            AdsLogger.w("场景=${runtime.key.scene} 平台=${runtime.key.platform} 已完成 1s/2s/4s 全部重试，停止继续重试")
+            return
+        }
         val delayMs = RetryPolicy.delayMillis(runtime.retryStage)
         runtime.state = AdsState.RetryWaiting
         runtime.retryJob?.cancel()

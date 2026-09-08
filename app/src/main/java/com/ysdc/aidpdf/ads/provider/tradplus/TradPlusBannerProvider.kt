@@ -29,27 +29,28 @@ class TradPlusBannerProvider : BannerAdProvider {
         // 这里关闭自动展示后，由页面容器自己控制挂载时机，避免 Banner 在错误时机自动弹出。
         banner.closeAutoShow()
         banner.setAdListener(object : BannerAdListener() {
-            override fun onAdClicked(tpAdInfo: TPAdInfo) = Unit
+            override fun onAdClicked(tpAdInfo: TPAdInfo?) = Unit
 
-            override fun onAdImpression(tpAdInfo: TPAdInfo) {
+            override fun onAdImpression(tpAdInfo: TPAdInfo?) {
                 onImpression()
             }
 
-            override fun onAdLoaded(tpAdInfo: TPAdInfo) = Unit
+            override fun onAdLoaded(tpAdInfo: TPAdInfo?) = Unit
 
-            override fun onAdLoadFailed(error: TPAdError) {
+            override fun onAdLoadFailed(error: TPAdError?) {
                 onFailed(
                     AdsExceptionInfo(
                         code = AdsErrorCode.LoadFailed,
                         scene = config.scene,
                         platform = AdsPlatform.TradPlus,
-                        message = error.errorMsg,
+                        // Banner 回调同样可能给空错误对象，这里补默认值避免日志丢失关键信息。
+                        message = error?.errorMsg ?: "TradPlus banner load failed",
                         unitId = config.unitId
                     )
                 )
             }
 
-            override fun onAdClosed(tpAdInfo: TPAdInfo) = Unit
+            override fun onAdClosed(tpAdInfo: TPAdInfo?) = Unit
         })
         parent.addView(banner)
         banner.loadAd(config.unitId)

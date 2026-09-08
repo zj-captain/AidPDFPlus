@@ -1,6 +1,8 @@
 package com.ysdc.aidpdf.ads.core
 
 object RetryPolicy {
+    const val MAX_RETRY_STAGE = 2
+
     fun delayMillis(retryStage: Int): Long {
         return when (retryStage) {
             0 -> 1_000L
