@@ -2,7 +2,6 @@ package com.ysdc.aidpdf.reminder.overlay
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.ysdc.aidpdf.ad.gate.OpenAdGate
 import com.ysdc.aidpdf.reminder.model.ReminderMessage
 import com.ysdc.aidpdf.reminder.notice.ReminderNotificationCenter
 
