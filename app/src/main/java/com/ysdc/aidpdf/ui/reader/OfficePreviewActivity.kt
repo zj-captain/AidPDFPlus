@@ -10,7 +10,9 @@ import com.seapeak.docviewer.DocViewerFragment
 import com.seapeak.docviewer.config.DocConfig
 import com.seapeak.docviewer.config.DocType
 import com.ysdc.aidpdf.R
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.data.document.DocumentKind
 import com.ysdc.aidpdf.data.document.LocalDocument
 import com.ysdc.aidpdf.databinding.ActivityOfficePreviewBinding
@@ -29,7 +31,7 @@ class OfficePreviewActivity : BaseActivity<ActivityOfficePreviewBinding>(Activit
             return
         }
         onBackPressedDispatcher.addCallback(this) { finishWithBackMainAd() }
-        InterstitialAdGate.prepareBackMain(this)
+        Ads.load(AdsScene.BackInterstitial, this)
         binding.titleText.text = document.name
         showDocument()
     }
@@ -39,9 +41,17 @@ class OfficePreviewActivity : BaseActivity<ActivityOfficePreviewBinding>(Activit
     }
 
     private fun finishWithBackMainAd() {
-        InterstitialAdGate.showForBackMainThenContinue(this) {
+        if (isFinishing || isDestroyed) return
+        if (BlockUtils.shouldBlockAds(this)) {
             finish()
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.BackInterstitial,
+            activity = this,
+            onClosed = { finish() },
+            onFailed = { finish() }
+        )
     }
 
     private fun showDocument() {

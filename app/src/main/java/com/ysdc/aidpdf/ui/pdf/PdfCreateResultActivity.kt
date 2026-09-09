@@ -4,14 +4,19 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.format.Formatter
+import android.util.Log
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import com.ysdc.aidpdf.R
-import com.ysdc.aidpdf.ad.config.AdScene
-import com.ysdc.aidpdf.ad.core.AdLease
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
-import com.ysdc.aidpdf.ad.gate.NativeAdGate
-import com.ysdc.aidpdf.ad.google.NativeAdSize
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.ads.model.AdDisplayHandle
+import com.ysdc.aidpdf.ads.model.NativeAdStyle
+import com.ysdc.aidpdf.ads.model.NativeRenderRequest
+import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.data.document.DocumentLibrary
 import com.ysdc.aidpdf.data.document.LocalDocument
 import com.ysdc.aidpdf.databinding.ActivityPdfCreateResultBinding
@@ -26,7 +31,8 @@ import java.util.Locale
 class PdfCreateResultActivity : BaseActivity<ActivityPdfCreateResultBinding>(ActivityPdfCreateResultBinding::inflate) {
 
     private var createdDocument: LocalDocument? = null
-    private var resultNativeAdLease: AdLease? = null
+    private var resultNativeAdHandle: AdDisplayHandle? = null
+    private var leaving = false
 
     override fun setupViews(savedInstanceState: Bundle?) {
         val document = intent.toDocumentOrNull()
@@ -37,8 +43,8 @@ class PdfCreateResultActivity : BaseActivity<ActivityPdfCreateResultBinding>(Act
         }
         createdDocument = document
         onBackPressedDispatcher.addCallback(this) { goHomeWithAd() }
-        InterstitialAdGate.prepareBackMain(this)
-        InterstitialAdGate.prepare(this, AdScene.CheckInterstitial)
+        Ads.load(AdsScene.BackInterstitial, this)
+        Ads.load(AdsScene.ResultInterstitial, this)
         binding.fileName.text = document.name
         binding.fileMeta.text = documentMeta(document)
         showResultNative()
@@ -51,18 +57,24 @@ class PdfCreateResultActivity : BaseActivity<ActivityPdfCreateResultBinding>(Act
     }
 
     override fun onDestroy() {
-        resultNativeAdLease?.release()
-        resultNativeAdLease = null
+        resultNativeAdHandle?.destroy()
+        resultNativeAdHandle = null
         super.onDestroy()
     }
 
     private fun openCreatedPdf() {
-        InterstitialAdGate.showForClickThenContinue(
-            activity = this,
-            scene = AdScene.CheckInterstitial
-        ) {
+        if (leaving) return
+        leaving = true
+        if (BlockUtils.shouldBlockAds(this)) {
             openCreatedPdfAfterAd()
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.ResultInterstitial,
+            activity = this,
+            onClosed = { openCreatedPdfAfterAd() },
+            onFailed = { openCreatedPdfAfterAd() }
+        )
     }
 
     private fun openCreatedPdfAfterAd() {
@@ -73,9 +85,18 @@ class PdfCreateResultActivity : BaseActivity<ActivityPdfCreateResultBinding>(Act
     }
 
     private fun goHomeWithAd() {
-        InterstitialAdGate.showForBackMainThenContinue(this) {
+        if (leaving) return
+        leaving = true
+        if (BlockUtils.shouldBlockAds(this)) {
             goHome()
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.BackInterstitial,
+            activity = this,
+            onClosed = { goHome() },
+            onFailed = { goHome() }
+        )
     }
 
     private fun goHome() {
@@ -88,14 +109,27 @@ class PdfCreateResultActivity : BaseActivity<ActivityPdfCreateResultBinding>(Act
     }
 
     private fun showResultNative() {
-        NativeAdGate.showWhenReady(
+        resultNativeAdHandle?.destroy()
+        resultNativeAdHandle = Ads.showNative(
+            scene = AdsScene.ResultNative,
             activity = this,
             parent = binding.resultNativeAdContainer,
-            scene = AdScene.ResultNative,
-            size = NativeAdSize.Medium,
-            onShown = { lease ->
-                resultNativeAdLease?.release()
-                resultNativeAdLease = lease
+            request = NativeRenderRequest(style = NativeAdStyle.Medium),
+            onShown = {
+                Log.d("PdfCreateResultActivity", "结果页原生广告展示成功")
+                binding.resultNativeAdContainer.isVisible = true
+                binding.resultNativeAdContainer.updateLayoutParams {
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+            },
+            onImpression = {
+                Log.d("PdfCreateResultActivity", "结果页原生广告曝光")
+            },
+            onFailed = {
+                Log.w("PdfCreateResultActivity", "结果页原生广告展示失败：message=${it.message}")
+                binding.resultNativeAdContainer.removeAllViews()
+                binding.resultNativeAdContainer.isVisible = false
+                binding.resultNativeAdContainer.updateLayoutParams { height = 0 }
             }
         )
     }

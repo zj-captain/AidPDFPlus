@@ -21,6 +21,7 @@ import com.ysdc.aidpdf.ads.config.AdsUnitConfig
 import com.ysdc.aidpdf.ads.core.AdsLogger
 import com.ysdc.aidpdf.ads.core.AdsErrorCode
 import com.ysdc.aidpdf.ads.core.AdsExceptionInfo
+import com.ysdc.aidpdf.ads.core.AdsThread
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.NativeAdStyle
 import com.ysdc.aidpdf.ads.model.NativeRenderRequest
@@ -152,25 +153,27 @@ class TradPlusCachedAdProvider : CachedAdProvider {
                     override fun onAdClicked(tpAdInfo: TPAdInfo?) = Unit
 
                     override fun onAdImpression(tpAdInfo: TPAdInfo?) {
-                        onShown()
+                        AdsThread.runOnMain { onShown() }
                     }
 
                     override fun onAdClosed(tpAdInfo: TPAdInfo?) {
-                        onClosed()
+                        AdsThread.runOnMain { onClosed() }
                     }
 
                     override fun onAdLoaded(tpAdInfo: TPAdInfo?, tpBaseAd: TPBaseAd?) = Unit
 
                     override fun onAdLoadFailed(tpAdError: TPAdError?) {
-                        onFailed(
-                            AdsExceptionInfo(
-                                code = AdsErrorCode.ShowFailed,
-                                scene = payload.config.scene,
-                                platform = AdsPlatform.TradPlus,
-                                message = tpAdError?.errorMsg ?: "TradPlus splash show failed",
-                                unitId = payload.config.unitId
+                        AdsThread.runOnMain {
+                            onFailed(
+                                AdsExceptionInfo(
+                                    code = AdsErrorCode.ShowFailed,
+                                    scene = payload.config.scene,
+                                    platform = AdsPlatform.TradPlus,
+                                    message = tpAdError?.errorMsg ?: "TradPlus splash show failed",
+                                    unitId = payload.config.unitId
+                                )
                             )
-                        )
+                        }
                     }
                 })
                 val container = FrameLayout(activity)
@@ -196,23 +199,25 @@ class TradPlusCachedAdProvider : CachedAdProvider {
                     override fun onAdClicked(tpAdInfo: TPAdInfo?) = Unit
 
                     override fun onAdImpression(tpAdInfo: TPAdInfo?) {
-                        onShown()
+                        AdsThread.runOnMain { onShown() }
                     }
 
                     override fun onAdFailed(tpAdError: TPAdError?) {
-                        onFailed(
-                            AdsExceptionInfo(
-                                code = AdsErrorCode.ShowFailed,
-                                scene = payload.config.scene,
-                                platform = AdsPlatform.TradPlus,
-                                message = tpAdError?.errorMsg ?: "TradPlus interstitial show failed",
-                                unitId = payload.config.unitId
+                        AdsThread.runOnMain {
+                            onFailed(
+                                AdsExceptionInfo(
+                                    code = AdsErrorCode.ShowFailed,
+                                    scene = payload.config.scene,
+                                    platform = AdsPlatform.TradPlus,
+                                    message = tpAdError?.errorMsg ?: "TradPlus interstitial show failed",
+                                    unitId = payload.config.unitId
+                                )
                             )
-                        )
+                        }
                     }
 
                     override fun onAdClosed(tpAdInfo: TPAdInfo?) {
-                        onClosed()
+                        AdsThread.runOnMain { onClosed() }
                     }
 
                     override fun onAdVideoError(tpAdInfo: TPAdInfo?, tpAdError: TPAdError?) = Unit

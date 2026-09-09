@@ -23,6 +23,17 @@ object TradPlusInitializer {
             GlobalTradPlus.getInstance().refreshContext(application)
             initialized = true
             AdsLogger.d("TradPlus 初始化完成")
+            val settingParam = HashMap<String, Any>()
+            val unitIds = arrayOf(
+                "CF08D70991970B5C90747A9B20220F12",
+                "6EF26876E9E56CD96DD4F01E2A1D9412",
+                "3E1F59FFE26B1D4BBC3A7C2E51D57A12",
+                "7879155BC6A5285C67D3C003D40D7E12",
+                "161079FEE749053E5963BF20648FF012",
+                "AC5896E2EAF7F1AD848820F04588C512"
+            )
+            settingParam["autoload_close"] = unitIds
+            TradPlusSdk.setSettingDataParam(settingParam)
         }.onFailure {
             AdsLogger.e("TradPlus 初始化失败：${it.message}", it)
         }

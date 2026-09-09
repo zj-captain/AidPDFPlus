@@ -4,34 +4,27 @@ import android.Manifest
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import com.ysdc.aidpdf.ad.AdEventTracker
-import com.ysdc.aidpdf.ad.AidAdHub
-import com.ysdc.aidpdf.ad.config.AdScene
-import com.ysdc.aidpdf.ad.config.AdTrackingScene
-import com.ysdc.aidpdf.ad.consent.AidUmpGate
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
-import com.ysdc.aidpdf.ad.gate.NativeAdGate
-import com.ysdc.aidpdf.ad.gate.OpenAdGate
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsPlatform
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.ads.consent.AidUmpGate
+import com.ysdc.aidpdf.ads.utils.AdTrackingScene
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.permission.canPostNotifications
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.databinding.ActivityLaunchLoadingBinding
-import com.ysdc.aidpdf.store.isFirstRun
 import com.ysdc.aidpdf.reminder.model.EXTRA_REMINDER_TRIGGER
 import com.ysdc.aidpdf.reminder.model.ReminderSource
 import com.ysdc.aidpdf.reminder.notice.ReminderNotificationCenter
 import com.ysdc.aidpdf.reminder.ReminderEventTracker
 import com.ysdc.aidpdf.reminder.store.ReminderNavigationStore
 import com.ysdc.aidpdf.store.requestSysNotificationCount
-import com.ysdc.aidpdf.ui.MainActivity
 import com.ysdc.aidpdf.ui.basic.BaseActivity
 import com.ysdc.aidpdf.ui.language.LanguageActivity
-import com.ysdc.aidpdf.ui.permission.OverlayPermissionActivity
 import com.ysdc.aidpdf.ui.permission.OverlayPermissionPromptPolicy
 import com.ysdc.aidpdf.ui.uninstall.UninstallProblemActivity
 import com.ysdc.aidpdf.tracking.AidEventHub
@@ -40,14 +33,35 @@ import com.ysdc.aidpdf.tracking.TrackingEventNames
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.milliseconds
 
 class LaunchLoadingActivity :
     BaseActivity<ActivityLaunchLoadingBinding>(ActivityLaunchLoadingBinding::inflate) {
 
+    private enum class LaunchAdDecision {
+        SHOW_BEST,
+        SHOW_SINGLE,
+        GO_NEXT
+    }
+
+    private data class LaunchAdState(
+        val hasTpReady: Boolean,
+        val hasAdMobReady: Boolean
+    ) {
+        val hasAnyReady: Boolean
+            get() = hasTpReady || hasAdMobReady
+
+        val hasBothReady: Boolean
+            get() = hasTpReady && hasAdMobReady
+    }
+
     private var launchJob: Job? = null
     private var launchRequestIndex = 0
+    private var isShowingAd = false
+    private var hasHandledOpenAdResult = false
+    private var hasNavigatedNextPage = false
+    private var hasLoggedSecondStage = false
+    private var lastLoggedAdState: LaunchAdState? = null
     private val launchedForUninstall: Boolean
         get() = intent?.getStringExtra(EXTRA_SHORTCUT_KEY) == SHORTCUT_UNINSTALL
     private val forceOpenAdLaunch: Boolean
@@ -60,12 +74,12 @@ class LaunchLoadingActivity :
     }
 
     override fun setupViews(savedInstanceState: Bundle?) {
+        // 提前预热开屏广告缓存，避免进入 8s/15s 决策时才开始加载。
+        Ads.load(AdsScene.Launch, this@LaunchLoadingActivity)
         reportLaunchView()
         captureReminderNavigation()
         onBackPressedDispatcher.addCallback(this) {}
         requestNotificationThenStart()
-        AdEventTracker.reportChance(launchAdTrackingScene(), launchAdTrackingType() ?: "start")
-        OpenAdGate.prepare()
     }
 
     override fun onAttachedToWindow() {
@@ -77,23 +91,21 @@ class LaunchLoadingActivity :
         launchJob?.cancel()
         launchJob = null
         val requestIndex = ++launchRequestIndex
-        /*if (AidUmpGate.canLoadAdsBeforeConsent()) {
-            OpenAdGate.prepare()
-        }*/
+        // 每次重新进入启动流程都必须重置状态，避免旧协程和旧回调污染本次启动。
+        isShowingAd = false
+        hasHandledOpenAdResult = false
+        hasNavigatedNextPage = false
+        hasLoggedSecondStage = false
+        lastLoggedAdState = null
+        if (requestIndex != launchRequestIndex || isFinishing || isDestroyed) return
+        // UMP 同意管理预留：当前直接放行，后续接入完整同意流程后再替换占位实现。
         AidUmpGate.requestBeforeAds(this) {
-            Log.e(
-                "TAG",
-                "startLaunchFlow: requestIndex = $requestIndex  launchRequestIndex = $launchRequestIndex"
-            )
             if (requestIndex != launchRequestIndex || isFinishing || isDestroyed) return@requestBeforeAds
             beginOpenAdFlow(requestIndex)
         }
     }
 
     private fun requestNotificationThenStart() {
-        /*if (AidUmpGate.canLoadAdsBeforeConsent()) {
-            OpenAdGate.prepare()
-        }*/
         if (shouldRequestNotificationPermission()) {
             requestSysNotificationCount++
             AidEventHub.track(TrackingEventNames.SYSTEM_NOTIFICATION_POPUP_VIEW)
@@ -114,64 +126,43 @@ class LaunchLoadingActivity :
         launchJob?.cancel()
         launchJob = lifecycleScope.launch {
             val startedAt = System.currentTimeMillis()
-            AidAdHub.resetFullScreenInterval()
-//            OpenAdGate.prepare()  //提前加载
-
-//            InterstitialAdGate.prepareHvInterstitial()
             prepareNextPageInventory()
-            waitForStartupReady(timeout = 15_000L, interval = 200L, requestIndex)
+            Log.d(TAG, "启动页广告等待开始：requestIndex=$requestIndex firstStage=${FIRST_STAGE_TIMEOUT_MS}ms total=${TOTAL_TIMEOUT_MS}ms")
+            val decision = waitForStartupReady(startedAt, requestIndex)
             keepSplashVisible(startedAt, minimumTime = 1_800L)
-            delay(3000L.milliseconds)
-            Log.e(
-                "TAG",
-                "beginOpenAdFlow:requestIndex = $requestIndex   launchRequestIndex = $launchRequestIndex"
-            )
-            Log.e("TAG", "beginOpenAdFlow: isShowingAd = $isShowingAd  $isLoaded")
-            if (requestIndex == launchRequestIndex && isShowingAd && isLoaded) {
+            if (requestIndex != launchRequestIndex || isFinishing || isDestroyed) {
+                Log.d(TAG, "启动流程已失效，终止后续处理：requestIndex=$requestIndex current=$launchRequestIndex")
                 return@launch
             }
-            prepareNextPageInventory()
-            openNextPage()
-
-            /*OpenAdGate.showThenContinue(
-                activity = this@LaunchLoadingActivity,
-                trackingScene = launchAdTrackingScene(),
-                trackingType = launchAdTrackingType(),
-                onShown = {
-                    if (requestIndex == launchRequestIndex) {
-                        prepareNextPageInventory()
-                    }
+            when (decision) {
+                LaunchAdDecision.SHOW_BEST,
+                LaunchAdDecision.SHOW_SINGLE -> {
+                    Log.d(TAG, "启动页命中广告展示条件，准备展示开屏广告：decision=$decision requestIndex=$requestIndex")
+                    showLaunchOpenAd(requestIndex)
                 }
-            ) {
-                if (requestIndex != launchRequestIndex) return@showThenContinue
-                prepareNextPageInventory()
-                openNextPage()
-            }*/
+
+                LaunchAdDecision.GO_NEXT -> {
+                    Log.d(TAG, "启动页在超时内没有可展示广告，直接进入下一页：requestIndex=$requestIndex")
+                    prepareNextPageInventory()
+                    openNextPage()
+                }
+            }
         }
     }
 
     private fun openNextPage() {
+        if (hasNavigatedNextPage) {
+            Log.d(TAG, "下一页已跳转，忽略重复导航")
+            return
+        }
         if (isFinishing || isDestroyed) return
+        hasNavigatedNextPage = true
         if (launchedForUninstall) {
             startActivity(Intent(this, UninstallProblemActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             })
             finish()
-        } /*else if (isFirstRun) {
-            isFirstRun = false  //引导流程没走完就退出后，下次在进来就不走引导流程了
-            startActivity(LanguageActivity.firstRunIntent(this))
-            finish()
-        } else if (shouldShowOverlayPermissionPage()) {
-            startActivity(Intent(this, OverlayPermissionActivity::class.java).apply {
-                putExtra(OverlayPermissionActivity.EXTRA_FIRST_RUN_FLOW, isFirstRun)
-                putExtra(OverlayPermissionActivity.EXTRA_LAUNCH_FLOW, true)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            })
-            finish()
         } else {
-            openActivity<MainActivity>(finishCurrent = true)
-        }*/
-        else{
             startActivity(LanguageActivity.firstRunIntent(this))
             finish()
         }
@@ -184,10 +175,7 @@ class LaunchLoadingActivity :
             forceOpenAdLaunch = forceOpenAdLaunch,
             canDrawOverlays = canDrawOverlays(),
             adsBlocked = BlockUtils.shouldBlockAds(this).apply {
-                Log.e(
-                    "TAG",
-                    "shouldShowOverlayPermissionPage: $this"
-                )
+                Log.e(TAG, "shouldShowOverlayPermissionPage: $this")
             }
         )
     }
@@ -220,22 +208,11 @@ class LaunchLoadingActivity :
     }
 
     private fun prepareNextPageInventory() {
-        //todo
-        /*when {
-            launchedForUninstall -> {
-                InterstitialAdGate.prepare(this, AdScene.UninstallFirstInterstitial)
-                InterstitialAdGate.prepare(this, AdScene.UninstallSecondInterstitial)
-                InterstitialAdGate.prepareBackMain(this)
-                NativeAdGate.prepare(this, AdScene.UninstallFirstNative)
-                NativeAdGate.prepare(this, AdScene.UninstallSecondNative)
-            }
-
-            else -> {
-                InterstitialAdGate.prepareStartupInventory(this)
-                NativeAdGate.prepare(this, AdScene.MainNative)
-                NativeAdGate.prepare(this, AdScene.ResultNative)
-            }
-        }*/
+        // 提前预加载下一页（卸载页/首页）所需广告位。
+        Ads.load(AdsScene.BackInterstitial, this)
+        Ads.load(AdsScene.ResultInterstitial, this)
+        Ads.load(AdsScene.MainNative, this)
+        Ads.load(AdsScene.ResultNative, this)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -265,44 +242,94 @@ class LaunchLoadingActivity :
         super.onDestroy()
     }
 
-    private var isShowingAd = false
-    private var isLoaded = false
     private suspend fun waitForStartupReady(
-        timeout: Long,
-        interval: Long,
+        startedAt: Long,
         requestIndex: Int
-    ): Boolean {
-        return withTimeoutOrNull(timeout.milliseconds) {
-            /*while (!OpenAdGate.ready(this@LaunchLoadingActivity)) {
-                delay(interval.milliseconds)
-                Log.e("TAG", "waitForStartupReady: 00", )
-                OpenAdGate.prepare(this@LaunchLoadingActivity)
-            }*/
-            while (true) {
-                delay(interval.milliseconds)
-               if (OpenAdGate.ready(this@LaunchLoadingActivity)) {
-                    isLoaded = true
-                    OpenAdGate.showThenContinue(
-                        activity = this@LaunchLoadingActivity,
-                        trackingScene = launchAdTrackingScene(),
-                        trackingType = launchAdTrackingType(),
-                        onShown = {
-                            Log.e("TAG", "waitForStartupReady: showing")
-                            isShowingAd = true
-                            if (requestIndex == launchRequestIndex) {
-                                prepareNextPageInventory()
-                            }
-                        }
-                    ) {
-                        if (requestIndex != launchRequestIndex) return@showThenContinue
-                        prepareNextPageInventory()
-                        openNextPage()
-                    }
-                    break
-                }
+    ): LaunchAdDecision {
+        while (true) {
+            if (requestIndex != launchRequestIndex || isFinishing || isDestroyed) {
+                Log.d(TAG, "启动页等待广告时检测到页面已结束，直接跳过：requestIndex=$requestIndex current=$launchRequestIndex")
+                return LaunchAdDecision.GO_NEXT
             }
-            true
-        } ?: false
+            val elapsed = System.currentTimeMillis() - startedAt
+            val state = currentLaunchAdState()
+            logLaunchAdStage(elapsed, state)
+            if (state.hasBothReady) {
+                Log.d(TAG, "启动页在8秒内双平台都已就绪，直接进入比价展示：elapsed=${elapsed}ms")
+                return LaunchAdDecision.SHOW_BEST
+            }
+            if (elapsed >= FIRST_STAGE_TIMEOUT_MS && state.hasAnyReady) {
+                Log.d(
+                    TAG,
+                    "启动页达到8秒阈值后命中展示条件：elapsed=${elapsed}ms tp=${state.hasTpReady} admob=${state.hasAdMobReady}"
+                )
+                return if (state.hasBothReady) LaunchAdDecision.SHOW_BEST else LaunchAdDecision.SHOW_SINGLE
+            }
+            if (elapsed >= TOTAL_TIMEOUT_MS) {
+                Log.d(TAG, "启动页达到15秒总超时仍无可展示广告，直接进入下一页")
+                return LaunchAdDecision.GO_NEXT
+            }
+            delay(POLL_INTERVAL_MS.milliseconds)
+        }
+    }
+
+    private fun currentLaunchAdState(): LaunchAdState {
+        return LaunchAdState(
+            hasTpReady = Ads.hasReady(AdsScene.Launch, AdsPlatform.TradPlus),
+            hasAdMobReady = Ads.hasReady(AdsScene.Launch, AdsPlatform.AdMob)
+        )
+    }
+
+    private fun logLaunchAdStage(elapsed: Long, state: LaunchAdState) {
+        // 只在状态发生变化、阶段切换时打日志，避免轮询日志过多影响排查效率。
+        if (lastLoggedAdState != state) {
+            val stageLabel = if (elapsed < FIRST_STAGE_TIMEOUT_MS) "0~8s等待阶段" else "8~15s兜底阶段"
+            Log.d(
+                TAG,
+                "启动页广告状态变化：stage=$stageLabel elapsed=${elapsed}ms tp=${state.hasTpReady} admob=${state.hasAdMobReady} any=${state.hasAnyReady} both=${state.hasBothReady}"
+            )
+            lastLoggedAdState = state
+        }
+        if (!hasLoggedSecondStage && elapsed >= FIRST_STAGE_TIMEOUT_MS) {
+            hasLoggedSecondStage = true
+            Log.d(
+                TAG,
+                "启动页进入8~15秒兜底阶段：elapsed=${elapsed}ms tp=${state.hasTpReady} admob=${state.hasAdMobReady}"
+            )
+        }
+    }
+
+    private fun showLaunchOpenAd(requestIndex: Int) {
+        if (hasHandledOpenAdResult || requestIndex != launchRequestIndex || isFinishing || isDestroyed) {
+            Log.d(
+                TAG,
+                "启动页广告展示请求被忽略：handled=$hasHandledOpenAdResult requestIndex=$requestIndex current=$launchRequestIndex finishing=$isFinishing destroyed=$isDestroyed"
+            )
+            return
+        }
+        hasHandledOpenAdResult = true
+        // 平台选择已下沉到 Ads 模块内部：展示时按 AdMob/TradPlus 价格比较，价高者优先展示。
+        Ads.showFullScreen(
+            scene = AdsScene.Launch,
+            activity = this,
+            onShown = {
+                isShowingAd = true
+                Log.d(TAG, "启动页开屏广告已展示")
+                if (requestIndex == launchRequestIndex) {
+                    prepareNextPageInventory()
+                }
+            },
+            onClosed = {
+                isShowingAd = false
+                Log.d(TAG, "启动页开屏广告已关闭，准备进入下一页")
+                openNextPage()
+            },
+            onFailed = {
+                isShowingAd = false
+                Log.e(TAG, "开屏广告展示失败，message=${it.message}")
+                openNextPage()
+            }
+        )
     }
 
     private suspend fun keepSplashVisible(startedAt: Long, minimumTime: Long) {
@@ -313,6 +340,10 @@ class LaunchLoadingActivity :
     }
 
     companion object {
+        private const val TAG = "LaunchLoadingActivity"
+        private const val FIRST_STAGE_TIMEOUT_MS = 8_000L
+        private const val TOTAL_TIMEOUT_MS = 15_000L
+        private const val POLL_INTERVAL_MS = 200L
         const val EXTRA_SHORTCUT_KEY = "key_uninstall"
         const val EXTRA_FORCE_OPEN_AD = "extra_force_open_ad"
         const val SHORTCUT_UNINSTALL = "shortcut_uninstall"

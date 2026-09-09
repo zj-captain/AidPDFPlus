@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -37,13 +38,13 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.ysdc.aidpdf.App
 import com.ysdc.aidpdf.R
-import com.ysdc.aidpdf.ad.config.AdScene
-import com.ysdc.aidpdf.ad.config.AdTrackingScene
-import com.ysdc.aidpdf.ad.core.AdLease
-import com.ysdc.aidpdf.ad.gate.BannerAdGate
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
-import com.ysdc.aidpdf.ad.gate.NativeAdGate
-import com.ysdc.aidpdf.ad.google.NativeAdSize
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsPlatform
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.ads.model.AdDisplayHandle
+import com.ysdc.aidpdf.ads.model.BannerRenderRequest
+import com.ysdc.aidpdf.ads.model.NativeAdStyle
+import com.ysdc.aidpdf.ads.model.NativeRenderRequest
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.core.permission.canPostNotifications
@@ -95,7 +96,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     private val documentKinds = DocumentKind.filters
     private val documentLibrary by lazy { DocumentLibrary(this) }
-    private val bannerAdGate = BannerAdGate()
+    private var bannerAdHandle: AdDisplayHandle? = null
     private val pagerAdapters by lazy {
         listOf(HomeSection.HOME, HomeSection.RECENT, HomeSection.FAVORITES).associateWith {
             DocumentPagerAdapter(
@@ -184,7 +185,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private var pendingAfterPermissionIntent: Intent? = null
     private var filterIndicatorPositioned = false
     private var sectionChromeReady = false
-    private var sectionNativeAdLease: AdLease? = null
+    private var sectionNativeAdHandle: AdDisplayHandle? = null
     private var openingOverlaySettings = false
     private var openingNotificationSettings = false
     private var skipOverlayPermissionPromptForLaunch = false
@@ -197,9 +198,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     override fun setupViews(savedInstanceState: Bundle?) {
         AidEventHub.track(TrackingEventNames.HOMEPAGE_VIEW)
-        InterstitialAdGate.prepareStartupInventory(this)
-        NativeAdGate.prepare(this, AdScene.MainNative)
-        NativeAdGate.prepare(this, AdScene.ResultNative)
+        Ads.load(AdsScene.BackInterstitial, this)
+        Ads.load(AdsScene.ResultInterstitial, this)
+        Ads.load(AdsScene.MainNative, this)
+        Ads.load(AdsScene.ResultNative, this)
         setupDocumentPager(HomeSection.HOME, binding.homeDocumentPager)
         setupDocumentPager(HomeSection.RECENT, binding.recentDocumentPager)
         setupDocumentPager(HomeSection.FAVORITES, binding.favoritesDocumentPager)
@@ -248,7 +250,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     override fun onStop() {
-        bannerAdGate.destroy(binding.bannerAdContainer)
+        bannerAdHandle?.destroy()
+        bannerAdHandle = null
         hideSectionNative()
         super.onStop()
     }
@@ -269,7 +272,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
         pageChangeCallbacks.clear()
         hideSectionNative()
-        bannerAdGate.destroy(binding.bannerAdContainer)
+        bannerAdHandle?.destroy()
+        bannerAdHandle = null
         super.onDestroy()
     }
 
@@ -285,15 +289,22 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                     return
                 }
                 if (activeKind == kind) return
-                InterstitialAdGate.showForNavigationThenContinue(
-                    activity = this@MainActivity,
-                    scene = AdScene.TopInterstitial
-                ) {
+                val applyKind = {
                     val currentKind = documentKinds.getOrNull(pager.currentItem) ?: kind
                     activeKind = currentKind
                     activeKindBySection[section] = currentKind
                     updateFilterState()
                 }
+                if (BlockUtils.shouldBlockAds(this@MainActivity)) {
+                    applyKind()
+                    return
+                }
+                Ads.showFullScreen(
+                    scene = AdsScene.ResultInterstitial,
+                    activity = this@MainActivity,
+                    onClosed = { applyKind() },
+                    onFailed = { applyKind() }
+                )
             }
         }
         pageChangeCallbacks[section] = callback
@@ -312,10 +323,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         if (page < 0) return
         val pager = documentPagerFor(activeSection) ?: return
         if (activeKind == kind && pager.currentItem == page) return
-        InterstitialAdGate.showForNavigationThenContinue(
-            activity = this,
-            scene = AdScene.TopInterstitial
-        ) {
+        val applyKind = {
             activeKind = kind
             activeKindBySection[activeSection] = kind
             updateFilterState()
@@ -323,6 +331,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 pager.setCurrentItem(page, true)
             }
         }
+        if (BlockUtils.shouldBlockAds(this)) {
+            applyKind()
+            return
+        }
+        Ads.showFullScreen(
+            scene = AdsScene.ResultInterstitial,
+            activity = this,
+            onClosed = { applyKind() },
+            onFailed = { applyKind() }
+        )
     }
 
     private fun refreshDocuments(forcePermissionCheck: Boolean) {
@@ -507,14 +525,21 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     private fun selectSectionFromBottom(section: HomeSection) {
         if (sectionChromeReady && activeSection == section) return
-        InterstitialAdGate.showForNavigationThenContinue(
-            activity = this,
-            scene = AdScene.BottomInterstitial
-        ) {
+        val applySection = {
             selectSection(section)
             refreshSectionNative()
             syncMainBannerVisibility()
         }
+        if (BlockUtils.shouldBlockAds(this)) {
+            applySection()
+            return
+        }
+        Ads.showFullScreen(
+            scene = AdsScene.BackInterstitial,
+            activity = this,
+            onClosed = { applySection() },
+            onFailed = { applySection() }
+        )
     }
 
     private fun updateSectionChrome() {
@@ -570,10 +595,23 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun showMainBanner() {
-        bannerAdGate.showWhenResumed(
+        if (!canShowMainBanner()) return
+        bannerAdHandle?.destroy()
+        bannerAdHandle = Ads.showBanner(
+            scene = AdsScene.MainBanner,
+            platform = AdsPlatform.AdMob,
             activity = this,
             parent = binding.bannerAdContainer,
-            shouldShow = { canShowMainBanner() }
+            request = BannerRenderRequest(),
+            onImpression = {
+                Log.d("MainActivity", "首页 Banner 广告曝光")
+                syncMainBannerVisibility()
+            },
+            onFailed = {
+                Log.w("MainActivity", "首页 Banner 广告展示失败：message=${it.message}")
+                binding.bannerAdContainer.removeAllViews()
+                binding.bannerAdContainer.isVisible = false
+            }
         )
     }
 
@@ -594,25 +632,36 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             binding.mainNativeAdContainer
         }
         val scene = if (activeSection == HomeSection.SETTING) {
-            AdScene.ResultNative
+            AdsScene.ResultNative
         } else {
-            AdScene.MainNative
+            AdsScene.MainNative
         }
-        val size = if (activeSection == HomeSection.SETTING) {
-            NativeAdSize.Medium
+        val style = if (activeSection == HomeSection.SETTING) {
+            NativeAdStyle.Medium
         } else {
-            NativeAdSize.Tiny
+            NativeAdStyle.Tiny
         }
         if (parent.isVisible && parent.childCount > 0) return
         parent.isVisible = false
-        NativeAdGate.showWhenReady(
+        sectionNativeAdHandle?.destroy()
+        sectionNativeAdHandle = Ads.showNative(
+            scene = scene,
             activity = this,
             parent = parent,
-            scene = scene,
-            size = size,
-            onShown = { lease ->
-                sectionNativeAdLease?.release()
-                sectionNativeAdLease = lease
+            request = NativeRenderRequest(style = style),
+            onShown = {
+                Log.d("MainActivity", "首页分区原生广告展示成功")
+                parent.isVisible = true
+                parent.updateLayoutParams { height = ViewGroup.LayoutParams.WRAP_CONTENT }
+            },
+            onImpression = {
+                Log.d("MainActivity", "首页分区原生广告曝光")
+            },
+            onFailed = {
+                Log.w("MainActivity", "首页分区原生广告展示失败：message=${it.message}")
+                parent.removeAllViews()
+                parent.isVisible = false
+                parent.updateLayoutParams { height = 0 }
             }
         )
     }
@@ -623,10 +672,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun hideSectionNative() {
-        sectionNativeAdLease?.release()
-        sectionNativeAdLease = null
+        sectionNativeAdHandle?.destroy()
+        sectionNativeAdHandle = null
         listOf(binding.mainNativeAdContainer, binding.toolsNativeAdContainer).forEach { parent ->
-            NativeAdGate.cancel(parent)
             parent.removeAllViews()
             parent.isVisible = false
         }
@@ -760,12 +808,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun openDocument(document: LocalDocument) {
-        InterstitialAdGate.showForClickThenContinue(
-            activity = this,
-            scene = AdScene.CheckInterstitial
-        ) {
+        if (BlockUtils.shouldBlockAds(this)) {
             openDocumentAfterAd(document)
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.ResultInterstitial,
+            activity = this,
+            onClosed = { openDocumentAfterAd(document) },
+            onFailed = { openDocumentAfterAd(document) }
+        )
     }
 
     private fun openDocumentAfterAd(document: LocalDocument) {
@@ -907,7 +959,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun openPdfTool(mode: PdfToolMode, preselectedPath: String? = null) {
-        NativeAdGate.prepare(this, AdScene.ResultNative)
+        Ads.load(AdsScene.ResultNative, this)
         val intent = PdfToolActivity.intent(this, mode, preselectedPath)
         if (canReadDocuments()) {
             startActivity(intent)
@@ -986,13 +1038,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         loadingStartedAt: Long,
         next: () -> Unit
     ) {
-        InterstitialAdGate.showForProcessingThenContinue(
+        // 广告展示前先关闭加载弹窗，广告关闭/失败后继续跳转。
+        loadingDialog.dismissAllowingStateLoss()
+        if (BlockUtils.shouldBlockAds(this)) {
+            next()
+            return
+        }
+        Ads.showFullScreen(
+            scene = AdsScene.BackInterstitial,
             activity = this,
-            processingStartedAtMillis = loadingStartedAt,
-            scene = AdScene.CheckInterstitial,
-            trackingScene = AdTrackingScene.SCAN_INTERSTITIAL,
-            beforeAdOrContinue = { loadingDialog.dismissAllowingStateLoss() },
-            next = next
+            onClosed = { next() },
+            onFailed = { next() }
         )
     }
 

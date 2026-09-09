@@ -5,19 +5,21 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.ysdc.aidpdf.R
-import com.ysdc.aidpdf.ad.config.AdScene
-import com.ysdc.aidpdf.ad.config.AdTrackingScene
-import com.ysdc.aidpdf.ad.core.AdLease
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
-import com.ysdc.aidpdf.ad.gate.NativeAdGate
-import com.ysdc.aidpdf.ad.google.NativeAdSize
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.ads.model.AdDisplayHandle
+import com.ysdc.aidpdf.ads.model.NativeAdStyle
+import com.ysdc.aidpdf.ads.model.NativeRenderRequest
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.databinding.ActivityLanguageBinding
 import com.ysdc.aidpdf.store.hasSavedLanguageTag
@@ -29,7 +31,7 @@ import com.ysdc.aidpdf.ui.guide.OnboardingActivity
 class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageBinding::inflate) {
 
     private lateinit var languageAdapter: LanguageOptionAdapter
-    private var nativeAdLease: AdLease? = null
+    private var nativeAdHandle: AdDisplayHandle? = null
 //    private var leaving = false
     private val fromFirstRun: Boolean
         get() = intent.getBooleanExtra(EXTRA_FIRST_RUN_FLOW, false)
@@ -103,21 +105,24 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
     }
 
     override fun onDestroy() {
-        nativeAdLease?.release()
-        nativeAdLease = null
+        nativeAdHandle?.destroy()
+        nativeAdHandle = null
         super.onDestroy()
     }
 
     private fun applySelection() {
 //        if (leaving) return
 //        leaving = true
-        InterstitialAdGate.showForClickThenContinue(
-            activity = this,
-            scene = AdScene.TopInterstitial,
-            trackingScene = AdTrackingScene.LANGUAGE_INTERSTITIAL
-        ) {
+        if (BlockUtils.shouldBlockAds(this)) {
             applySelectionAfterAd()
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.ResultInterstitial,
+            activity = this,
+            onClosed = { applySelectionAfterAd() },
+            onFailed = { applySelectionAfterAd() }
+        )
     }
 
     private fun applySelectionAfterAd() {
@@ -135,27 +140,42 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
     }
 
     private fun prepareAds() {
-        InterstitialAdGate.prepare(this, AdScene.TopInterstitial)
-        NativeAdGate.prepare(this, AdScene.MainNative)
+        // 插屏固定用 ResultInterstitial 池，原生固定用 MainNative 池。
+        Ads.load(AdsScene.ResultInterstitial, this)
+        Ads.load(AdsScene.MainNative, this)
         if (fromFirstRun) {
-            InterstitialAdGate.prepare(this, AdScene.BottomInterstitial)
-            NativeAdGate.prepare(this, AdScene.ResultNative)
+            // 首次引导流程：预加载后续页面会用的广告位。
+            Ads.load(AdsScene.BackInterstitial, this)
+            Ads.load(AdsScene.ResultNative, this)
         } else {
-            InterstitialAdGate.prepareStartupInventory(this)
-            NativeAdGate.prepare(this, AdScene.MainNative)
+            // 非首次：按启动清单预加载首页所需广告位。
+            Ads.load(AdsScene.BackInterstitial, this)
+            Ads.load(AdsScene.ResultNative, this)
         }
     }
 
     private fun showNativeAd() {
-        NativeAdGate.showWhenReady(
+        nativeAdHandle?.destroy()
+        nativeAdHandle = Ads.showNative(
+            scene = AdsScene.MainNative,
             activity = this,
             parent = binding.languageNativeAdContainer,
-            scene = AdScene.MainNative,
-            size = NativeAdSize.Large,
-            trackingScene = AdTrackingScene.LANGUAGE_NATIVE,
-            onShown = { lease ->
-                nativeAdLease?.release()
-                nativeAdLease = lease
+            request = NativeRenderRequest(style = NativeAdStyle.Large),
+            onShown = {
+                Log.d("LanguageActivity", "语言页原生广告展示成功")
+                binding.languageNativeAdContainer.isVisible = true
+                binding.languageNativeAdContainer.updateLayoutParams {
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+            },
+            onImpression = {
+                Log.d("LanguageActivity", "语言页原生广告曝光")
+            },
+            onFailed = {
+                Log.w("LanguageActivity", "语言页原生广告展示失败：message=${it.message}")
+                binding.languageNativeAdContainer.removeAllViews()
+                binding.languageNativeAdContainer.isVisible = false
+                binding.languageNativeAdContainer.updateLayoutParams { height = 0 }
             }
         )
     }

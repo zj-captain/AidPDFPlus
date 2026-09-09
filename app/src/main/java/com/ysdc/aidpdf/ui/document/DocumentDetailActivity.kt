@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.text.format.Formatter
 import androidx.activity.addCallback
 import com.ysdc.aidpdf.R
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.data.document.LocalDocument
 import com.ysdc.aidpdf.databinding.ActivityDocumentDetailBinding
 import com.ysdc.aidpdf.databinding.ViewDetailRowBinding
@@ -22,7 +24,7 @@ class DocumentDetailActivity : BaseActivity<ActivityDocumentDetailBinding>(Activ
     override fun setupViews(savedInstanceState: Bundle?) {
         document = intent.toDocument()
         onBackPressedDispatcher.addCallback(this) { finishWithBackMainAd() }
-        InterstitialAdGate.prepareBackMain(this)
+        Ads.load(AdsScene.BackInterstitial, this)
         renderDetails()
     }
 
@@ -32,9 +34,17 @@ class DocumentDetailActivity : BaseActivity<ActivityDocumentDetailBinding>(Activ
     }
 
     private fun finishWithBackMainAd() {
-        InterstitialAdGate.showForBackMainThenContinue(this) {
+        if (isFinishing || isDestroyed) return
+        if (BlockUtils.shouldBlockAds(this)) {
             finish()
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.BackInterstitial,
+            activity = this,
+            onClosed = { finish() },
+            onFailed = { finish() }
+        )
     }
 
     private fun renderDetails() {

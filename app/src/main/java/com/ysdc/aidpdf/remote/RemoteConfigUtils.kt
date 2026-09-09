@@ -7,11 +7,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.Gson
 import com.ysdc.aidpdf.BuildConfig
-import com.ysdc.aidpdf.ad.AdUnitFuseManager
 import com.ysdc.aidpdf.ad.AdsLimitManager
 import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.ad.DEFAULT_ADS_LIMIT_CONFIG_JSON
-import com.ysdc.aidpdf.ad.DEFAULT_AD_FUSE_CONFIG_JSON
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderOverlayConfigRepository
@@ -86,7 +84,6 @@ object RemoteConfigUtils {
                     putAll(
                         mapOf(
                             GLOBAL_BLOCK_SWITCH_KEY to "1",
-                            REMOTE_AD_FUSE_CONFIG_KEY to DEFAULT_AD_FUSE_CONFIG_JSON,
                             REMOTE_ADS_LIMIT_CONFIG_KEY to DEFAULT_ADS_LIMIT_CONFIG_JSON,
                             REFERRER_CONFIG_KEY to DEFAULT_REFERRER_CONFIG,
                             BLOCKED_REFERRER_KEY to DEFAULT_BLOCKED_REFERRERS,
@@ -148,14 +145,6 @@ object RemoteConfigUtils {
         )
         ReminderTriggerCenter.onConfigUpdated()
     }
-    private fun applyAdFuseConfig() {
-        runCatching {
-            val json = getString(REMOTE_AD_FUSE_CONFIG_KEY).ifBlank { DEFAULT_AD_FUSE_CONFIG_JSON }
-            AdUnitFuseManager.applyConfig(json)
-        }.onFailure {
-            AdUnitFuseManager.applyConfig(DEFAULT_AD_FUSE_CONFIG_JSON)
-        }
-    }
     private fun applyAdsLimitConfig() {
         runCatching {
             val json = getString(REMOTE_ADS_LIMIT_CONFIG_KEY).ifBlank { DEFAULT_ADS_LIMIT_CONFIG_JSON }
@@ -172,7 +161,6 @@ object RemoteConfigUtils {
         applyBlockedReferrers()
         applyPopRefresh()
 //        applyVirtualBlockSwitch()
-        applyAdFuseConfig()//熔断配置
         applyAdsLimitConfig()
     }
 

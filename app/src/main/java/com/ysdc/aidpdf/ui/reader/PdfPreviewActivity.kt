@@ -9,7 +9,9 @@ import androidx.lifecycle.lifecycleScope
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.github.barteksc.pdfviewer.util.FitPolicy
 import com.ysdc.aidpdf.R
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.data.document.LocalDocument
 import com.ysdc.aidpdf.databinding.ActivityPdfPreviewBinding
 import com.ysdc.aidpdf.ui.basic.BaseActivity
@@ -33,7 +35,7 @@ class PdfPreviewActivity : BaseActivity<ActivityPdfPreviewBinding>(ActivityPdfPr
             return
         }
         onBackPressedDispatcher.addCallback(this) { finishWithBackMainAd() }
-        InterstitialAdGate.prepareBackMain(this)
+        Ads.load(AdsScene.BackInterstitial, this)
         binding.titleText.text = document.name
         preparePasswordThenLoad()
     }
@@ -43,9 +45,17 @@ class PdfPreviewActivity : BaseActivity<ActivityPdfPreviewBinding>(ActivityPdfPr
     }
 
     private fun finishWithBackMainAd() {
-        InterstitialAdGate.showForBackMainThenContinue(this) {
+        if (isFinishing || isDestroyed) return
+        if (BlockUtils.shouldBlockAds(this)) {
             finish()
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.BackInterstitial,
+            activity = this,
+            onClosed = { finish() },
+            onFailed = { finish() }
+        )
     }
 
     private fun loadPdf(password: String?) {

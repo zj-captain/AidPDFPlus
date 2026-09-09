@@ -23,6 +23,7 @@ import com.ysdc.aidpdf.ads.config.AdsScene
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
 import com.ysdc.aidpdf.ads.core.AdsErrorCode
 import com.ysdc.aidpdf.ads.core.AdsExceptionInfo
+import com.ysdc.aidpdf.ads.core.AdsThread
 import com.ysdc.aidpdf.ads.provider.CachedAdProvider
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.NativeRenderRequest
@@ -96,24 +97,27 @@ class AdMobCachedAdProvider : CachedAdProvider {
         when (payload) {
             is AdMobOpenPayload -> {
                 payload.ad.adEventCallback = object : AppOpenAdEventCallback {
+                    // AdMob 事件回调可能被 SDK 调度到后台线程（如 GMA BG），必须切回主线程再通知业务层。
                     override fun onAdShowedFullScreenContent() {
-                        onShown()
+                        AdsThread.runOnMain { onShown() }
                     }
 
                     override fun onAdDismissedFullScreenContent() {
-                        onClosed()
+                        AdsThread.runOnMain { onClosed() }
                     }
 
                     override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {
-                        onFailed(
-                            AdsExceptionInfo(
-                                code = AdsErrorCode.ShowFailed,
-                                scene = AdsScene.Launch,
-                                platform = AdsPlatform.AdMob,
-                                message = fullScreenContentError.message,
-                                unitId = payload.config.unitId
+                        AdsThread.runOnMain {
+                            onFailed(
+                                AdsExceptionInfo(
+                                    code = AdsErrorCode.ShowFailed,
+                                    scene = AdsScene.Launch,
+                                    platform = AdsPlatform.AdMob,
+                                    message = fullScreenContentError.message,
+                                    unitId = payload.config.unitId
+                                )
                             )
-                        )
+                        }
                     }
                 }
                 payload.ad.show(activity)
@@ -121,24 +125,27 @@ class AdMobCachedAdProvider : CachedAdProvider {
 
             is AdMobInterstitialPayload -> {
                 payload.ad.adEventCallback = object : InterstitialAdEventCallback {
+                    // AdMob 事件回调可能被 SDK 调度到后台线程（如 GMA BG），必须切回主线程再通知业务层。
                     override fun onAdShowedFullScreenContent() {
-                        onShown()
+                        AdsThread.runOnMain { onShown() }
                     }
 
                     override fun onAdDismissedFullScreenContent() {
-                        onClosed()
+                        AdsThread.runOnMain { onClosed() }
                     }
 
                     override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {
-                        onFailed(
-                            AdsExceptionInfo(
-                                code = AdsErrorCode.ShowFailed,
-                                scene = payload.config.scene,
-                                platform = AdsPlatform.AdMob,
-                                message = fullScreenContentError.message,
-                                unitId = payload.config.unitId
+                        AdsThread.runOnMain {
+                            onFailed(
+                                AdsExceptionInfo(
+                                    code = AdsErrorCode.ShowFailed,
+                                    scene = payload.config.scene,
+                                    platform = AdsPlatform.AdMob,
+                                    message = fullScreenContentError.message,
+                                    unitId = payload.config.unitId
+                                )
                             )
-                        )
+                        }
                     }
                 }
                 payload.ad.show(activity)

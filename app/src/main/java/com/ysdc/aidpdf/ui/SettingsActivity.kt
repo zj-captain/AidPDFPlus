@@ -7,7 +7,9 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import com.ysdc.aidpdf.App
 import com.ysdc.aidpdf.R
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.databinding.ActivitySettingsBinding
 import com.ysdc.aidpdf.ui.basic.BaseActivity
 import com.ysdc.aidpdf.ui.language.LanguageActivity
@@ -22,7 +24,7 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>(ActivitySettingsB
 
     override fun setupViews(savedInstanceState: Bundle?) {
         onBackPressedDispatcher.addCallback(this) { finishWithBackMainAd() }
-        InterstitialAdGate.prepareBackMain(this)
+        Ads.load(AdsScene.BackInterstitial, this)
         binding.versionText.text = getString(R.string.app_version, currentVersionName())
     }
 
@@ -36,9 +38,17 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>(ActivitySettingsB
     }
 
     private fun finishWithBackMainAd() {
-        InterstitialAdGate.showForBackMainThenContinue(this) {
+        if (isFinishing || isDestroyed) return
+        if (BlockUtils.shouldBlockAds(this)) {
             finish()
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.BackInterstitial,
+            activity = this,
+            onClosed = { finish() },
+            onFailed = { finish() }
+        )
     }
 
     private fun shareApp() {
