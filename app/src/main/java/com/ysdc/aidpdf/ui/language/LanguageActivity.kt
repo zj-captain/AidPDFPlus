@@ -20,6 +20,7 @@ import com.ysdc.aidpdf.ads.config.AdsScene
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.NativeAdStyle
 import com.ysdc.aidpdf.ads.model.NativeRenderRequest
+import com.ysdc.aidpdf.ads.utils.AdTrackingScene
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.databinding.ActivityLanguageBinding
 import com.ysdc.aidpdf.store.hasSavedLanguageTag
@@ -121,7 +122,8 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
             scene = AdsScene.ResultInterstitial,
             activity = this,
             onClosed = { applySelectionAfterAd() },
-            onFailed = { applySelectionAfterAd() }
+            onFailed = { applySelectionAfterAd() },
+            trackingScene = AdTrackingScene.LANGUAGE_INTERSTITIAL
         )
     }
 
@@ -161,6 +163,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
             activity = this,
             parent = binding.languageNativeAdContainer,
             request = NativeRenderRequest(style = NativeAdStyle.Large),
+            trackingScene = AdTrackingScene.LANGUAGE_NATIVE,
             onShown = {
                 Log.d("LanguageActivity", "语言页原生广告展示成功")
                 binding.languageNativeAdContainer.isVisible = true

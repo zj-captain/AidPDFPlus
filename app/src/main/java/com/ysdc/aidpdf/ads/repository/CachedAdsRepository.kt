@@ -12,6 +12,7 @@ import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsScene
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
 import com.ysdc.aidpdf.ads.core.AdsErrorCode
+import com.ysdc.aidpdf.ads.core.AdsEventTracker
 import com.ysdc.aidpdf.ads.core.AdsExceptionInfo
 import com.ysdc.aidpdf.ads.core.AdsLogger
 import com.ysdc.aidpdf.ads.core.AdsState
@@ -105,7 +106,9 @@ class CachedAdsRepository(
         activity: AppCompatActivity,
         onShown: () -> Unit,
         onClosed: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String? = null,
+        trackingType: String? = null
     ) {
         AdsThread.runOnMain {
             val runtime = runtimeRegistry.get(scene, platform)
@@ -134,7 +137,9 @@ class CachedAdsRepository(
                 activity = activity,
                 onShown = onShown,
                 onClosed = onClosed,
-                onFailed = onFailed
+                onFailed = onFailed,
+                trackingScene = trackingScene,
+                trackingType = trackingType
             )
         }
     }
@@ -147,7 +152,8 @@ class CachedAdsRepository(
         request: NativeRenderRequest,
         onShown: () -> Unit,
         onImpression: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String? = null
     ): AdDisplayHandle? {
         var handle: AdDisplayHandle? = null
         AdsThread.runOnMain {
@@ -192,7 +198,8 @@ class CachedAdsRepository(
                     onShown()
                 },
                 onImpression = onImpression,
-                onFailed = onFailed
+                onFailed = onFailed,
+                trackingScene = trackingScene
             ) ?: return@runOnMain
             val wrappedHandle = object : AdDisplayHandle {
                 private var destroyed = false
@@ -222,7 +229,9 @@ class CachedAdsRepository(
         activity: AppCompatActivity,
         onShown: () -> Unit,
         onClosed: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String? = null,
+        trackingType: String? = null
     ) {
         AdsThread.runOnMain {
             val ranked = rankCandidates(buildCandidates(scene))
@@ -231,7 +240,7 @@ class CachedAdsRepository(
                 return@runOnMain
             }
             AdsLogger.d("自动竞价：场景=$scene 候选顺序=${formatCandidateOrder(ranked)}")
-            tryShowBestFullScreen(scene, ranked, 0, activity, onShown, onClosed, onFailed, null)
+            tryShowBestFullScreen(scene, ranked, 0, activity, onShown, onClosed, onFailed, null, trackingScene, trackingType)
         }
     }
 
@@ -246,7 +255,8 @@ class CachedAdsRepository(
         request: NativeRenderRequest,
         onShown: () -> Unit,
         onImpression: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String? = null
     ): AdDisplayHandle? {
         var result: AdDisplayHandle? = null
         AdsThread.runOnMain {
@@ -284,7 +294,8 @@ class CachedAdsRepository(
                             lastError = error
                             AdsLogger.w("自动竞价：场景=$scene 平台=${candidate.platform} 原生展示失败，尝试下一候选：${error.message}")
                         }
-                    }
+                    },
+                    trackingScene = trackingScene
                 )
                 if (handle != null) {
                     result = handle
@@ -314,7 +325,9 @@ class CachedAdsRepository(
         onShown: () -> Unit,
         onClosed: () -> Unit,
         onFailed: (AdsExceptionInfo) -> Unit,
-        lastError: AdsExceptionInfo?
+        lastError: AdsExceptionInfo?,
+        trackingScene: String?,
+        trackingType: String?
     ) {
         if (index >= candidates.size) {
             onFailed(lastError ?: noCandidates(scene))
@@ -330,8 +343,10 @@ class CachedAdsRepository(
             onClosed = onClosed,
             onFailed = { error ->
                 AdsLogger.w("自动竞价：场景=$scene 平台=${candidate.platform} 展示失败，尝试下一候选：${error.message}")
-                tryShowBestFullScreen(scene, candidates, index + 1, activity, onShown, onClosed, onFailed, error)
-            }
+                tryShowBestFullScreen(scene, candidates, index + 1, activity, onShown, onClosed, onFailed, error, trackingScene, trackingType)
+            },
+            trackingScene = trackingScene,
+            trackingType = trackingType
         )
     }
 
@@ -386,11 +401,14 @@ class CachedAdsRepository(
         }
         val config = candidates[runtime.currentIndex]
         AdsLogger.d("场景=$scene 平台=$platform 开始尝试第${runtime.currentIndex + 1}个候选广告位=${config.unitId}")
+        AdsEventTracker.reportLoadStarted(config)
         ProviderFactory.cached(platform, config.format).load(config, appContext, activity) { result ->
             AdsThread.runOnMain {
                 result.onSuccess { payload ->
+                    AdsEventTracker.reportLoaded(config, success = true, resultCode = 200, resultInfo = "")
                     cacheLoadedAd(runtime, config, payload)
                 }.onFailure { throwable ->
+                    AdsEventTracker.reportLoaded(config, success = false, resultCode = 0, resultInfo = throwable.message.orEmpty())
                     AdsLogger.w("场景=$scene 平台=$platform 广告加载失败，切换下一个候选位：${throwable.message}", throwable)
                     runtime.currentIndex += 1
                     tryLoad(runtime, activity)

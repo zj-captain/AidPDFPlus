@@ -22,6 +22,7 @@ import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsScene
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
 import com.ysdc.aidpdf.ads.core.AdsErrorCode
+import com.ysdc.aidpdf.ads.core.AdsEventTracker
 import com.ysdc.aidpdf.ads.core.AdsExceptionInfo
 import com.ysdc.aidpdf.ads.core.AdsThread
 import com.ysdc.aidpdf.ads.provider.CachedAdProvider
@@ -92,31 +93,45 @@ class AdMobCachedAdProvider : CachedAdProvider {
         activity: AppCompatActivity,
         onShown: () -> Unit,
         onClosed: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String?,
+        trackingType: String?
     ) {
         when (payload) {
             is AdMobOpenPayload -> {
                 payload.ad.adEventCallback = object : AppOpenAdEventCallback {
                     // AdMob 事件回调可能被 SDK 调度到后台线程（如 GMA BG），必须切回主线程再通知业务层。
                     override fun onAdShowedFullScreenContent() {
-                        AdsThread.runOnMain { onShown() }
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType)
+                            onShown()
+                        }
+                    }
+
+                    override fun onAdClicked() {
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportClick(payload.config, trackingScene)
+                        }
                     }
 
                     override fun onAdDismissedFullScreenContent() {
-                        AdsThread.runOnMain { onClosed() }
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportClosed(payload.config, trackingScene)
+                            onClosed()
+                        }
                     }
 
                     override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {
                         AdsThread.runOnMain {
-                            onFailed(
-                                AdsExceptionInfo(
-                                    code = AdsErrorCode.ShowFailed,
-                                    scene = AdsScene.Launch,
-                                    platform = AdsPlatform.AdMob,
-                                    message = fullScreenContentError.message,
-                                    unitId = payload.config.unitId
-                                )
+                            val error = AdsExceptionInfo(
+                                code = AdsErrorCode.ShowFailed,
+                                scene = AdsScene.Launch,
+                                platform = AdsPlatform.AdMob,
+                                message = fullScreenContentError.message,
+                                unitId = payload.config.unitId
                             )
+                            AdsEventTracker.reportShowFailed(payload.config, trackingScene, error)
+                            onFailed(error)
                         }
                     }
                 }
@@ -127,24 +142,36 @@ class AdMobCachedAdProvider : CachedAdProvider {
                 payload.ad.adEventCallback = object : InterstitialAdEventCallback {
                     // AdMob 事件回调可能被 SDK 调度到后台线程（如 GMA BG），必须切回主线程再通知业务层。
                     override fun onAdShowedFullScreenContent() {
-                        AdsThread.runOnMain { onShown() }
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType)
+                            onShown()
+                        }
+                    }
+
+                    override fun onAdClicked() {
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportClick(payload.config, trackingScene)
+                        }
                     }
 
                     override fun onAdDismissedFullScreenContent() {
-                        AdsThread.runOnMain { onClosed() }
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportClosed(payload.config, trackingScene)
+                            onClosed()
+                        }
                     }
 
                     override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {
                         AdsThread.runOnMain {
-                            onFailed(
-                                AdsExceptionInfo(
-                                    code = AdsErrorCode.ShowFailed,
-                                    scene = payload.config.scene,
-                                    platform = AdsPlatform.AdMob,
-                                    message = fullScreenContentError.message,
-                                    unitId = payload.config.unitId
-                                )
+                            val error = AdsExceptionInfo(
+                                code = AdsErrorCode.ShowFailed,
+                                scene = payload.config.scene,
+                                platform = AdsPlatform.AdMob,
+                                message = fullScreenContentError.message,
+                                unitId = payload.config.unitId
                             )
+                            AdsEventTracker.reportShowFailed(payload.config, trackingScene, error)
+                            onFailed(error)
                         }
                     }
                 }
@@ -160,11 +187,13 @@ class AdMobCachedAdProvider : CachedAdProvider {
         request: NativeRenderRequest,
         onShown: () -> Unit,
         onImpression: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String?
     ): AdDisplayHandle? {
         payload as? AdMobNativePayload ?: return null
         val nativeAdView: NativeAdView = AdMobNativeRenderer.createAndBind(parent, payload, request.style)
         parent.addView(nativeAdView)
+        AdsEventTracker.reportShown(payload.config, trackingScene)
         onShown()
         onImpression()
         return AdMobDisplayHandle(parent = parent, child = nativeAdView, nativeAd = payload.ad)

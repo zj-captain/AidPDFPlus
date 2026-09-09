@@ -17,6 +17,7 @@ interface BannerAdProvider {
         parent: ViewGroup,
         request: BannerRenderRequest,
         onImpression: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String? = null
     ): AdDisplayHandle?
 }

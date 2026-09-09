@@ -56,9 +56,11 @@ object Ads {
         activity: AppCompatActivity,
         onShown: () -> Unit = {},
         onClosed: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit = {}
+        onFailed: (AdsExceptionInfo) -> Unit = {},
+        trackingScene: String? = null,
+        trackingType: String? = null
     ) {
-        cachedRepository?.showFullScreen(scene, platform, activity, onShown, onClosed, onFailed)
+        cachedRepository?.showFullScreen(scene, platform, activity, onShown, onClosed, onFailed, trackingScene, trackingType)
     }
 
     /**
@@ -69,9 +71,11 @@ object Ads {
         activity: AppCompatActivity,
         onShown: () -> Unit = {},
         onClosed: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit = {}
+        onFailed: (AdsExceptionInfo) -> Unit = {},
+        trackingScene: String? = null,
+        trackingType: String? = null
     ) {
-        cachedRepository?.showBestFullScreen(scene, activity, onShown, onClosed, onFailed)
+        cachedRepository?.showBestFullScreen(scene, activity, onShown, onClosed, onFailed, trackingScene, trackingType)
     }
 
     fun showNative(
@@ -82,7 +86,8 @@ object Ads {
         request: NativeRenderRequest,
         onShown: () -> Unit = {},
         onImpression: () -> Unit = {},
-        onFailed: (AdsExceptionInfo) -> Unit = {}
+        onFailed: (AdsExceptionInfo) -> Unit = {},
+        trackingScene: String? = null
     ): AdDisplayHandle? {
         return cachedRepository?.showNative(
             scene,
@@ -92,7 +97,8 @@ object Ads {
             request,
             onShown,
             onImpression,
-            onFailed
+            onFailed,
+            trackingScene
         )
     }
 
@@ -106,7 +112,8 @@ object Ads {
         request: NativeRenderRequest,
         onShown: () -> Unit = {},
         onImpression: () -> Unit = {},
-        onFailed: (AdsExceptionInfo) -> Unit = {}
+        onFailed: (AdsExceptionInfo) -> Unit = {},
+        trackingScene: String? = null
     ): AdDisplayHandle? {
         return cachedRepository?.showBestNative(
             scene,
@@ -115,7 +122,8 @@ object Ads {
             request,
             onShown,
             onImpression,
-            onFailed
+            onFailed,
+            trackingScene
         )
     }
 
@@ -126,7 +134,8 @@ object Ads {
         parent: ViewGroup,
         request: BannerRenderRequest = BannerRenderRequest(),
         onImpression: () -> Unit = {},
-        onFailed: (AdsExceptionInfo) -> Unit = {}
+        onFailed: (AdsExceptionInfo) -> Unit = {},
+        trackingScene: String? = null
     ): AdDisplayHandle? {
         return bannerCoordinator?.showBanner(
             scene,
@@ -135,7 +144,8 @@ object Ads {
             parent,
             request,
             onImpression,
-            onFailed
+            onFailed,
+            trackingScene
         )
     }
 

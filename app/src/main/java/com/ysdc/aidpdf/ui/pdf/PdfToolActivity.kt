@@ -18,6 +18,7 @@ import com.ysdc.aidpdf.ads.config.AdsScene
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.NativeAdStyle
 import com.ysdc.aidpdf.ads.model.NativeRenderRequest
+import com.ysdc.aidpdf.ads.utils.AdTrackingScene
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.data.document.DocumentKind
 import com.ysdc.aidpdf.data.document.DocumentLibrary
@@ -77,6 +78,7 @@ class PdfToolActivity : BaseActivity<ActivityPdfToolBinding>(ActivityPdfToolBind
             activity = this,
             parent = binding.pdfToolNativeAdContainer,
             request = NativeRenderRequest(style = NativeAdStyle.Tiny),
+            trackingScene = AdTrackingScene.SCAN_NATIVE,
             onShown = {
                 Log.d("PdfToolActivity", "工具页原生广告展示成功")
                 binding.pdfToolNativeAdContainer.isVisible = true
@@ -549,7 +551,8 @@ class PdfToolActivity : BaseActivity<ActivityPdfToolBinding>(ActivityPdfToolBind
             scene = AdsScene.ResultInterstitial,
             activity = this,
             onClosed = { next() },
-            onFailed = { next() }
+            onFailed = { next() },
+            trackingScene = AdTrackingScene.SCAN_INTERSTITIAL
         )
     }
 

@@ -26,7 +26,9 @@ interface CachedAdProvider {
         activity: AppCompatActivity,
         onShown: () -> Unit,
         onClosed: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String? = null,
+        trackingType: String? = null
     )
 
     fun showNative(
@@ -36,7 +38,8 @@ interface CachedAdProvider {
         request: NativeRenderRequest,
         onShown: () -> Unit,
         onImpression: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String? = null
     ): AdDisplayHandle?
 
     fun destroyPayload(payload: Any)

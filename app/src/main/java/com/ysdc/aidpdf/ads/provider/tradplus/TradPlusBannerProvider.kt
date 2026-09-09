@@ -9,6 +9,7 @@ import com.tradplus.ads.open.banner.TPBanner
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
 import com.ysdc.aidpdf.ads.core.AdsErrorCode
+import com.ysdc.aidpdf.ads.core.AdsEventTracker
 import com.ysdc.aidpdf.ads.core.AdsExceptionInfo
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.BannerRenderRequest
@@ -23,31 +24,38 @@ class TradPlusBannerProvider : BannerAdProvider {
         parent: ViewGroup,
         request: BannerRenderRequest,
         onImpression: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String?
     ): AdDisplayHandle? {
         val banner = TPBanner(activity)
         // 这里关闭自动展示后，由页面容器自己控制挂载时机，避免 Banner 在错误时机自动弹出。
         banner.closeAutoShow()
+        AdsEventTracker.reportLoadStarted(config)
         banner.setAdListener(object : BannerAdListener() {
-            override fun onAdClicked(tpAdInfo: TPAdInfo?) = Unit
+            override fun onAdClicked(tpAdInfo: TPAdInfo?) {
+                AdsEventTracker.reportClick(config, trackingScene)
+            }
 
             override fun onAdImpression(tpAdInfo: TPAdInfo?) {
+                AdsEventTracker.reportShown(config, trackingScene)
                 onImpression()
             }
 
-            override fun onAdLoaded(tpAdInfo: TPAdInfo?) = Unit
+            override fun onAdLoaded(tpAdInfo: TPAdInfo?) {
+                AdsEventTracker.reportLoaded(config, success = true, resultCode = 200, resultInfo = "")
+            }
 
             override fun onAdLoadFailed(error: TPAdError?) {
-                onFailed(
-                    AdsExceptionInfo(
-                        code = AdsErrorCode.LoadFailed,
-                        scene = config.scene,
-                        platform = AdsPlatform.TradPlus,
-                        // Banner 回调同样可能给空错误对象，这里补默认值避免日志丢失关键信息。
-                        message = error?.errorMsg ?: "TradPlus banner load failed",
-                        unitId = config.unitId
-                    )
+                AdsEventTracker.reportLoaded(config, success = false, resultCode = 0, resultInfo = error?.errorMsg.orEmpty())
+                val exceptionInfo = AdsExceptionInfo(
+                    code = AdsErrorCode.LoadFailed,
+                    scene = config.scene,
+                    platform = AdsPlatform.TradPlus,
+                    // Banner 回调同样可能给空错误对象，这里补默认值避免日志丢失关键信息。
+                    message = error?.errorMsg ?: "TradPlus banner load failed",
+                    unitId = config.unitId
                 )
+                onFailed(exceptionInfo)
             }
 
             override fun onAdClosed(tpAdInfo: TPAdInfo?) = Unit

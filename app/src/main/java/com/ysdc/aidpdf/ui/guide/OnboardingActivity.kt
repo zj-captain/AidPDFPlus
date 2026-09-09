@@ -18,6 +18,7 @@ import com.ysdc.aidpdf.ads.config.AdsScene
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.NativeAdStyle
 import com.ysdc.aidpdf.ads.model.NativeRenderRequest
+import com.ysdc.aidpdf.ads.utils.AdTrackingScene
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.databinding.ActivityOnboardingBinding
@@ -135,7 +136,8 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
             scene = AdsScene.BackInterstitial,
             activity = this,
             onClosed = { finishGuide() },
-            onFailed = { finishGuide() }
+            onFailed = { finishGuide() },
+            trackingScene = AdTrackingScene.GUIDE_INTERSTITIAL
         )
     }
 
@@ -193,6 +195,7 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
             activity = this,
             parent = binding.onboardingNativeAdContainer,
             request = NativeRenderRequest(style = NativeAdStyle.Medium),
+            trackingScene = AdTrackingScene.GUIDE_NATIVE,
             onShown = {
                 Log.d("OnboardingActivity", "引导页原生广告展示成功")
                 binding.onboardingNativeAdContainer.isVisible = true

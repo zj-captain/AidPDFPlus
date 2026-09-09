@@ -45,6 +45,7 @@ import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.BannerRenderRequest
 import com.ysdc.aidpdf.ads.model.NativeAdStyle
 import com.ysdc.aidpdf.ads.model.NativeRenderRequest
+import com.ysdc.aidpdf.ads.utils.AdTrackingScene
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.core.permission.canPostNotifications
@@ -1048,7 +1049,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             scene = AdsScene.BackInterstitial,
             activity = this,
             onClosed = { next() },
-            onFailed = { next() }
+            onFailed = { next() },
+            trackingScene = AdTrackingScene.SCAN_INTERSTITIAL
         )
     }
 

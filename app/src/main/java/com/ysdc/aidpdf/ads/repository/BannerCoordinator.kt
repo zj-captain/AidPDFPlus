@@ -29,7 +29,8 @@ class BannerCoordinator(
         parent: ViewGroup,
         request: BannerRenderRequest,
         onImpression: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String? = null
     ): AdDisplayHandle? {
         if (displayRegistry.hasBanner(parent)) {
             val error = AdsExceptionInfo(
@@ -61,7 +62,8 @@ class BannerCoordinator(
                 parent = parent,
                 request = request,
                 onImpression = onImpression,
-                onFailed = onFailed
+                onFailed = onFailed,
+                trackingScene = trackingScene
             ) ?: return@forEach
             val wrappedHandle = object : AdDisplayHandle {
                 private var destroyed = false

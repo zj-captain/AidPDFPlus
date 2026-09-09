@@ -20,6 +20,7 @@ import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
 import com.ysdc.aidpdf.ads.core.AdsLogger
 import com.ysdc.aidpdf.ads.core.AdsErrorCode
+import com.ysdc.aidpdf.ads.core.AdsEventTracker
 import com.ysdc.aidpdf.ads.core.AdsExceptionInfo
 import com.ysdc.aidpdf.ads.core.AdsThread
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
@@ -145,34 +146,44 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         activity: AppCompatActivity,
         onShown: () -> Unit,
         onClosed: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String?,
+        trackingType: String?
     ) {
         when (payload) {
             is TradPlusOpenPayload -> {
                 payload.ad.setAdListener(object : SplashAdListener() {
-                    override fun onAdClicked(tpAdInfo: TPAdInfo?) = Unit
+                    override fun onAdClicked(tpAdInfo: TPAdInfo?) {
+                        AdsThread.runOnMain { AdsEventTracker.reportClick(payload.config, trackingScene) }
+                    }
 
                     override fun onAdImpression(tpAdInfo: TPAdInfo?) {
-                        AdsThread.runOnMain { onShown() }
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType)
+                            onShown()
+                        }
                     }
 
                     override fun onAdClosed(tpAdInfo: TPAdInfo?) {
-                        AdsThread.runOnMain { onClosed() }
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportClosed(payload.config, trackingScene)
+                            onClosed()
+                        }
                     }
 
                     override fun onAdLoaded(tpAdInfo: TPAdInfo?, tpBaseAd: TPBaseAd?) = Unit
 
                     override fun onAdLoadFailed(tpAdError: TPAdError?) {
                         AdsThread.runOnMain {
-                            onFailed(
-                                AdsExceptionInfo(
-                                    code = AdsErrorCode.ShowFailed,
-                                    scene = payload.config.scene,
-                                    platform = AdsPlatform.TradPlus,
-                                    message = tpAdError?.errorMsg ?: "TradPlus splash show failed",
-                                    unitId = payload.config.unitId
-                                )
+                            val error = AdsExceptionInfo(
+                                code = AdsErrorCode.ShowFailed,
+                                scene = payload.config.scene,
+                                platform = AdsPlatform.TradPlus,
+                                message = tpAdError?.errorMsg ?: "TradPlus splash show failed",
+                                unitId = payload.config.unitId
                             )
+                            AdsEventTracker.reportShowFailed(payload.config, trackingScene, error)
+                            onFailed(error)
                         }
                     }
                 })
@@ -182,42 +193,50 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
             is TradPlusInterstitialPayload -> {
                 if (!payload.ad.isReady) {
-                    onFailed(
-                        AdsExceptionInfo(
-                            code = AdsErrorCode.ShowFailed,
-                            scene = payload.config.scene,
-                            platform = AdsPlatform.TradPlus,
-                            message = "TradPlus 插屏当前不可展示",
-                            unitId = payload.config.unitId
-                        )
+                    val error = AdsExceptionInfo(
+                        code = AdsErrorCode.ShowFailed,
+                        scene = payload.config.scene,
+                        platform = AdsPlatform.TradPlus,
+                        message = "TradPlus 插屏当前不可展示",
+                        unitId = payload.config.unitId
                     )
+                    AdsEventTracker.reportShowFailed(payload.config, trackingScene, error)
+                    onFailed(error)
                     return
                 }
                 payload.ad.setAdListener(object : InterstitialAdListener {
                     override fun onAdLoaded(tpAdInfo: TPAdInfo?) = Unit
 
-                    override fun onAdClicked(tpAdInfo: TPAdInfo?) = Unit
+                    override fun onAdClicked(tpAdInfo: TPAdInfo?) {
+                        AdsThread.runOnMain { AdsEventTracker.reportClick(payload.config, trackingScene) }
+                    }
 
                     override fun onAdImpression(tpAdInfo: TPAdInfo?) {
-                        AdsThread.runOnMain { onShown() }
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType)
+                            onShown()
+                        }
                     }
 
                     override fun onAdFailed(tpAdError: TPAdError?) {
                         AdsThread.runOnMain {
-                            onFailed(
-                                AdsExceptionInfo(
-                                    code = AdsErrorCode.ShowFailed,
-                                    scene = payload.config.scene,
-                                    platform = AdsPlatform.TradPlus,
-                                    message = tpAdError?.errorMsg ?: "TradPlus interstitial show failed",
-                                    unitId = payload.config.unitId
-                                )
+                            val error = AdsExceptionInfo(
+                                code = AdsErrorCode.ShowFailed,
+                                scene = payload.config.scene,
+                                platform = AdsPlatform.TradPlus,
+                                message = tpAdError?.errorMsg ?: "TradPlus interstitial show failed",
+                                unitId = payload.config.unitId
                             )
+                            AdsEventTracker.reportShowFailed(payload.config, trackingScene, error)
+                            onFailed(error)
                         }
                     }
 
                     override fun onAdClosed(tpAdInfo: TPAdInfo?) {
-                        AdsThread.runOnMain { onClosed() }
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportClosed(payload.config, trackingScene)
+                            onClosed()
+                        }
                     }
 
                     override fun onAdVideoError(tpAdInfo: TPAdInfo?, tpAdError: TPAdError?) = Unit
@@ -238,19 +257,20 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         request: NativeRenderRequest,
         onShown: () -> Unit,
         onImpression: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String?
     ): AdDisplayHandle? {
         payload as? TradPlusNativePayload ?: return null
         if (!payload.ad.isReady) {
-            onFailed(
-                AdsExceptionInfo(
-                    code = AdsErrorCode.ShowFailed,
-                    scene = payload.config.scene,
-                    platform = AdsPlatform.TradPlus,
-                    message = "TradPlus 原生当前不可展示",
-                    unitId = payload.config.unitId
-                )
+            val error = AdsExceptionInfo(
+                code = AdsErrorCode.ShowFailed,
+                scene = payload.config.scene,
+                platform = AdsPlatform.TradPlus,
+                message = "TradPlus 原生当前不可展示",
+                unitId = payload.config.unitId
             )
+            AdsEventTracker.reportShowFailed(payload.config, trackingScene, error)
+            onFailed(error)
             return null
         }
         val layoutId = when (request.style) {
@@ -261,22 +281,29 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         payload.ad.setAdListener(object : NativeAdListener() {
             override fun onAdLoaded(tpAdInfo: TPAdInfo?, tpBaseAd: TPBaseAd?) = Unit
 
-            override fun onAdClicked(tpAdInfo: TPAdInfo?) = Unit
+            override fun onAdClicked(tpAdInfo: TPAdInfo?) {
+                AdsThread.runOnMain { AdsEventTracker.reportClick(payload.config, trackingScene) }
+            }
 
             override fun onAdImpression(tpAdInfo: TPAdInfo?) {
-                onImpression()
+                AdsThread.runOnMain {
+                    AdsEventTracker.reportShown(payload.config, trackingScene)
+                    onImpression()
+                }
             }
 
             override fun onAdShowFailed(tpAdError: TPAdError?, tpAdInfo: TPAdInfo?) {
-                onFailed(
-                    AdsExceptionInfo(
+                AdsThread.runOnMain {
+                    val error = AdsExceptionInfo(
                         code = AdsErrorCode.ShowFailed,
                         scene = payload.config.scene,
                         platform = AdsPlatform.TradPlus,
                         message = tpAdError?.errorMsg ?: "TradPlus native show failed",
                         unitId = payload.config.unitId
                     )
-                )
+                    AdsEventTracker.reportShowFailed(payload.config, trackingScene, error)
+                    onFailed(error)
+                }
             }
 
             override fun onAdLoadFailed(tpAdError: TPAdError?) = Unit

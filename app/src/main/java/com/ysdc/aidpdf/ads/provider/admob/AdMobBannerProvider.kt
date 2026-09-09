@@ -11,6 +11,7 @@ import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
 import com.ysdc.aidpdf.ads.core.AdsErrorCode
+import com.ysdc.aidpdf.ads.core.AdsEventTracker
 import com.ysdc.aidpdf.ads.core.AdsExceptionInfo
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.BannerRenderRequest
@@ -25,29 +26,33 @@ class AdMobBannerProvider : BannerAdProvider {
         parent: ViewGroup,
         request: BannerRenderRequest,
         onImpression: () -> Unit,
-        onFailed: (AdsExceptionInfo) -> Unit
+        onFailed: (AdsExceptionInfo) -> Unit,
+        trackingScene: String?
     ): AdDisplayHandle? {
         val adView = AdView(activity)
         val adSize = AdSize.getLargeAnchoredAdaptiveBannerAdSize(activity, activity.resources.displayMetrics.widthPixels)
         val adRequest = BannerAdRequest.Builder(config.unitId, adSize).build()
+        AdsEventTracker.reportLoadStarted(config)
         adView.loadAd(adRequest, object : AdLoadCallback<BannerAd> {
             override fun onAdLoaded(ad: BannerAd) {
                 if (adView.parent == null) {
                     parent.addView(adView)
                 }
+                AdsEventTracker.reportLoaded(config, success = true, resultCode = 200, resultInfo = "")
+                AdsEventTracker.reportShown(config, trackingScene)
                 onImpression()
             }
 
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                onFailed(
-                    AdsExceptionInfo(
-                        code = AdsErrorCode.LoadFailed,
-                        scene = config.scene,
-                        platform = AdsPlatform.AdMob,
-                        message = loadAdError.message,
-                        unitId = config.unitId
-                    )
+                AdsEventTracker.reportLoaded(config, success = false, resultCode = 0, resultInfo = loadAdError.message)
+                val error = AdsExceptionInfo(
+                    code = AdsErrorCode.LoadFailed,
+                    scene = config.scene,
+                    platform = AdsPlatform.AdMob,
+                    message = loadAdError.message,
+                    unitId = config.unitId
                 )
+                onFailed(error)
             }
         })
         return AdMobDisplayHandle(parent = parent, child = adView, adView = adView)

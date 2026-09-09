@@ -328,7 +328,9 @@ class LaunchLoadingActivity :
                 isShowingAd = false
                 Log.e(TAG, "开屏广告展示失败，message=${it.message}")
                 openNextPage()
-            }
+            },
+            trackingScene = launchAdTrackingScene(),
+            trackingType = launchAdTrackingType()
         )
     }
 
