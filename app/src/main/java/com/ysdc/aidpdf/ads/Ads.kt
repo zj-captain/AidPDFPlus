@@ -61,6 +61,19 @@ object Ads {
         cachedRepository?.showFullScreen(scene, platform, activity, onShown, onClosed, onFailed)
     }
 
+    /**
+     * 全屏广告展示入口：业务层不再指定平台，由模块内部按 AdMob/TradPlus 展示前价格比较，价高者优先。
+     */
+    fun showFullScreen(
+        scene: AdsScene,
+        activity: AppCompatActivity,
+        onShown: () -> Unit = {},
+        onClosed: () -> Unit,
+        onFailed: (AdsExceptionInfo) -> Unit = {}
+    ) {
+        cachedRepository?.showBestFullScreen(scene, activity, onShown, onClosed, onFailed)
+    }
+
     fun showNative(
         scene: AdsScene,
         platform: AdsPlatform,
@@ -74,6 +87,29 @@ object Ads {
         return cachedRepository?.showNative(
             scene,
             platform,
+            activity,
+            parent,
+            request,
+            onShown,
+            onImpression,
+            onFailed
+        )
+    }
+
+    /**
+     * 原生广告展示入口：业务层不再指定平台，由模块内部按 AdMob/TradPlus 展示前价格比较，价高者优先。
+     */
+    fun showNative(
+        scene: AdsScene,
+        activity: AppCompatActivity,
+        parent: ViewGroup,
+        request: NativeRenderRequest,
+        onShown: () -> Unit = {},
+        onImpression: () -> Unit = {},
+        onFailed: (AdsExceptionInfo) -> Unit = {}
+    ): AdDisplayHandle? {
+        return cachedRepository?.showBestNative(
+            scene,
             activity,
             parent,
             request,

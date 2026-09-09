@@ -139,5 +139,5 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.tradplusad:tp_exchange:40.16.7.0.1")
 
-    implementation (name: 'compare_price-release', ext: 'aar')
+    implementation files('libs/compare_price-release.aar')
 }
