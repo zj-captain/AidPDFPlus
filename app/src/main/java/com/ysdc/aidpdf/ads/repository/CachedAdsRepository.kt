@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import com.blankj.utilcode.util.RomUtils
 import com.tp.compareprice.ComparePriceUtil
 import com.ysdc.aidpdf.ads.config.AdsCatalog
 import com.ysdc.aidpdf.ads.config.AdsFormat
@@ -36,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class CachedAdsRepository(
     private val appContext: Context,
@@ -543,16 +545,20 @@ class CachedAdsRepository(
             is AdMobNativePayload -> payload.ad
             else -> return null to "payload 类型不是 AdMob 广告对象"
         }
-        return try {
-            val result = AdMobPriceReflectionUtil.probe(ad, cachedAd.config.unitId)
-            if (result.status == AdMobPriceReflectionUtil.Status.PRIVATE_VALUE_UNVERIFIED && result.price != null) {
-                result.price.ecpm to "status=${result.status} path=${result.matchedPath}"
-            } else {
-                null to "status=${result.status} 未取得展示前候选价"
-            }
-        } catch (throwable: Throwable) {
-            null to "probe 异常：${throwable.javaClass.simpleName}"
-        }
+        val result = AdMobPriceReflectionUtil.probe(ad, cachedAd.config.unitId)
+
+        val testEcpm = Random.nextInt(1, 6) / 100.0
+        return testEcpm  to "临时测试价 eCPM=$testEcpm"
+//        return try {
+//            val result = AdMobPriceReflectionUtil.probe(ad, cachedAd.config.unitId)
+//            if (result.status == AdMobPriceReflectionUtil.Status.PRIVATE_VALUE_UNVERIFIED && result.price != null) {
+//                result.price.ecpm to "status=${result.status} path=${result.matchedPath}"
+//            } else {
+//                null to "status=${result.status} 未取得展示前候选价"
+//            }
+//        } catch (throwable: Throwable) {
+//            null to "probe 异常：${throwable.javaClass.simpleName}"
+//        }
     }
 
     /** 读取 TradPlus 展示前 eCPM；按约定所有广告源统一走 recursiveComparePrice。 */
