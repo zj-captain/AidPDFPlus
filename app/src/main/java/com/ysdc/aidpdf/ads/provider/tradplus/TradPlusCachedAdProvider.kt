@@ -18,6 +18,7 @@ import com.ysdc.aidpdf.R
 import com.ysdc.aidpdf.ads.config.AdsFormat
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
+import com.ysdc.aidpdf.ads.core.AdsLogger
 import com.ysdc.aidpdf.ads.core.AdsErrorCode
 import com.ysdc.aidpdf.ads.core.AdsExceptionInfo
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
@@ -53,7 +54,9 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         config: AdsUnitConfig,
         callback: (Result<Any>) -> Unit
     ) {
-        val splash = TradPlusHolderRegistry.getOrCreateSplash(activity, config.unitId)
+        // 开屏缓存必须与 payload 一一对应，不能按广告位复用同一个 TPSplash，
+        // 否则旧缓存销毁时会把新缓存的底层对象一并销毁。
+        val splash = TPSplash(activity, config.unitId)
         splash.setAdListener(object : SplashAdListener() {
             override fun onAdClicked(tpAdInfo: TPAdInfo?) = Unit
 
@@ -62,10 +65,12 @@ class TradPlusCachedAdProvider : CachedAdProvider {
             override fun onAdClosed(tpAdInfo: TPAdInfo?) = Unit
 
             override fun onAdLoaded(tpAdInfo: TPAdInfo?, tpBaseAd: TPBaseAd?) {
+                AdsLogger.d("TradPlus 开屏缓存加载成功，创建独立 TPSplash：unitId=${config.unitId}")
                 callback(Result.success(TradPlusOpenPayload(config, splash)))
             }
 
             override fun onAdLoadFailed(tpAdError: TPAdError?) {
+                AdsLogger.w("TradPlus 开屏缓存加载失败：unitId=${config.unitId} error=${tpAdError?.errorMsg}")
                 callback(Result.failure(IllegalStateException(tpAdError?.errorMsg)))
             }
         })
@@ -77,9 +82,11 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         config: AdsUnitConfig,
         callback: (Result<Any>) -> Unit
     ) {
-        val interstitial = TradPlusHolderRegistry.getOrCreateInterstitial(activity, config.unitId)
+        // 插屏缓存同样需要独立底层对象，避免旧缓存释放时误伤下一次 reload 的新缓存。
+        val interstitial = TPInterstitial(activity, config.unitId)
         interstitial.setAdListener(object : InterstitialAdListener {
             override fun onAdLoaded(tpAdInfo: TPAdInfo?) {
+                AdsLogger.d("TradPlus 插屏缓存加载成功，创建独立 TPInterstitial：unitId=${config.unitId}")
                 callback(Result.success(TradPlusInterstitialPayload(config, interstitial)))
             }
 
@@ -88,6 +95,7 @@ class TradPlusCachedAdProvider : CachedAdProvider {
             override fun onAdImpression(tpAdInfo: TPAdInfo?) = Unit
 
             override fun onAdFailed(tpAdError: TPAdError?) {
+                AdsLogger.w("TradPlus 插屏缓存加载失败：unitId=${config.unitId} error=${tpAdError?.errorMsg}")
                 callback(Result.failure(IllegalStateException(tpAdError?.errorMsg)))
             }
 
@@ -107,9 +115,11 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         config: AdsUnitConfig,
         callback: (Result<Any>) -> Unit
     ) {
-        val nativeAd = TradPlusHolderRegistry.getOrCreateNative(activity, config.unitId)
+        // 原生缓存需要与 payload 一一对应，避免复用同一对象导致多次 show/destroy 相互污染。
+        val nativeAd = TPNative(activity, config.unitId)
         nativeAd.setAdListener(object : NativeAdListener() {
             override fun onAdLoaded(tpAdInfo: TPAdInfo?, tpBaseAd: TPBaseAd?) {
+                AdsLogger.d("TradPlus 原生缓存加载成功，创建独立 TPNative：unitId=${config.unitId}")
                 callback(Result.success(TradPlusNativePayload(config, nativeAd)))
             }
 
@@ -120,6 +130,7 @@ class TradPlusCachedAdProvider : CachedAdProvider {
             override fun onAdShowFailed(tpAdError: TPAdError?, tpAdInfo: TPAdInfo?) = Unit
 
             override fun onAdLoadFailed(tpAdError: TPAdError?) {
+                AdsLogger.w("TradPlus 原生缓存加载失败：unitId=${config.unitId} error=${tpAdError?.errorMsg}")
                 callback(Result.failure(IllegalStateException(tpAdError?.errorMsg)))
             }
 
@@ -274,9 +285,22 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
     override fun destroyPayload(payload: Any) {
         when (payload) {
-            is TradPlusOpenPayload -> TradPlusHolderRegistry.destroy(payload.config.unitId, AdsFormat.Open)
-            is TradPlusInterstitialPayload -> TradPlusHolderRegistry.destroy(payload.config.unitId, AdsFormat.Interstitial)
-            is TradPlusNativePayload -> TradPlusHolderRegistry.destroy(payload.config.unitId, AdsFormat.Native)
+            is TradPlusOpenPayload -> {
+                // 开屏 payload 改为独立实例后，必须只销毁当前 payload 自己持有的对象，
+                // 避免按 unitId 清理时误伤后续 reload 出来的新缓存。
+                AdsLogger.d("TradPlus 开屏缓存销毁独立 TPSplash：unitId=${payload.config.unitId}")
+                payload.ad.onDestroy()
+            }
+            is TradPlusInterstitialPayload -> {
+                // 插屏 payload 改为独立实例后，销毁时只回收当前对象，避免 unitId 级别复用污染。
+                AdsLogger.d("TradPlus 插屏缓存销毁独立 TPInterstitial：unitId=${payload.config.unitId}")
+                payload.ad.onDestroy()
+            }
+            is TradPlusNativePayload -> {
+                // 原生 payload 改为独立实例后，销毁时只释放当前对象，避免误销毁后续缓存。
+                AdsLogger.d("TradPlus 原生缓存销毁独立 TPNative：unitId=${payload.config.unitId}")
+                payload.ad.onDestroy()
+            }
         }
     }
 }

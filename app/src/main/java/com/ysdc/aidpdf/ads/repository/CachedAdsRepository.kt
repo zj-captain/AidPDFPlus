@@ -564,8 +564,11 @@ class CachedAdsRepository(
     /** 读取 TradPlus 展示前 eCPM；按约定所有广告源统一走 recursiveComparePrice。 */
     private fun resolveTradPlusEcpm(cachedAd: CachedAd): Pair<Double?, String> {
         return try {
-            val ecpm = ComparePriceUtil.recursiveComparePrice(cachedAd.config.unitId)
-            ecpm to "recursiveComparePrice 返回 eCPM=$ecpm"
+//            val ecpm = ComparePriceUtil.recursiveComparePrice(cachedAd.config.unitId)
+//            ecpm to "recursiveComparePrice 返回 eCPM=$ecpm"
+
+            val testEcpm = Random.nextInt(1, 6) / 100.0
+            return testEcpm  to "临时测试价 eCPM=$testEcpm"
         } catch (throwable: Throwable) {
             null to "recursiveComparePrice 异常：${throwable.javaClass.simpleName}"
         }

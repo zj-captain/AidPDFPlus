@@ -29,7 +29,7 @@ object ProviderFactory {
     }
 
     fun destroyAll() {
-        // 当前只有 TradPlus 维护了内部广告对象复用池，需要在全局销毁时一并清理，避免旧对象残留。
+        // 当前 provider 已不再维护 TradPlus 对象复用池，保留空实现以维持统一销毁入口。
         TradPlusHolderRegistry.destroyAll()
     }
 }
