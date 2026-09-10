@@ -273,10 +273,12 @@ class TradPlusCachedAdProvider : CachedAdProvider {
             onFailed(error)
             return null
         }
+        // TradPlus 原生模板不能复用 AdMob 的 NativeAdView/MediaView 根布局，
+        // 否则 SDK 可能无法正确绑定素材，最终只剩空白占位。
         val layoutId = when (request.style) {
-            NativeAdStyle.Large -> R.layout.layout_ad_native_large
-            NativeAdStyle.Medium -> R.layout.layout_ad_native_medium
-            NativeAdStyle.Tiny -> R.layout.layout_ad_native_tiny
+            NativeAdStyle.Large -> R.layout.layout_ad_native_tradplus_large
+            NativeAdStyle.Medium -> R.layout.layout_ad_native_tradplus_medium
+            NativeAdStyle.Tiny -> R.layout.layout_ad_native_tradplus_tiny
         }
         payload.ad.setAdListener(object : NativeAdListener() {
             override fun onAdLoaded(tpAdInfo: TPAdInfo?, tpBaseAd: TPBaseAd?) = Unit
