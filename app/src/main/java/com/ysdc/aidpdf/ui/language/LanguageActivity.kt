@@ -40,7 +40,6 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
     override fun hideNavigationBar(): Boolean = true
 
     private var secondCount = 5
-    private var isStop = false
 
     override fun setupViews(savedInstanceState: Bundle?) {
         val selectedTag = if (hasSavedLanguageTag) {
@@ -48,7 +47,6 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
         } else {
             AppLanguages.defaultForSystem().tag
         }
-        isStop = false
         val languages = AppLanguages.ordered(selectedTag)
         languageAdapter = LanguageOptionAdapter(languages, selectedTag)
         binding.languageList.adapter = languageAdapter
@@ -100,7 +98,6 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
 
     override fun onStop() {
         super.onStop()
-        isStop = true
         timer?.cancel()
         timer = null
     }
@@ -131,7 +128,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
         val selected = languageAdapter.selectedTag
         languageTag = selected
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(selected))
-        if (isFinishing || isDestroyed || isStop) return
+        if (isFinishing || isDestroyed) return
         if (fromFirstRun) {
             openActivity<OnboardingActivity>(finishCurrent = true)
         } else {
