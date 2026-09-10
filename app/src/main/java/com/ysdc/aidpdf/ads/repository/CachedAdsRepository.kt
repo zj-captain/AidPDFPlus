@@ -108,7 +108,8 @@ class CachedAdsRepository(
         onClosed: () -> Unit,
         onFailed: (AdsExceptionInfo) -> Unit,
         trackingScene: String? = null,
-        trackingType: String? = null
+        trackingType: String? = null,
+        ecpm: Double? = null
     ) {
         AdsThread.runOnMain {
             val runtime = runtimeRegistry.get(scene, platform)
@@ -139,7 +140,8 @@ class CachedAdsRepository(
                 onClosed = onClosed,
                 onFailed = onFailed,
                 trackingScene = trackingScene,
-                trackingType = trackingType
+                trackingType = trackingType,
+                ecpm = ecpm
             )
         }
     }
@@ -153,7 +155,8 @@ class CachedAdsRepository(
         onShown: () -> Unit,
         onImpression: () -> Unit,
         onFailed: (AdsExceptionInfo) -> Unit,
-        trackingScene: String? = null
+        trackingScene: String? = null,
+        ecpm: Double? = null
     ): AdDisplayHandle? {
         var handle: AdDisplayHandle? = null
         AdsThread.runOnMain {
@@ -183,6 +186,7 @@ class CachedAdsRepository(
                 onFailed(error)
                 return@runOnMain
             }
+            var nativeShowFailedHandled = false
             val actualHandle = ProviderFactory.cached(platform, AdsFormat.Native).showNative(
                 payload = cached.payload,
                 activity = activity,
@@ -198,8 +202,24 @@ class CachedAdsRepository(
                     onShown()
                 },
                 onImpression = onImpression,
-                onFailed = onFailed,
-                trackingScene = trackingScene
+                onFailed = { error ->
+                    // 原生广告一旦确认展示失败，需要及时淘汰当前缓存并触发补缓存，
+                    // 避免下一次自动竞价继续反复命中同一条不可展示对象。
+                    if (!nativeShowFailedHandled) {
+                        nativeShowFailedHandled = true
+                        if (runtime.cachedAd?.payload === cached.payload) {
+                            AdsLogger.w("场景=$scene 平台=$platform 原生展示失败，淘汰当前缓存并尝试补缓存：${error.message}")
+                            destroyCachedAd(runtime)
+                            runtime.state = if (runtime.autoReloadEnabled) AdsState.Idle else AdsState.Suspended
+                            if (runtime.autoReloadEnabled) {
+                                load(scene, platform, activity = if (platform == AdsPlatform.TradPlus) activity else null)
+                            }
+                        }
+                    }
+                    onFailed(error)
+                },
+                trackingScene = trackingScene,
+                ecpm = ecpm
             ) ?: return@runOnMain
             val wrappedHandle = object : AdDisplayHandle {
                 private var destroyed = false
@@ -234,7 +254,7 @@ class CachedAdsRepository(
         trackingType: String? = null
     ) {
         AdsThread.runOnMain {
-            val ranked = rankCandidates(buildCandidates(scene))
+            val ranked = rankCandidates(buildCandidates(scene,activity))
             if (ranked.isEmpty()) {
                 onFailed(noCandidates(scene))
                 return@runOnMain
@@ -271,7 +291,7 @@ class CachedAdsRepository(
                 onFailed(error)
                 return@runOnMain
             }
-            val ranked = rankCandidates(buildCandidates(scene))
+            val ranked = rankCandidates(buildCandidates(scene,activity))
             if (ranked.isEmpty()) {
                 onFailed(noCandidates(scene))
                 return@runOnMain
@@ -295,7 +315,8 @@ class CachedAdsRepository(
                             AdsLogger.w("自动竞价：场景=$scene 平台=${candidate.platform} 原生展示失败，尝试下一候选：${error.message}")
                         }
                     },
-                    trackingScene = trackingScene
+                    trackingScene = trackingScene,
+                    ecpm = candidate.ecpm
                 )
                 if (handle != null) {
                     result = handle
@@ -346,7 +367,8 @@ class CachedAdsRepository(
                 tryShowBestFullScreen(scene, candidates, index + 1, activity, onShown, onClosed, onFailed, error, trackingScene, trackingType)
             },
             trackingScene = trackingScene,
-            trackingType = trackingType
+            trackingType = trackingType,
+            ecpm = candidate.ecpm
         )
     }
 
@@ -508,20 +530,23 @@ class CachedAdsRepository(
         AdsPlatform.AdMob -> 1
     }
 
-    private fun buildCandidates(scene: AdsScene): List<DisplayCandidate> {
+    private fun buildCandidates(scene: AdsScene,activity: AppCompatActivity,): List<DisplayCandidate> {
         return listOf(AdsPlatform.TradPlus, AdsPlatform.AdMob).mapNotNull { platform ->
-            buildCandidate(scene, platform)
+            buildCandidate(scene,activity, platform)
         }
     }
 
-    private fun buildCandidate(scene: AdsScene, platform: AdsPlatform): DisplayCandidate? {
+    private fun buildCandidate(scene: AdsScene, activity: AppCompatActivity,platform: AdsPlatform): DisplayCandidate? {
         val runtime = runtimeRegistry.get(scene, platform)
         val cached = runtime.cachedAd ?: run {
-            AdsLogger.d("自动竞价：场景=$scene 平台=$platform 无缓存，不参与竞价")
+            AdsLogger.d("自动竞价：场景=$scene 平台=$platform 无缓存，不参与竞价，尝试补缓存")
+            maybeBackfillPlatform(scene,activity, platform)
             return null
         }
         if (cached.isExpired(System.currentTimeMillis())) {
-            AdsLogger.w("自动竞价：场景=$scene 平台=$platform 缓存已过期，不参与竞价")
+            AdsLogger.w("自动竞价：场景=$scene 平台=$platform 缓存已过期，不参与竞价，尝试补缓存")
+            destroyCachedAd(runtime)
+            maybeBackfillPlatform(scene, activity,platform)
             return null
         }
         if (cached.config.format != scene.expectedFormat) {
@@ -545,12 +570,35 @@ class CachedAdsRepository(
         )
     }
 
-    /** TradPlus 插屏/原生依赖对象自身的 isReady；开屏沿用现有“有缓存即可尝试”的弱校验。 */
+    private fun maybeBackfillPlatform(scene: AdsScene,activity: AppCompatActivity, platform: AdsPlatform) {
+        val runtime = runtimeRegistry.get(scene, platform)
+        if (!runtime.autoReloadEnabled) {
+            AdsLogger.d("自动竞价：场景=$scene 平台=$platform 已关闭自动补缓存，跳过补缓存")
+            return
+        }
+        if (runtime.state == AdsState.Loading || runtime.state == AdsState.RetryWaiting || runtime.state == AdsState.Suspended) {
+            AdsLogger.d("自动竞价：场景=$scene 平台=$platform 当前状态=${runtime.state}，跳过补缓存")
+            return
+        }
+        if (catalog.unitsFor(scene, platform).isEmpty()) {
+            AdsLogger.d("自动竞价：场景=$scene 平台=$platform 没有广告配置，跳过补缓存")
+            return
+        }
+        AdsLogger.d("自动竞价：场景=$scene 平台=$platform 满足补缓存条件，开始补缓存")
+        load(scene, platform, activity = activity)
+    }
+
+    /**
+     * TradPlus 可用性预检查：
+     * - 开屏：沿用“有缓存即可尝试”的弱校验；
+     * - 插屏：继续依赖 isReady，避免明显不可展示对象参与全屏竞价；
+     * - 原生：只要缓存未过期就先允许进候选，最终能否展示交给 showNative() 再裁决。
+     */
     private fun isTradPlusPayloadUsable(payload: Any): Boolean {
         return when (payload) {
             is TradPlusOpenPayload -> true
             is TradPlusInterstitialPayload -> payload.ad.isReady
-            is TradPlusNativePayload -> payload.ad.isReady
+            is TradPlusNativePayload -> true
             else -> false
         }
     }

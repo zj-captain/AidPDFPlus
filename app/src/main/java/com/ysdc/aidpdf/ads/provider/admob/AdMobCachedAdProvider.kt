@@ -95,7 +95,8 @@ class AdMobCachedAdProvider : CachedAdProvider {
         onClosed: () -> Unit,
         onFailed: (AdsExceptionInfo) -> Unit,
         trackingScene: String?,
-        trackingType: String?
+        trackingType: String?,
+        ecpm: Double?
     ) {
         when (payload) {
             is AdMobOpenPayload -> {
@@ -103,7 +104,7 @@ class AdMobCachedAdProvider : CachedAdProvider {
                     // AdMob 事件回调可能被 SDK 调度到后台线程（如 GMA BG），必须切回主线程再通知业务层。
                     override fun onAdShowedFullScreenContent() {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType)
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm)
                             onShown()
                         }
                     }
@@ -143,7 +144,7 @@ class AdMobCachedAdProvider : CachedAdProvider {
                     // AdMob 事件回调可能被 SDK 调度到后台线程（如 GMA BG），必须切回主线程再通知业务层。
                     override fun onAdShowedFullScreenContent() {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType)
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm)
                             onShown()
                         }
                     }
@@ -188,12 +189,13 @@ class AdMobCachedAdProvider : CachedAdProvider {
         onShown: () -> Unit,
         onImpression: () -> Unit,
         onFailed: (AdsExceptionInfo) -> Unit,
-        trackingScene: String?
+        trackingScene: String?,
+        ecpm: Double?
     ): AdDisplayHandle? {
         payload as? AdMobNativePayload ?: return null
         val nativeAdView: NativeAdView = AdMobNativeRenderer.createAndBind(parent, payload, request.style)
         parent.addView(nativeAdView)
-        AdsEventTracker.reportShown(payload.config, trackingScene)
+        AdsEventTracker.reportShown(payload.config, trackingScene, ecpm = ecpm)
         onShown()
         onImpression()
         return AdMobDisplayHandle(parent = parent, child = nativeAdView, nativeAd = payload.ad)

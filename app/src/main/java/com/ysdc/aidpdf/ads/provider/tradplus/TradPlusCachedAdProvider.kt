@@ -148,7 +148,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         onClosed: () -> Unit,
         onFailed: (AdsExceptionInfo) -> Unit,
         trackingScene: String?,
-        trackingType: String?
+        trackingType: String?,
+        ecpm: Double?
     ) {
         when (payload) {
             is TradPlusOpenPayload -> {
@@ -159,7 +160,7 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
                     override fun onAdImpression(tpAdInfo: TPAdInfo?) {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType)
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm)
                             onShown()
                         }
                     }
@@ -213,7 +214,7 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
                     override fun onAdImpression(tpAdInfo: TPAdInfo?) {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType)
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm)
                             onShown()
                         }
                     }
@@ -258,7 +259,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         onShown: () -> Unit,
         onImpression: () -> Unit,
         onFailed: (AdsExceptionInfo) -> Unit,
-        trackingScene: String?
+        trackingScene: String?,
+        ecpm: Double?
     ): AdDisplayHandle? {
         payload as? TradPlusNativePayload ?: return null
         if (!payload.ad.isReady) {
@@ -289,7 +291,7 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
             override fun onAdImpression(tpAdInfo: TPAdInfo?) {
                 AdsThread.runOnMain {
-                    AdsEventTracker.reportShown(payload.config, trackingScene)
+                    AdsEventTracker.reportShown(payload.config, trackingScene, ecpm = ecpm)
                     onImpression()
                 }
             }

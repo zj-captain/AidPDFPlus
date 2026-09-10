@@ -61,7 +61,12 @@ object AdsEventTracker {
         )
     }
 
-    fun reportShown(config: AdsUnitConfig, trackingScene: String?, trackingType: String? = null) {
+    fun reportShown(
+        config: AdsUnitConfig,
+        trackingScene: String?,
+        trackingType: String? = null,
+        ecpm: Double? = null
+    ) {
         val params = mutableMapOf<String, Any?>(
             "ad_type" to resolveAdType(config.format),
             "ad_type_name" to resolveAdTypeName(config.format),
@@ -69,7 +74,7 @@ object AdsEventTracker {
             "ad_mediation" to resolveMediation(config.platform),
             "ad_placement_name" to "",
             "ad_placement_id" to config.unitId,
-            "ad_ecpm_number" to EMPTY_ECPM,
+            "ad_ecpm_number" to (ecpm ?: EMPTY_ECPM),
             "ad_source" to resolveMediation(config.platform),
             "ad_source_id" to config.unitId,
             "result_code" to RESULT_SUCCESS,
