@@ -22,7 +22,14 @@
 
 -dontwarn com.gemalto.jp2.JP2Decoder
 -dontwarn com.gemalto.jp2.JP2Encoder
-
+-assumenosideeffects class android.util.Log {
+    public static int v(...);
+    public static int d(...);
+    public static int i(...);
+    public static int w(...);
+    public static int e(...);
+    public static int wtf(...);
+}
 # ── Gson ──────────────────────────────────────────────────────────
 # 保留泛型签名，TypeToken 需要在运行时读取泛型参数
 -keepattributes Signature
@@ -38,3 +45,5 @@
 
 -keep public class com.tradplus.** { *; }
 -keep class com.tradplus.ads.** { *; }
+
+-keep public class com.tp.compareprice.** { *; }

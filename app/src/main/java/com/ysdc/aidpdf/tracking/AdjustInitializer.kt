@@ -8,6 +8,7 @@ import com.adjust.sdk.AdjustConfig
 import com.adjust.sdk.LogLevel
 import com.google.android.libraries.ads.mobile.sdk.common.AdValue
 import com.google.android.libraries.ads.mobile.sdk.common.ResponseInfo
+import com.loft.vertsdk.VertSDK
 import com.ysdc.aidpdf.BuildConfig
 
 internal object AdjustInitializer {

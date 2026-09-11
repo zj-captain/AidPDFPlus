@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import com.tp.compareprice.ComparePriceUtil
 import com.ysdc.aidpdf.ads.config.AdsCatalog
 import com.ysdc.aidpdf.ads.config.AdsFormat
 import com.ysdc.aidpdf.ads.config.AdsPlatform
@@ -609,30 +610,28 @@ class CachedAdsRepository(
             is AdMobNativePayload -> payload.ad
             else -> return null to "payload 类型不是 AdMob 广告对象"
         }
-        val result = AdMobPriceReflectionUtil.probe(ad, cachedAd.config.unitId)
-
-        val testEcpm = Random.nextInt(1, 6) / 100.0
-        return testEcpm  to "临时测试价 eCPM=$testEcpm"
-//        return try {
-//            val result = AdMobPriceReflectionUtil.probe(ad, cachedAd.config.unitId)
-//            if (result.status == AdMobPriceReflectionUtil.Status.PRIVATE_VALUE_UNVERIFIED && result.price != null) {
-//                result.price.ecpm to "status=${result.status} path=${result.matchedPath}"
-//            } else {
-//                null to "status=${result.status} 未取得展示前候选价"
-//            }
-//        } catch (throwable: Throwable) {
-//            null to "probe 异常：${throwable.javaClass.simpleName}"
-//        }
+//        val testEcpm = Random.nextInt(1, 6) / 100.0
+//        return testEcpm  to "临时测试价 eCPM=$testEcpm"
+        return try {
+            val result = AdMobPriceReflectionUtil.probe(ad, cachedAd.config.unitId)
+            if (result.status == AdMobPriceReflectionUtil.Status.PRIVATE_VALUE_UNVERIFIED && result.price != null) {
+                result.price.ecpm to "status=${result.status} path=${result.matchedPath}"
+            } else {
+                null to "status=${result.status} 未取得展示前候选价"
+            }
+        } catch (throwable: Throwable) {
+            null to "probe 异常：${throwable.javaClass.simpleName}"
+        }
     }
 
     /** 读取 TradPlus 展示前 eCPM；按约定所有广告源统一走 recursiveComparePrice。 */
     private fun resolveTradPlusEcpm(cachedAd: CachedAd): Pair<Double?, String> {
         return try {
-//            val ecpm = ComparePriceUtil.recursiveComparePrice(cachedAd.config.unitId)
-//            ecpm to "recursiveComparePrice 返回 eCPM=$ecpm"
+            val ecpm = ComparePriceUtil.recursiveComparePrice(cachedAd.config.unitId)
+            ecpm to "recursiveComparePrice 返回 eCPM=$ecpm"
 
-            val testEcpm = Random.nextInt(1, 6) / 100.0
-            return testEcpm  to "临时测试价 eCPM=$testEcpm"
+//            val testEcpm = Random.nextInt(1, 6) / 100.0
+//            return testEcpm  to "临时测试价 eCPM=$testEcpm"
         } catch (throwable: Throwable) {
             null to "recursiveComparePrice 异常：${throwable.javaClass.simpleName}"
         }

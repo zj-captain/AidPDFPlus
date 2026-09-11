@@ -29,7 +29,7 @@ object GmaInitializer {
             runCatching {
                 MobileAds.initialize(
                     application,
-                    InitializationConfig.Builder("ca-app-pub-3940256099942544~3347511713").build()
+                    InitializationConfig.Builder("ca-app-pub-9270792764224532~2941886933").build()
                 ) {
                     initialized = true
                     initializing = false

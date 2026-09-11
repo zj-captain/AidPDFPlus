@@ -6,7 +6,7 @@ import com.tradplus.ads.open.TradPlusSdk
 import com.ysdc.aidpdf.ads.core.AdsLogger
 
 object TradPlusInitializer {
-    private const val TRAD_PLUS_APP_ID = "3BA470A2B9FED0E184DD0A0C8329B811"
+    private const val TRAD_PLUS_APP_ID = "A77C9A8B618E88EF72DC1E05CFB88A11"
 
     @Volatile
     private var initialized = false
@@ -25,12 +25,10 @@ object TradPlusInitializer {
             AdsLogger.d("TradPlus 初始化完成")
             val settingParam = HashMap<String, Any>()
             val unitIds = arrayOf(
-                "CF08D70991970B5C90747A9B20220F12",
-                "6EF26876E9E56CD96DD4F01E2A1D9412",
-                "3E1F59FFE26B1D4BBC3A7C2E51D57A12",
-                "7879155BC6A5285C67D3C003D40D7E12",
-                "161079FEE749053E5963BF20648FF012",
-                "AC5896E2EAF7F1AD848820F04588C512"
+                "4A1E0CCC2D7D9C8F146EDD76F3BD6E12",
+                "5041097CA9419D1C1D05A61F8AEA9212",
+                "0EEBA179B9D67F343D3FB7A19D59C912",
+                "386CFFD673E1FB10106E36649FBDE312"
             )
             settingParam["autoload_close"] = unitIds
             TradPlusSdk.setSettingDataParam(settingParam)
