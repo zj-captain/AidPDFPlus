@@ -1,11 +1,14 @@
 package com.ysdc.aidpdf.ad
 
 import android.os.Bundle
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustAdRevenue
 import com.facebook.appevents.AppEventsLogger
 import com.google.android.libraries.ads.mobile.sdk.common.AdValue
 import com.google.android.libraries.ads.mobile.sdk.common.ResponseInfo
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.loft.vertsdk.VertSDK
+import com.ysdc.aidpdf.BuildConfig
 import com.ysdc.aidpdf.ads.config.AdsFormat
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
 import com.ysdc.aidpdf.store.appInstance
@@ -49,8 +52,31 @@ object AdEventTracker {
             )
         }
     }
+    fun sendTpRevenue(ecpm: Double, currencyCode: String?, responseInfoName: String?) {
+        runCatching {
+            Adjust.trackAdRevenue(AdjustAdRevenue("admob_sdk").also {
+                it.setRevenue(ecpm * 1000, currencyCode)
+                it.adRevenueNetwork = responseInfoName
+            })
+        }
 
-    fun reportTotalAdsRenenue001(adValue: AdValue) {
+        if (!BuildConfig.DEBUG) {
+            runCatching {
+                firebaseAnalytics?.logEvent("ad_impression_revenue", Bundle().apply {
+                    putDouble(FirebaseAnalytics.Param.VALUE, ecpm * 1000)
+                    putString(FirebaseAnalytics.Param.CURRENCY, "USD")
+                })
+            }
+
+            runCatching {
+                facebookLogger.logPurchase(
+                    (ecpm * 1000).toBigDecimal(),
+                    Currency.getInstance("USD")
+                )
+            }
+        }
+    }
+    fun reportTotalAdsRenenue001Admob(adValue: AdValue) {
         //新增Total_Ads_Renenue_001 投放事件上报
         runCatching {
             val revenueTemp = adValue.valueMicros / 1_000_000.0
@@ -78,7 +104,30 @@ object AdEventTracker {
             }
         }
     }
+    fun reportTotalAdsRenenue001Tp(ecmp: Double) {
+        //新增Total_Ads_Renenue_001 投放事件上报
+        runCatching {
+            val revenueTemp = ecmp / 1000
+            var current = currentAdRevenue
+            current += revenueTemp
+            if (current >= 0.01f) {
+                val analytics = firebaseAnalytics ?: return
+                analytics.logEvent("Total_Ads_Renenue_001", Bundle().apply {
+                    putDouble(FirebaseAnalytics.Param.VALUE, current)
+                    putString(FirebaseAnalytics.Param.CURRENCY, "USD")
+                })
 
+                val jsonObject = JSONObject()
+                jsonObject.put(FirebaseAnalytics.Param.VALUE, current)
+                jsonObject.put(FirebaseAnalytics.Param.CURRENCY, "USD")
+                VertSDK.trackEvent("Total_Ads_Renenue_001", jsonObject)
+
+                currentAdRevenue = 0.000000000000
+            } else {
+                currentAdRevenue = current
+            }
+        }
+    }
     internal fun firebaseRevenueParameters(
         scene: String,
         format: String,

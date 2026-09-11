@@ -8,6 +8,7 @@ import com.google.android.libraries.ads.mobile.sdk.banner.BannerAd
 import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRequest
 import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback
 import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
+import com.ysdc.aidpdf.ad.AdEventTracker
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
 import com.ysdc.aidpdf.ads.core.AdsErrorCode
@@ -40,9 +41,10 @@ class AdMobBannerProvider : BannerAdProvider {
                 }
                 AdsEventTracker.reportLoaded(config, success = true, resultCode = 200, resultInfo = "")
                 AdsEventTracker.reportShown(config, trackingScene)
+                AdEventTracker.reportPaidValue(trackingScene?:config.scene.remoteKey, config, value, ad.getResponseInfo())
+                AdEventTracker.reportTotalAdsRenenue001Admob(value)
                 onImpression()
             }
-
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 AdsEventTracker.reportLoaded(config, success = false, resultCode = 0, resultInfo = loadAdError.message)
                 val error = AdsExceptionInfo(

@@ -19,6 +19,7 @@ import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoader
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoaderCallback
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
+import com.ysdc.aidpdf.ad.AdEventTracker
 import com.ysdc.aidpdf.ads.config.AdsFormat
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsScene
@@ -113,6 +114,8 @@ class AdMobCachedAdProvider : CachedAdProvider {
                     override fun onAdPaid(value: AdValue) {
                         AdsThread.runOnMain {
                             AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000)
+                            AdEventTracker.reportPaidValue(trackingScene?:payload.config.scene.remoteKey, payload.config, value, payload.ad.getResponseInfo())
+                            AdEventTracker.reportTotalAdsRenenue001Admob(value)
                         }
                     }
                     override fun onAdClicked() {
@@ -157,6 +160,8 @@ class AdMobCachedAdProvider : CachedAdProvider {
                     override fun onAdPaid(value: AdValue) {
                         AdsThread.runOnMain {
                             AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000)
+                            AdEventTracker.reportPaidValue(trackingScene?:payload.config.scene.remoteKey, payload.config, value, payload.ad.getResponseInfo())
+                            AdEventTracker.reportTotalAdsRenenue001Admob(value)
                         }
                     }
                     override fun onAdClicked() {
@@ -214,6 +219,8 @@ class AdMobCachedAdProvider : CachedAdProvider {
                         ecpm = ecpm,
                         reEcpm = value.valueMicros / 1_000_000.0 * 1000
                     )
+                    AdEventTracker.reportPaidValue(trackingScene?:payload.config.scene.remoteKey, payload.config, value, payload.ad.getResponseInfo())
+                    AdEventTracker.reportTotalAdsRenenue001Admob(value)
                 }
             }
         }

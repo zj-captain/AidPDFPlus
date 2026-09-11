@@ -15,6 +15,7 @@ import com.tradplus.ads.open.nativead.TPNative
 import com.tradplus.ads.open.splash.SplashAdListener
 import com.tradplus.ads.open.splash.TPSplash
 import com.ysdc.aidpdf.R
+import com.ysdc.aidpdf.ad.AdEventTracker
 import com.ysdc.aidpdf.ads.config.AdsFormat
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
@@ -162,6 +163,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
                         AdsThread.runOnMain {
                             // 补传最终展示价（TPAdInfo.ecpm 为美元 eCPM），供埋点计算 gap。
                             AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm, tpAdInfo?.ecpm?.toDoubleOrNull())
+                            AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,tpAdInfo?.ecpmcny,tpAdInfo?.adSourceName)
+                            AdEventTracker.reportTotalAdsRenenue001Tp(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
                             onShown()
                         }
                     }
@@ -217,6 +220,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
                         AdsThread.runOnMain {
                             // 补传最终展示价（TPAdInfo.ecpm 为美元 eCPM），供埋点计算 gap。
                             AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm, tpAdInfo?.ecpm?.toDoubleOrNull())
+                            AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,tpAdInfo?.ecpmcny,tpAdInfo?.adSourceName)
+                            AdEventTracker.reportTotalAdsRenenue001Tp(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
                             onShown()
                         }
                     }
@@ -295,6 +300,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
                 AdsThread.runOnMain {
                     // 补传最终展示价（TPAdInfo.ecpm 为美元 eCPM），供埋点计算 gap。
                     AdsEventTracker.reportShown(payload.config, trackingScene, ecpm = ecpm, reEcpm = tpAdInfo?.ecpm?.toDoubleOrNull())
+                    AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,tpAdInfo?.ecpmcny,tpAdInfo?.adSourceName)
+                    AdEventTracker.reportTotalAdsRenenue001Tp(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
                     onImpression()
                 }
             }

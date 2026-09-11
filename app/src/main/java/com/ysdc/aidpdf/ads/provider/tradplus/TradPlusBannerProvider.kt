@@ -6,6 +6,7 @@ import com.tradplus.ads.base.bean.TPAdError
 import com.tradplus.ads.base.bean.TPAdInfo
 import com.tradplus.ads.open.banner.BannerAdListener
 import com.tradplus.ads.open.banner.TPBanner
+import com.ysdc.aidpdf.ad.AdEventTracker
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsUnitConfig
 import com.ysdc.aidpdf.ads.core.AdsErrorCode
@@ -37,7 +38,9 @@ class TradPlusBannerProvider : BannerAdProvider {
             }
 
             override fun onAdImpression(tpAdInfo: TPAdInfo?) {
-                AdsEventTracker.reportShown(config, trackingScene)
+                AdsEventTracker.reportShown(config, trackingScene, ecpm = tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00, reEcpm = tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
+                AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,tpAdInfo?.ecpmcny,tpAdInfo?.adSourceName)
+                AdEventTracker.reportTotalAdsRenenue001Tp(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
                 onImpression()
             }
 
