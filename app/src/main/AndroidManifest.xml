@@ -226,7 +226,7 @@
 
         <activity
             android:name=".ui.language.LanguageActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:configChanges="orientation|screenSize|keyboardHidden|locale|layoutDirection"
             android:exported="false"
             android:screenOrientation="portrait" />
 
