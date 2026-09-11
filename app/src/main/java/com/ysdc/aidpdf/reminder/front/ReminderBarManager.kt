@@ -5,6 +5,7 @@ import android.app.Application
 import android.app.Notification
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
@@ -25,31 +26,39 @@ import kotlin.random.Random
 
 object ReminderBarManager {
 
+    private const val TAG = "ReminderBarManager"
     const val NOTIFICATION_ID = 24_300
     private const val CHANNEL_ID = "aidpdf_document_bar"
 
     fun startIfAllowed(context: Context) {
         if (!context.canPostNotifications()) {
+            Log.e(TAG, "startIfAllowed: 无通知权限，直接停止")
             stop(context)
             return
         }
-        if (ReminderDeviceCompat.isAndroid12AndAbove() && context is Application) {
+        if (ReminderDeviceCompat.isAndroid12AndAbove() && context is Application ||!ReminderDeviceCompat.isAndroid12AndAbove()) {
+            Log.e(TAG, "startIfAllowed: Android12+ 且 Application，仅 showNotification 不启动服务")
             runCatching { showNotification(context) }
             return
         }
         runCatching {
             if (ReminderBarService.isServiceRunning) {
+                Log.e(TAG, "startIfAllowed: 服务已在运行，检查通知是否被移除")
                 val removed = NotificationManagerCompat.from(context)
                     .activeNotifications
                     .none { it.id == NOTIFICATION_ID }
                 if (removed) showNotification(context)
                 return
             } else {
+                Log.e(TAG, "startIfAllowed: 调用 startForegroundService 启动服务")
                 ContextCompat.startForegroundService(
                     context,
                     Intent(context, ReminderBarService::class.java)
                 )
             }
+        }.onFailure {
+            // 关键日志：startForegroundService 抛异常时，此前会被 runCatching 静默吞掉
+            Log.e(TAG, "startIfAllowed: startForegroundService 抛出异常", it)
         }
     }
 

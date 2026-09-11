@@ -17,6 +17,7 @@ import com.ysdc.aidpdf.ads.model.NativeRenderRequest
 import com.ysdc.aidpdf.ads.repository.BannerCoordinator
 import com.ysdc.aidpdf.ads.repository.CachedAdsRepository
 import com.ysdc.aidpdf.ad.AdsLimitManager
+import com.ysdc.aidpdf.core.block.BlockUtils
 
 object Ads {
     private var cachedRepository: CachedAdsRepository? = null
@@ -158,6 +159,17 @@ object Ads {
         onFailed: (AdsExceptionInfo) -> Unit = {},
         trackingScene: String? = null
     ): AdDisplayHandle? {
+        if (BlockUtils.shouldBlockAds(activity)) {
+            onFailed(
+                AdsExceptionInfo(
+                    code = AdsErrorCode.DailyLimitExceeded,
+                    scene = scene,
+                    platform = AdsPlatform.TradPlus,
+                    message = "广告被拦截屏蔽"
+                )
+            )
+            return null
+        }
         // 每日广告展示上限检查
         if (!AdsLimitManager.canShow()) {
             AdsLogger.d("广告展示被每日上限拦截: scene=$scene (自动竞价原生)")

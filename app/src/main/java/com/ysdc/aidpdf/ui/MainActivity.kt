@@ -809,10 +809,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun openDocument(document: LocalDocument) {
-        if (BlockUtils.shouldBlockAds(this)) {
-            openDocumentAfterAd(document)
-            return
-        }
+//        if (BlockUtils.shouldBlockAds(this)) {
+//            openDocumentAfterAd(document)
+//            return
+//        }
         Ads.showFullScreen(
             scene = AdsScene.ResultInterstitial,
             activity = this,
