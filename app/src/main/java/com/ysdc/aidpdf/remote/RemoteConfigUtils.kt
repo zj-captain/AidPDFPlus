@@ -86,7 +86,7 @@ object RemoteConfigUtils {
                 buildMap {
                     putAll(
                         mapOf(
-                            GLOBAL_BLOCK_SWITCH_KEY to "1",
+                            GLOBAL_BLOCK_SWITCH_KEY to "0",
                             REMOTE_ADS_LIMIT_CONFIG_KEY to DEFAULT_ADS_LIMIT_CONFIG_JSON,
                             REFERRER_CONFIG_KEY to DEFAULT_REFERRER_CONFIG,
                             BLOCKED_REFERRER_KEY to DEFAULT_BLOCKED_REFERRERS,

@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import com.blankj.utilcode.util.RomUtils
-import com.tp.compareprice.ComparePriceUtil
 import com.ysdc.aidpdf.ads.config.AdsCatalog
 import com.ysdc.aidpdf.ads.config.AdsFormat
 import com.ysdc.aidpdf.ads.config.AdsPlatform

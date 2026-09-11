@@ -12,5 +12,6 @@ enum class AdsErrorCode {
     LoadFailed,
     ShowFailed,
     RenderFailed,
-    UnsupportedFormat
+    UnsupportedFormat,
+    DailyLimitExceeded    // 今日广告展示已达上限
 }
