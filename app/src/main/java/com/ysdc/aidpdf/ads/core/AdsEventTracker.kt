@@ -79,7 +79,7 @@ object AdsEventTracker {
             "ad_placement_name" to "",
             "ad_placement_id" to config.unitId,
             "ad_ecpm_number" to (ecpm ?: EMPTY_ECPM),
-            "gap" to resolveGap(ecpm, reEcpm),
+            "gap" to resolveGap(ecpm, reEcpm,(config.platform)),
             "ad_source" to resolveMediation(config.platform),
             "ad_source_id" to config.unitId,
             "result_code" to RESULT_SUCCESS,
@@ -154,13 +154,13 @@ object AdsEventTracker {
      * 仅当两个价格都为有效正值时才比较；任一价格缺失或无效时返回空字符串，
      * 避免把「无法比较」误报成某种偏差。
      */
-    private fun resolveGap(ecpm: Double?, reEcpm: Double?): String {
+    private fun resolveGap(ecpm: Double?, reEcpm: Double?,platform: AdsPlatform?): String {
         val requestPrice = ecpm?.takeIf { !it.isNaN() && !it.isInfinite() && it > 0.0 } ?: return ""
         val finalPrice = reEcpm?.takeIf { !it.isNaN() && !it.isInfinite() && it > 0.0 } ?: return ""
         return when {
-            kotlin.math.abs(requestPrice - finalPrice) < GAP_EQUAL_EPSILON -> "equal_mix"
-            requestPrice > finalPrice -> "lower_mix"
-            else -> "higher_mix"
+            kotlin.math.abs(requestPrice - finalPrice) < GAP_EQUAL_EPSILON -> if (platform==AdsPlatform.AdMob)"equal_a" else "equal_mix"
+            requestPrice > finalPrice ->if (platform==AdsPlatform.AdMob)"lower_a" else "lower_mix"
+            else ->if (platform==AdsPlatform.AdMob)"higher_a" else "higher_mix"
         }
     }
 
