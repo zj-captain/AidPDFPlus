@@ -7,13 +7,11 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.Gson
 import com.ysdc.aidpdf.BuildConfig
-import com.ysdc.aidpdf.ad.AdUnitFuseManager
 import com.ysdc.aidpdf.ad.AdsLimitManager
 import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.ad.DEFAULT_ADS_LIMIT_CONFIG_JSON
-import com.ysdc.aidpdf.ad.DEFAULT_AD_FUSE_CONFIG_JSON
-import com.ysdc.aidpdf.ad.remote.AdRemoteBridge
-import com.ysdc.aidpdf.ad.remote.NatConfig
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsConfigBridge
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderOverlayConfigRepository
@@ -70,6 +68,7 @@ object RemoteConfigUtils {
 
     private const val virtual_block_switch = "virtual_block_switch"
     private const val AC_NAT_CONFIG = "ac_nat_config"
+    private const val REMOTE_AD_CONFIG_KEY = "ac_ad_config"
     private var initialized = false
 
     fun initRemoteConfig(application: Application, onApplied: () -> Unit = {}) {
@@ -87,14 +86,14 @@ object RemoteConfigUtils {
                 buildMap {
                     putAll(
                         mapOf(
-                            GLOBAL_BLOCK_SWITCH_KEY to "1",
-                            REMOTE_AD_FUSE_CONFIG_KEY to DEFAULT_AD_FUSE_CONFIG_JSON,
+                            GLOBAL_BLOCK_SWITCH_KEY to "0",
                             REMOTE_ADS_LIMIT_CONFIG_KEY to DEFAULT_ADS_LIMIT_CONFIG_JSON,
                             REFERRER_CONFIG_KEY to DEFAULT_REFERRER_CONFIG,
                             BLOCKED_REFERRER_KEY to DEFAULT_BLOCKED_REFERRERS,
                             ADB_BLOCK_SWITCH_KEY to "1",
                             POP_REFRESH to DEFAULT_POP_REFRESH,
-                            AC_NAT_CONFIG to DEFAULT_AC_NAT_CONFIG
+                            AC_NAT_CONFIG to DEFAULT_AC_NAT_CONFIG,
+                            REMOTE_AD_CONFIG_KEY to AdsConfigBridge.LOCAL_ADS_CONFIG_JSON
                         )
                     )
                     putAll(ReminderConfigRepository.defaultJsonValues())
@@ -126,7 +125,8 @@ object RemoteConfigUtils {
     private fun getAllConfigs(onApplied: () -> Unit) {
         getBlockConfigs()
         getReminderConfigs()
-        getAdConfig()
+        // 应用远程广告配置：从 Firebase 拉取 ac_ad_config 并热切换广告目录
+        applyAdsRemoteConfig()
         runCatching(onApplied).onFailure { log("Config applied callback failed: ${it.message}") }
     }
 
@@ -150,14 +150,6 @@ object RemoteConfigUtils {
         )
         ReminderTriggerCenter.onConfigUpdated()
     }
-    private fun applyAdFuseConfig() {
-        runCatching {
-            val json = getString(REMOTE_AD_FUSE_CONFIG_KEY).ifBlank { DEFAULT_AD_FUSE_CONFIG_JSON }
-            AdUnitFuseManager.applyConfig(json)
-        }.onFailure {
-            AdUnitFuseManager.applyConfig(DEFAULT_AD_FUSE_CONFIG_JSON)
-        }
-    }
     private fun applyAdsLimitConfig() {
         runCatching {
             val json = getString(REMOTE_ADS_LIMIT_CONFIG_KEY).ifBlank { DEFAULT_ADS_LIMIT_CONFIG_JSON }
@@ -167,6 +159,22 @@ object RemoteConfigUtils {
             AidAdHub.log("Remote ads limit config skipped: ${it.message}")
         }
     }
+
+    /**
+     * 从 Firebase Remote Config 拉取远程广告配置，解析成功后热切换广告目录。
+     * 失败时静默忽略，保持当前配置（首次启动为本地默认，后续为上次成功的远程配置）。
+     */
+    private fun applyAdsRemoteConfig() {
+        runCatching {
+            val catalog = AdsConfigBridge.remoteCatalog()
+            if (catalog != null) {
+                Ads.configure(catalog)
+                Log.d(TAG, "远程广告配置已应用")
+            }
+        }.onFailure {
+            log("Remote ad config apply failed: ${it.message}")
+        }
+    }
     private fun getBlockConfigs() {
         BlockUtils.applyGlobalSwitch(readSwitch(GLOBAL_BLOCK_SWITCH_KEY, defaultValue = false))
         BlockUtils.applyAdbSwitch(readSwitch(ADB_BLOCK_SWITCH_KEY, defaultValue = true))
@@ -174,7 +182,6 @@ object RemoteConfigUtils {
         applyBlockedReferrers()
         applyPopRefresh()
         applyVirtualBlockSwitch()
-        applyAdFuseConfig()//熔断配置
         applyAdsLimitConfig()
     }
 
@@ -206,25 +213,13 @@ object RemoteConfigUtils {
                 Gson().fromJson(DEFAULT_POP_REFRESH, PopRefresh::class.java)
         }
     }
-
     private fun applyVirtualBlockSwitch() {
         if (readSwitch(virtual_block_switch, defaultValue = true)) {
-            AdRemoteBridge.virtual_block_switch = 1
+            AdsConfigBridge.virtual_block_switch = 1
         } else {
-            AdRemoteBridge.virtual_block_switch = 0
+            AdsConfigBridge.virtual_block_switch = 0
         }
     }
-
-    private fun applyAcNatConfig(){
-        val raw = getString(AC_NAT_CONFIG).ifBlank { DEFAULT_AC_NAT_CONFIG }
-        runCatching {
-            AdRemoteBridge.natConfig = Gson().fromJson(raw, NatConfig::class.java)
-        }.onFailure {
-            AdRemoteBridge.natConfig =
-                Gson().fromJson(DEFAULT_AC_NAT_CONFIG, NatConfig::class.java)
-        }
-    }
-
     private fun applyBlockedReferrers() {
         val raw = getString(BLOCKED_REFERRER_KEY).ifBlank { DEFAULT_BLOCKED_REFERRERS }
         runCatching {
@@ -251,11 +246,6 @@ object RemoteConfigUtils {
                 optString(index).trim().takeIf(String::isNotBlank)?.let(::add)
             }
         }
-    }
-
-    private fun getAdConfig() {
-        runCatching { AdRemoteBridge.readRemoteAdConfig() }.onFailure { log("Remote ad config failed: ${it.message}") }
-        runCatching { applyAcNatConfig() }
     }
 
     private fun log(message: String) {

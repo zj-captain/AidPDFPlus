@@ -6,8 +6,9 @@ import android.os.Bundle
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import com.ysdc.aidpdf.ad.config.AdScene
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.databinding.ActivityOverlayPermissionBinding
 import com.ysdc.aidpdf.ui.MainActivity
@@ -38,7 +39,7 @@ class OverlayPermissionActivity : BaseActivity<ActivityOverlayPermissionBinding>
             ?: intent.getBooleanExtra(EXTRA_LAUNCH_FLOW, false)
         onBackPressedDispatcher.addCallback(this) { }
         AidEventHub.track(TrackingEventNames.FLOATING_NOTIFICATION_POPUP_VIEW)
-        InterstitialAdGate.prepare(this, AdScene.MainBackInterstitial)
+        Ads.load(AdsScene.BackInterstitial, this)
         startButtonPulse()
 
         binding.permissionImage.imageAssetsFolder = "overlay/images/"
@@ -105,12 +106,16 @@ class OverlayPermissionActivity : BaseActivity<ActivityOverlayPermissionBinding>
     private fun goNextPage() {
         if (navigatingNext || isFinishing || isDestroyed) return
         navigatingNext = true
-        InterstitialAdGate.showForClickThenContinue(
-            activity = this,
-            scene = AdScene.MainBackInterstitial
-        ) {
+        if (BlockUtils.shouldBlockAds(this)) {
             openNextPage()
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.BackInterstitial,
+            activity = this,
+            onClosed = { openNextPage() },
+            onFailed = { openNextPage() }
+        )
     }
 
     private fun openNextPage() {

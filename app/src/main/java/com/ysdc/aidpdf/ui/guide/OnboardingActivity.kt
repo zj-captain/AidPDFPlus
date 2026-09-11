@@ -8,15 +8,17 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.ysdc.aidpdf.R
-import com.ysdc.aidpdf.ad.config.AdScene
-import com.ysdc.aidpdf.ad.config.AdTrackingScene
-import com.ysdc.aidpdf.ad.core.AdLease
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
-import com.ysdc.aidpdf.ad.gate.NativeAdGate
-import com.ysdc.aidpdf.ad.google.NativeAdSize
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.ads.model.AdDisplayHandle
+import com.ysdc.aidpdf.ads.model.NativeAdStyle
+import com.ysdc.aidpdf.ads.model.NativeRenderRequest
+import com.ysdc.aidpdf.ads.utils.AdTrackingScene
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.databinding.ActivityOnboardingBinding
@@ -31,7 +33,7 @@ import kotlin.math.roundToInt
 
 class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboardingBinding::inflate) {
 
-    private var nativeAdLease: AdLease? = null
+    private var nativeAdHandle: AdDisplayHandle? = null
     private var leaving = false
 
     companion object{
@@ -91,8 +93,8 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
     override fun onDestroy() {
         binding.guidePager.unregisterOnPageChangeCallback(pageCallback)
         binding.guidePager.adapter = null
-        nativeAdLease?.release()
-        nativeAdLease = null
+        nativeAdHandle?.destroy()
+        nativeAdHandle = null
         super.onDestroy()
     }
 
@@ -126,13 +128,17 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
     private fun finishGuideWithAd() {
         if (leaving) return
         leaving = true
-        InterstitialAdGate.showForClickThenContinue(
-            activity = this,
-            scene = AdScene.BottomInterstitial,
-            trackingScene = AdTrackingScene.GUIDE_INTERSTITIAL
-        ) {
+        if (BlockUtils.shouldBlockAds(this)) {
             finishGuide()
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.BackInterstitial,
+            activity = this,
+            onClosed = { finishGuide() },
+            onFailed = { finishGuide() },
+            trackingScene = AdTrackingScene.GUIDE_INTERSTITIAL
+        )
     }
 
     private fun finishGuide() {
@@ -174,22 +180,37 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
         )
     }
     private fun prepareAds() {
-        InterstitialAdGate.prepare(this, AdScene.BottomInterstitial)
-        NativeAdGate.prepare(this, AdScene.ResultNative)
-        InterstitialAdGate.prepareStartupInventory(this)
-        NativeAdGate.prepare(this, AdScene.MainNative)
+        // 插屏固定用 BackInterstitial 池，原生固定用 ResultNative 池。
+        Ads.load(AdsScene.BackInterstitial, this)
+        Ads.load(AdsScene.ResultNative, this)
+        // 启动清单：预加载首页所需广告位。
+        Ads.load(AdsScene.ResultInterstitial, this)
+        Ads.load(AdsScene.MainNative, this)
     }
 
     private fun showNativeAd() {
-        NativeAdGate.showWhenReady(
+        nativeAdHandle?.destroy()
+        nativeAdHandle = Ads.showNative(
+            scene = AdsScene.ResultNative,
             activity = this,
             parent = binding.onboardingNativeAdContainer,
-            scene = AdScene.ResultNative,
-            size = NativeAdSize.Medium,
+            request = NativeRenderRequest(style = NativeAdStyle.Medium),
             trackingScene = AdTrackingScene.GUIDE_NATIVE,
-            onShown = { lease ->
-                nativeAdLease?.release()
-                nativeAdLease = lease
+            onShown = {
+                Log.d("OnboardingActivity", "引导页原生广告展示成功")
+                binding.onboardingNativeAdContainer.isVisible = true
+                binding.onboardingNativeAdContainer.updateLayoutParams {
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+            },
+            onImpression = {
+                Log.d("OnboardingActivity", "引导页原生广告曝光")
+            },
+            onFailed = {
+                Log.w("OnboardingActivity", "引导页原生广告展示失败：message=${it.message}")
+                binding.onboardingNativeAdContainer.removeAllViews()
+                binding.onboardingNativeAdContainer.isVisible = false
+                binding.onboardingNativeAdContainer.updateLayoutParams { height = 0 }
             }
         )
     }

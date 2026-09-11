@@ -7,22 +7,20 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
-import com.ysdc.aidpdf.ad.AidAdHub
-import com.ysdc.aidpdf.ad.config.AdScene
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
-import com.ysdc.aidpdf.ad.gate.NativeAdGate
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsConfigBridge
 import com.ysdc.aidpdf.app.AppVisibilityTracker
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.block.InstallReferrerRepository
-import com.ysdc.aidpdf.remote.RemoteConfigUtils
+import com.ysdc.aidpdf.reminder.alive.ReminderFcmInitializer
+import com.ysdc.aidpdf.reminder.alive.ReminderKeepAliveJobService
+import com.ysdc.aidpdf.reminder.alive.ReminderKeepAliveReceiver
 import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderOverlayConfigRepository
-import com.ysdc.aidpdf.reminder.alive.ReminderKeepAliveJobService
-import com.ysdc.aidpdf.reminder.alive.ReminderFcmInitializer
-import com.ysdc.aidpdf.reminder.alive.ReminderKeepAliveReceiver
 import com.ysdc.aidpdf.reminder.front.ReminderBarManager
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter.registerReceivers
+import com.ysdc.aidpdf.remote.RemoteConfigUtils
 import com.ysdc.aidpdf.store.appInstance
 import com.ysdc.aidpdf.store.hasSavedLanguageTag
 import com.ysdc.aidpdf.store.languageTag
@@ -50,11 +48,15 @@ class App : Application() {
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(languageTag))
         }
         PDFBoxResourceLoader.init(this)
+        //广告初始化
+        Ads.initialize(this)
+        Ads.configure(AdsConfigBridge.localCatalog())
+
+
         InstallReferrerRepository.refreshIfMissing(this) {
             CoreEventTracker.reportReferrerUsers()
             warmEligibleAdInventory()
         }
-        AidAdHub.initialize(this)
         RemoteConfigUtils.initRemoteConfig(this, ::warmEligibleAdInventory)
 
         registerReceiver()

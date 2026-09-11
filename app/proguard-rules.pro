@@ -35,3 +35,6 @@
 # 保留通过 Gson 反序列化的数据类字段
 -keep class com.ysdc.aidpdf.reminder.notice.PopRefresh { *; }
 -keep class com.ysdc.aidpdf.ad.remote.NatConfig { *; }
+
+-keep public class com.tradplus.** { *; }
+-keep class com.tradplus.ads.** { *; }

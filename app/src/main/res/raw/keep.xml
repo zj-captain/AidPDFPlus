@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 资源缩减保留规则：RemoteViews 通知布局在系统进程 inflate，
+     必须显式保留其引用链上的资源，避免 shrinkResources 误删导致 release 崩溃。 -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@layout/layout_reminder_bar,@layout/layout_reminder_bar_compact,@drawable/img_hold_bar_pdf,@drawable/img_hold_bar_excel,@drawable/img_hold_bar_ppt,@drawable/ic_notification_small,@font/poppins,@font/poppins_regular,@font/poppins_bold,@color/reminder_text" />

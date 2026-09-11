@@ -3,19 +3,23 @@ package com.ysdc.aidpdf.ui.pdf
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ysdc.aidpdf.R
-import com.ysdc.aidpdf.ad.config.AdScene
-import com.ysdc.aidpdf.ad.config.AdTrackingScene
-import com.ysdc.aidpdf.ad.core.AdLease
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
-import com.ysdc.aidpdf.ad.gate.NativeAdGate
-import com.ysdc.aidpdf.ad.google.NativeAdSize
+import com.ysdc.aidpdf.ads.Ads
+import com.ysdc.aidpdf.ads.config.AdsScene
+import com.ysdc.aidpdf.ads.model.AdDisplayHandle
+import com.ysdc.aidpdf.ads.model.NativeAdStyle
+import com.ysdc.aidpdf.ads.model.NativeRenderRequest
+import com.ysdc.aidpdf.ads.utils.AdTrackingScene
+import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.data.document.DocumentKind
 import com.ysdc.aidpdf.data.document.DocumentLibrary
 import com.ysdc.aidpdf.data.document.LocalDocument
@@ -39,13 +43,13 @@ class PdfToolActivity : BaseActivity<ActivityPdfToolBinding>(ActivityPdfToolBind
     private var splitDocument: LocalDocument? = null
     private var splitPassword = ""
     private var scrolledToPreselected = false
-    private var nativeAdLease: AdLease? = null
+    private var nativeAdHandle: AdDisplayHandle? = null
 
     override fun setupViews(savedInstanceState: Bundle?) {
         onBackPressedDispatcher.addCallback(this) { finishWithBackMainAd() }
-        InterstitialAdGate.prepareBackMain(this)
-        InterstitialAdGate.prepare(this, AdScene.CheckInterstitial)
-        NativeAdGate.prepare(this, AdScene.ResultNative)
+        Ads.load(AdsScene.BackInterstitial, this)
+        Ads.load(AdsScene.ResultInterstitial, this)
+        Ads.load(AdsScene.MainNative, this)
         binding.titleText.setText(mode.titleRes)
         binding.actionButton.setText(mode.actionRes)
         binding.itemList.itemAnimator = null
@@ -60,22 +64,36 @@ class PdfToolActivity : BaseActivity<ActivityPdfToolBinding>(ActivityPdfToolBind
     }
 
     override fun onDestroy() {
-        NativeAdGate.cancel(binding.pdfToolNativeAdContainer)
-        nativeAdLease?.release()
-        nativeAdLease = null
+        nativeAdHandle?.destroy()
+        nativeAdHandle = null
+        binding.pdfToolNativeAdContainer.removeAllViews()
+        binding.pdfToolNativeAdContainer.isVisible = false
         super.onDestroy()
     }
 
     private fun showNativeAd() {
-        NativeAdGate.showWhenReady(
+        nativeAdHandle?.destroy()
+        nativeAdHandle = Ads.showNative(
+            scene = AdsScene.MainNative,
             activity = this,
             parent = binding.pdfToolNativeAdContainer,
-            scene = AdScene.ResultNative,
-            size = NativeAdSize.Tiny,
+            request = NativeRenderRequest(style = NativeAdStyle.Tiny),
             trackingScene = AdTrackingScene.SCAN_NATIVE,
-            onShown = { lease ->
-                nativeAdLease?.release()
-                nativeAdLease = lease
+            onShown = {
+                Log.d("PdfToolActivity", "工具页原生广告展示成功")
+                binding.pdfToolNativeAdContainer.isVisible = true
+                binding.pdfToolNativeAdContainer.updateLayoutParams {
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+            },
+            onImpression = {
+                Log.d("PdfToolActivity", "工具页原生广告曝光")
+            },
+            onFailed = {
+                Log.w("PdfToolActivity", "工具页原生广告展示失败：message=${it.message}")
+                binding.pdfToolNativeAdContainer.removeAllViews()
+                binding.pdfToolNativeAdContainer.isVisible = false
+                binding.pdfToolNativeAdContainer.updateLayoutParams { height = 0 }
             }
         )
     }
@@ -523,20 +541,33 @@ class PdfToolActivity : BaseActivity<ActivityPdfToolBinding>(ActivityPdfToolBind
         loadingStartedAt: Long,
         next: () -> Unit
     ) {
-        InterstitialAdGate.showForProcessingThenContinue(
+        // 广告展示前先关闭加载弹窗，广告关闭/失败后继续原处理结果跳转。
+        loadingDialog.dismissAllowingStateLoss()
+        if (BlockUtils.shouldBlockAds(this)) {
+            next()
+            return
+        }
+        Ads.showFullScreen(
+            scene = AdsScene.ResultInterstitial,
             activity = this,
-            processingStartedAtMillis = loadingStartedAt,
-            scene = AdScene.CheckInterstitial,
-            trackingScene = AdTrackingScene.SCAN_INTERSTITIAL,
-            beforeAdOrContinue = { loadingDialog.dismissAllowingStateLoss() },
-            next = next
+            onClosed = { next() },
+            onFailed = { next() },
+            trackingScene = AdTrackingScene.SCAN_INTERSTITIAL
         )
     }
 
     private fun finishWithBackMainAd() {
-        InterstitialAdGate.showForBackMainThenContinue(this) {
+        if (isFinishing || isDestroyed) return
+        if (BlockUtils.shouldBlockAds(this)) {
             finish()
+            return
         }
+        Ads.showFullScreen(
+            scene = AdsScene.BackInterstitial,
+            activity = this,
+            onClosed = { finish() },
+            onFailed = { finish() }
+        )
     }
 
     private fun removeProcessedDocument(document: LocalDocument) {

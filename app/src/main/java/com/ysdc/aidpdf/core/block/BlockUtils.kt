@@ -11,6 +11,8 @@ import com.ysdc.aidpdf.tracking.CoreEventTracker
 import java.util.concurrent.CopyOnWriteArrayList
 
 object BlockUtils {
+    private const val TAG = "BlockUtils"
+
     private val defaultAllowedReferrers = listOf(
         "fb4a",
         "instagram",
@@ -26,7 +28,7 @@ object BlockUtils {
     )
 
     @Volatile
-    private var globalBlockEnabled = true
+    private var globalBlockEnabled = false
 
     @Volatile
     private var referrerBlockEnabled = true
@@ -102,16 +104,19 @@ object BlockUtils {
     }
 
     fun shouldBlockAds(context: Context): Boolean {
-        if (BuildConfig.DEBUG) return false
-        if (globalBlockEnabled) return true
-        if (isReviewUser()) return true
-        if (testAdDevice == true) return true
-        if (isBlockedReferrer()) return true
-        if (shouldBlockForReferrer()) return true
-        if (DeviceSignals.hasNoSim(context)) return true
-        if (DeviceSignals.isEmulator()) return true
-        if (isSamSungAndKoreanFun()) return true  //三星且韩国不显示广告
-        return adbBlockEnabled && DeviceSignals.isAdbEnabled(context)
+        if (BuildConfig.DEBUG) { Log.d(TAG, "shouldBlockAds: DEBUG 模式，不拦截"); return false }
+        if (globalBlockEnabled) { Log.d(TAG, "shouldBlockAds: 拦截 → globalBlockEnabled=true"); return true }
+        if (isReviewUser()) { Log.d(TAG, "shouldBlockAds: 拦截 → 审核用户"); return true }
+        if (testAdDevice == true) { Log.d(TAG, "shouldBlockAds: 拦截 → 测试设备"); return true }
+        if (isBlockedReferrer()) { Log.d(TAG, "shouldBlockAds: 拦截 → 黑名单 referrer"); return true }
+        if (shouldBlockForReferrer()) { Log.d(TAG, "shouldBlockAds: 拦截 → referrer 不在白名单"); return true }
+        if (DeviceSignals.hasNoSim(context)) { Log.d(TAG, "shouldBlockAds: 拦截 → 无 SIM 卡"); return true }
+        if (DeviceSignals.isEmulator()) { Log.d(TAG, "shouldBlockAds: 拦截 → 模拟器"); return true }
+        if (isSamSungAndKoreanFun()) { Log.d(TAG, "shouldBlockAds: 拦截 → 三星且韩国"); return true }
+        val adbBlocked = adbBlockEnabled && DeviceSignals.isAdbEnabled(context)
+        if (adbBlocked) { Log.d(TAG, "shouldBlockAds: 拦截 → ADB 调试开启") }
+        else { Log.d(TAG, "shouldBlockAds: 放行") }
+        return adbBlocked
     }
 
     /**

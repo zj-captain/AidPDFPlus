@@ -10,7 +10,6 @@ import android.os.Looper
 import android.os.PowerManager
 import android.os.SystemClock
 import com.ysdc.aidpdf.ad.AidAdHub
-import com.ysdc.aidpdf.ad.gate.InterstitialAdGate
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.reminder.notice.ReminderNotificationCenter
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
@@ -95,13 +94,11 @@ class AppVisibilityTracker(private val application: Application) : Application.A
             return
         }
         ReminderTriggerCenter.onForegroundCountChanged(0)
-        InterstitialAdGate.resetForAppRestart()
         restartWhenVisible = true
         finishActivitiesOutsideLaunchFlow()
     }
 
     private fun routeThroughLoading(activity: Activity) {
-        AidAdHub.resetFullScreenInterval()
         val relayIntent = Intent(activity, LaunchRelayActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             latestLoadingIntent()?.extras?.let(::putExtras)

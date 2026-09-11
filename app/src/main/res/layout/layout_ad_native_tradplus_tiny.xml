@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/native_outer_view"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:background="@drawable/bg_ad_native_surface"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/imageClose"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:contentDescription="@string/close"
+        android:padding="5dp"
+        android:src="@mipmap/close"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/tp_layout_ad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:id="@+id/tp_ad_choices_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp" />
+
+        <ImageView
+            android:id="@+id/tp_native_ad_choice"
+            android:layout_width="28dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="2dp" />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/tp_native_icon_image"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageClose"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/img_launch_logo" />
+
+    <FrameLayout
+        android:id="@+id/tp_native_main_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/tp_mopub_native_main_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tp_native_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textColor="@color/text_primary"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tp_native_text"
+        app:layout_constraintEnd_toStartOf="@id/tp_native_cta_btn"
+        app:layout_constraintStart_toEndOf="@id/tp_native_icon_image"
+        app:layout_constraintTop_toTopOf="@id/tp_native_icon_image"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Ad headline" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tp_native_advertiser"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/tp_native_icon_image"
+        app:layout_constraintTop_toBottomOf="@id/tp_native_title" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tp_native_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textColor="@color/text_secondary"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@id/tp_native_icon_image"
+        app:layout_constraintEnd_toStartOf="@id/tp_native_cta_btn"
+        app:layout_constraintStart_toEndOf="@id/tp_native_icon_image"
+        app:layout_constraintTop_toBottomOf="@id/tp_native_title"
+        tools:text="Short body text" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/adBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:background="@drawable/bg_ad_badge"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:minWidth="24dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:text="@string/ad_label"
+        android:textColor="@color/white"
+        android:textSize="9sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/tp_native_icon_image"
+        app:layout_constraintTop_toTopOf="@id/tp_native_icon_image" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tp_native_cta_btn"
+        android:layout_width="76dp"
+        android:layout_height="38dp"
+        android:background="@drawable/bg_ad_cta"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Install" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

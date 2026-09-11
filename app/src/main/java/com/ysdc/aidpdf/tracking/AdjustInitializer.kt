@@ -3,12 +3,11 @@ package com.ysdc.aidpdf.tracking
 import android.app.Application
 import android.util.Log
 import com.adjust.sdk.Adjust
-import com.adjust.sdk.AdjustConfig
 import com.adjust.sdk.AdjustAdRevenue
+import com.adjust.sdk.AdjustConfig
 import com.adjust.sdk.LogLevel
-import com.google.android.gms.ads.AdValue
-import com.google.android.gms.ads.ResponseInfo
-import com.loft.vertsdk.VertSDK
+import com.google.android.libraries.ads.mobile.sdk.common.AdValue
+import com.google.android.libraries.ads.mobile.sdk.common.ResponseInfo
 import com.ysdc.aidpdf.BuildConfig
 
 internal object AdjustInitializer {
@@ -52,7 +51,7 @@ internal object AdjustInitializer {
         runCatching {
             val revenue = AdjustAdRevenue("admob_sdk").apply {
                 setRevenue(adValue.valueMicros / 1_000_000.0, adValue.currencyCode)
-                adRevenueNetwork = responseInfo?.loadedAdapterResponseInfo?.adSourceName.orEmpty()
+                adRevenueNetwork = responseInfo?.loadedAdSourceResponseInfo?.name.orEmpty()
             }
             Adjust.trackAdRevenue(revenue)
         }.onFailure {

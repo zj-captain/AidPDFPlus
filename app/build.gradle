@@ -102,7 +102,7 @@ dependencies {
     implementation 'com.xmiles.androidsdk:vertSdk:1.0.1.4-releases'
     implementation 'com.adjust.sdk:adjust-android:5.7.0'
     implementation 'com.android.installreferrer:installreferrer:2.2'
-    implementation 'com.google.android.gms:play-services-ads:24.6.0'
+//    implementation 'com.google.android.gms:play-services-ads:24.6.0'
     implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
     // Lifecycle & ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
@@ -123,4 +123,28 @@ dependencies {
 
     // Google Play in-app review
     implementation("com.google.android.play:review:2.0.1")
+
+    // TradPlus
+    implementation 'com.tradplusad:tradplus:16.6.0.1'
+    // Admob
+    implementation 'com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.2.1'
+    implementation 'com.tradplusad:tradplus-gma-nextgen:2.16.6.10.1'
+    // Meta
+    implementation 'com.facebook.android:audience-network-sdk:6.21.0'
+    implementation 'com.tradplusad:tradplus-facebook:1.16.6.0.1'
+    // Pangle
+    implementation 'com.tradplusad:tradplus-pangle:19.16.6.0.1'
+    implementation 'com.pangle.global:pag-sdk:8.1.0.5'
+    // Mintegral
+    implementation 'com.tradplusad:tradplus-mintegralx_overseas:18.16.6.0.1'
+    implementation 'com.mbridge.msdk.oversea:mbridge_android_sdk:17.1.71'
+    // Cross Promotion
+    implementation 'com.tradplusad:tradplus-crosspromotion:27.16.6.0.1'
+    // TP Exchange
+    // 请注意保持与主包版本同步更新
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.tradplusad:tp_exchange:40.16.6.0.1'
+
+    implementation files('libs/compare_price-release.aar')
+
 }

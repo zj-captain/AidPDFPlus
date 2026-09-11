@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/native_outer_view"
+    android:layout_width="match_parent"
+    android:layout_height="260dp"
+    android:background="@drawable/bg_ad_native_surface"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/imageClose"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:contentDescription="@string/close"
+        android:padding="5dp"
+        android:src="@mipmap/close"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- TradPlus 原生模板使用普通 ViewGroup 作为媒体区域占位，避免依赖 AdMob 的 MediaView。 -->
+    <FrameLayout
+        android:id="@+id/tp_native_main_image"
+        android:layout_width="0dp"
+        android:layout_height="136dp"
+        android:background="#F3F4F6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageClose">
+
+        <ImageView
+            android:id="@+id/tp_mopub_native_main_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+    </FrameLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/tp_native_icon_image"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="10dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tp_native_main_image"
+        tools:src="@drawable/img_launch_logo" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tp_native_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tp_native_icon_image"
+        app:layout_constraintTop_toTopOf="@id/tp_native_icon_image"
+        tools:text="Ad headline" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tp_native_advertiser"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textColor="@color/text_secondary"
+        android:textSize="10sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tp_native_icon_image"
+        app:layout_constraintTop_toBottomOf="@id/tp_native_title"
+        tools:text="Advertiser" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tp_native_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="6dp"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:maxLines="2"
+        android:textColor="@color/text_secondary"
+        android:textSize="11sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tp_native_icon_image"
+        app:layout_constraintTop_toBottomOf="@id/tp_native_advertiser"
+        tools:text="Ad body text goes here" />
+
+    <LinearLayout
+        android:id="@+id/tp_layout_ad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@id/tp_native_main_image"
+        app:layout_constraintTop_toTopOf="@id/tp_native_main_image">
+
+        <FrameLayout
+            android:id="@+id/tp_ad_choices_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp" />
+
+        <ImageView
+            android:id="@+id/tp_native_ad_choice"
+            android:layout_width="28dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="2dp" />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/adBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:background="@drawable/bg_ad_badge"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:minWidth="24dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:text="@string/ad_label"
+        android:textColor="@color/white"
+        android:textSize="9sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/tp_layout_ad"
+        app:layout_constraintTop_toTopOf="@id/tp_native_main_image" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tp_native_cta_btn"
+        android:layout_width="0dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_ad_cta"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Install" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
