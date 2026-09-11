@@ -1,8 +1,18 @@
 package com.ysdc.aidpdf.ads.config
 
-object AdsConfigBridge {
+import com.ysdc.aidpdf.ad.remote.NatConfig
+import com.ysdc.aidpdf.ads.core.AdsLogger
+import com.ysdc.aidpdf.remote.RemoteConfigUtils
 
-    private const val LOCAL_ADS_CONFIG_JSON = """
+object AdsConfigBridge {
+    @Volatile
+    var virtual_block_switch = 1  //隐藏虚拟按键逻辑开关
+
+    var natConfig: NatConfig? = null    //原生广告误触配置
+    private const val REMOTE_AD_CONFIG_KEY = "ac_ad_config"
+
+    // 供 RemoteConfigUtils.setDefaultsAsync 作为兜底默认值
+    internal const val LOCAL_ADS_CONFIG_JSON = """
         {
           "ac_launch": [
             {
@@ -91,8 +101,28 @@ object AdsConfigBridge {
         }
     """
 
+    /**
+     * 本地默认广告目录，启动时立即可用，保证首次启动不空。
+     */
     fun localCatalog(): AdsCatalog {
-        // 新广告模块当前先只接本地默认配置，后续如果接远端配置，再在这个桥接层扩展。
         return AdsConfigParser.parse(LOCAL_ADS_CONFIG_JSON)
+    }
+
+    /**
+     * 从 Firebase Remote Config 拉取远程广告配置。
+     * - 远程 JSON 为空或解析失败时返回 null，由调用方决定是否保持当前配置。
+     * - 解析成功返回 AdsCatalog，可直接传给 Ads.configure() 实现热切换。
+     */
+    fun remoteCatalog(): AdsCatalog? {
+        val json = RemoteConfigUtils.getString(REMOTE_AD_CONFIG_KEY)
+        if (json.isBlank()) {
+            AdsLogger.d("远程广告配置(ac_ad_config)为空，使用本地默认配置")
+            return null
+        }
+        return runCatching {
+            AdsConfigParser.parse(json, fallback = localCatalog())
+        }.onFailure {
+            AdsLogger.w("远程广告配置解析失败，使用本地默认配置：${it.message}")
+        }.getOrNull()
     }
 }

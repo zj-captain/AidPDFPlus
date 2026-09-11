@@ -20,6 +20,7 @@ import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoaderCallba
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
 import com.ysdc.aidpdf.ad.AdEventTracker
+import com.ysdc.aidpdf.ads.config.AdsConfigBridge
 import com.ysdc.aidpdf.ads.config.AdsFormat
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsScene
@@ -145,6 +146,11 @@ class AdMobCachedAdProvider : CachedAdProvider {
                         }
                     }
                 }
+                if (AdsConfigBridge.virtual_block_switch == 1) {
+                    payload.ad.setImmersiveMode(true)
+                } else {
+                    payload.ad.setImmersiveMode(false)
+                }
                 payload.ad.show(activity)
             }
 
@@ -190,6 +196,11 @@ class AdMobCachedAdProvider : CachedAdProvider {
                             onFailed(error)
                         }
                     }
+                }
+                if (AdsConfigBridge.virtual_block_switch == 1) {
+                    payload.ad.setImmersiveMode(true)
+                } else {
+                    payload.ad.setImmersiveMode(false)
                 }
                 payload.ad.show(activity)
             }
