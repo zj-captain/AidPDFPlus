@@ -8,6 +8,7 @@ import com.google.android.libraries.ads.mobile.sdk.appopen.AppOpenAd
 import com.google.android.libraries.ads.mobile.sdk.appopen.AppOpenAdEventCallback
 import com.google.android.libraries.ads.mobile.sdk.common.AdRequest
 import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback
+import com.google.android.libraries.ads.mobile.sdk.common.AdValue
 import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
 import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
 import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd
@@ -104,11 +105,15 @@ class AdMobCachedAdProvider : CachedAdProvider {
                     // AdMob 事件回调可能被 SDK 调度到后台线程（如 GMA BG），必须切回主线程再通知业务层。
                     override fun onAdShowedFullScreenContent() {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm)
                             onShown()
                         }
                     }
 
+                    override fun onAdPaid(value: AdValue) {
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000)
+                        }
+                    }
                     override fun onAdClicked() {
                         AdsThread.runOnMain {
                             AdsEventTracker.reportClick(payload.config, trackingScene)
@@ -144,11 +149,15 @@ class AdMobCachedAdProvider : CachedAdProvider {
                     // AdMob 事件回调可能被 SDK 调度到后台线程（如 GMA BG），必须切回主线程再通知业务层。
                     override fun onAdShowedFullScreenContent() {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm)
                             onShown()
                         }
                     }
 
+                    override fun onAdPaid(value: AdValue) {
+                        AdsThread.runOnMain {
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000)
+                        }
+                    }
                     override fun onAdClicked() {
                         AdsThread.runOnMain {
                             AdsEventTracker.reportClick(payload.config, trackingScene)

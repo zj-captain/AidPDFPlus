@@ -160,7 +160,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
                     override fun onAdImpression(tpAdInfo: TPAdInfo?) {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm)
+                            // 补传最终展示价（TPAdInfo.ecpm 为美元 eCPM），供埋点计算 gap。
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm, tpAdInfo?.ecpm?.toDoubleOrNull())
                             onShown()
                         }
                     }
@@ -214,7 +215,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
                     override fun onAdImpression(tpAdInfo: TPAdInfo?) {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm)
+                            // 补传最终展示价（TPAdInfo.ecpm 为美元 eCPM），供埋点计算 gap。
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm, tpAdInfo?.ecpm?.toDoubleOrNull())
                             onShown()
                         }
                     }
@@ -291,7 +293,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
             override fun onAdImpression(tpAdInfo: TPAdInfo?) {
                 AdsThread.runOnMain {
-                    AdsEventTracker.reportShown(payload.config, trackingScene, ecpm = ecpm)
+                    // 补传最终展示价（TPAdInfo.ecpm 为美元 eCPM），供埋点计算 gap。
+                    AdsEventTracker.reportShown(payload.config, trackingScene, ecpm = ecpm, reEcpm = tpAdInfo?.ecpm?.toDoubleOrNull())
                     onImpression()
                 }
             }

@@ -25,6 +25,9 @@ object AdsEventTracker {
     private const val RESULT_FAILED = 0
     private const val EMPTY_ECPM = 0.0
 
+    /** gap 判定使用的浮点容差：两个 eCPM 差值小于该值时视为相等，避免浮点误差误判。 */
+    private const val GAP_EQUAL_EPSILON = 1e-6
+
     fun reportLoadStarted(config: AdsUnitConfig) {
         AidEventHub.track(
             TrackingEventNames.AD_PLACEMENT_REQUEST,
@@ -65,7 +68,8 @@ object AdsEventTracker {
         config: AdsUnitConfig,
         trackingScene: String?,
         trackingType: String? = null,
-        ecpm: Double? = null
+        ecpm: Double? = null,
+        reEcpm: Double?=null
     ) {
         val params = mutableMapOf<String, Any?>(
             "ad_type" to resolveAdType(config.format),
@@ -75,6 +79,7 @@ object AdsEventTracker {
             "ad_placement_name" to "",
             "ad_placement_id" to config.unitId,
             "ad_ecpm_number" to (ecpm ?: EMPTY_ECPM),
+            "gap" to resolveGap(ecpm, reEcpm),
             "ad_source" to resolveMediation(config.platform),
             "ad_source_id" to config.unitId,
             "result_code" to RESULT_SUCCESS,
@@ -142,6 +147,21 @@ object AdsEventTracker {
             ),
             EventDelivery.Batched
         )
+    }
+
+    /**
+     * 计算展示前比价价（ecpm）与最终展示价（reEcpm）的偏差方向。
+     * 仅当两个价格都为有效正值时才比较；任一价格缺失或无效时返回空字符串，
+     * 避免把「无法比较」误报成某种偏差。
+     */
+    private fun resolveGap(ecpm: Double?, reEcpm: Double?): String {
+        val requestPrice = ecpm?.takeIf { !it.isNaN() && !it.isInfinite() && it > 0.0 } ?: return ""
+        val finalPrice = reEcpm?.takeIf { !it.isNaN() && !it.isInfinite() && it > 0.0 } ?: return ""
+        return when {
+            kotlin.math.abs(requestPrice - finalPrice) < GAP_EQUAL_EPSILON -> "equal_mix"
+            requestPrice > finalPrice -> "lower_mix"
+            else -> "higher_mix"
+        }
     }
 
     private fun resolveAdType(format: AdsFormat): Int = when (format) {
