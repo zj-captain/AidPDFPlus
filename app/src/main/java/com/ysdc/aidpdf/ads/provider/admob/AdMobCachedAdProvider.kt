@@ -14,6 +14,7 @@ import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
 import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd
 import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdEventCallback
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoader
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoaderCallback
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest
@@ -202,9 +203,22 @@ class AdMobCachedAdProvider : CachedAdProvider {
         ecpm: Double?
     ): AdDisplayHandle? {
         payload as? AdMobNativePayload ?: return null
+        // 展示埋点迁到 onAdPaid：拿到最终展示价后再上报，才能计算 gap。
+        // 回调注册放在渲染/registerNativeAd 之前，避免错过 SDK 早期回调（对齐全屏“先设回调再 show”）。
+        payload.ad.adEventCallback = object : NativeAdEventCallback {
+            override fun onAdPaid(value: AdValue) {
+                AdsThread.runOnMain {
+                    AdsEventTracker.reportShown(
+                        payload.config,
+                        trackingScene,
+                        ecpm = ecpm,
+                        reEcpm = value.valueMicros / 1_000_000.0 * 1000
+                    )
+                }
+            }
+        }
         val nativeAdView: NativeAdView = AdMobNativeRenderer.createAndBind(parent, payload, request.style)
         parent.addView(nativeAdView)
-        AdsEventTracker.reportShown(payload.config, trackingScene, ecpm = ecpm)
         onShown()
         onImpression()
         return AdMobDisplayHandle(parent = parent, child = nativeAdView, nativeAd = payload.ad)
