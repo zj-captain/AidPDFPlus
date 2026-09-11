@@ -41,8 +41,8 @@ class AdMobBannerProvider : BannerAdProvider {
                 }
                 AdsEventTracker.reportLoaded(config, success = true, resultCode = 200, resultInfo = "")
                 AdsEventTracker.reportShown(config, trackingScene)
-                AdEventTracker.reportPaidValue(trackingScene?:config.scene.remoteKey, config, value, ad.getResponseInfo())
-                AdEventTracker.reportTotalAdsRenenue001Admob(value)
+//                AdEventTracker.reportPaidValue(trackingScene?:config.scene.remoteKey, config, value, ad.getResponseInfo())
+//                AdEventTracker.reportTotalAdsRenenue001Admob(value)
                 onImpression()
             }
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
