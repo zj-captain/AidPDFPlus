@@ -114,7 +114,7 @@ class AdMobCachedAdProvider : CachedAdProvider {
 
                     override fun onAdPaid(value: AdValue) {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000)
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000, source =payload.ad.getResponseInfo().loadedAdSourceResponseInfo?.name?:"admob" )
                             AdEventTracker.reportPaidValue(trackingScene?:payload.config.scene.remoteKey, payload.config, value, payload.ad.getResponseInfo())
                             AdEventTracker.reportTotalAdsRenenue001Admob(value)
                         }
@@ -165,7 +165,7 @@ class AdMobCachedAdProvider : CachedAdProvider {
 
                     override fun onAdPaid(value: AdValue) {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000)
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000, source =payload.ad.getResponseInfo().loadedAdSourceResponseInfo?.name?:"admob" )
                             AdEventTracker.reportPaidValue(trackingScene?:payload.config.scene.remoteKey, payload.config, value, payload.ad.getResponseInfo())
                             AdEventTracker.reportTotalAdsRenenue001Admob(value)
                         }
@@ -228,7 +228,8 @@ class AdMobCachedAdProvider : CachedAdProvider {
                         payload.config,
                         trackingScene,
                         ecpm = ecpm,
-                        reEcpm = value.valueMicros / 1_000_000.0 * 1000
+                        reEcpm = value.valueMicros / 1_000_000.0 * 1000,
+                        source =payload.ad.getResponseInfo().loadedAdSourceResponseInfo?.name?:"admob"
                     )
                     AdEventTracker.reportPaidValue(trackingScene?:payload.config.scene.remoteKey, payload.config, value, payload.ad.getResponseInfo())
                     AdEventTracker.reportTotalAdsRenenue001Admob(value)

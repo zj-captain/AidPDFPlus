@@ -609,8 +609,6 @@ class CachedAdsRepository(
             is AdMobNativePayload -> payload.ad
             else -> return null to "payload 类型不是 AdMob 广告对象"
         }
-        val result = AdMobPriceReflectionUtil.probe(ad, cachedAd.config.unitId)
-
         val testEcpm = Random.nextInt(1, 6) / 100.0
         return testEcpm  to "临时测试价 eCPM=$testEcpm"
 //        return try {
@@ -631,7 +629,7 @@ class CachedAdsRepository(
 //            val ecpm = ComparePriceUtil.recursiveComparePrice(cachedAd.config.unitId)
 //            ecpm to "recursiveComparePrice 返回 eCPM=$ecpm"
 
-            val testEcpm = Random.nextInt(1, 6) / 100.0
+            val testEcpm = Random.nextInt(4, 6) / 100.0
             return testEcpm  to "临时测试价 eCPM=$testEcpm"
         } catch (throwable: Throwable) {
             null to "recursiveComparePrice 异常：${throwable.javaClass.simpleName}"

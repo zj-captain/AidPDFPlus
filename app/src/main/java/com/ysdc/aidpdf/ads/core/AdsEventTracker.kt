@@ -69,7 +69,8 @@ object AdsEventTracker {
         trackingScene: String?,
         trackingType: String? = null,
         ecpm: Double? = null,
-        reEcpm: Double?=null
+        reEcpm: Double?=null,
+        source: String? =null
     ) {
         val params = mutableMapOf<String, Any?>(
             "ad_type" to resolveAdType(config.format),
@@ -78,9 +79,10 @@ object AdsEventTracker {
             "ad_mediation" to resolveMediation(config.platform),
             "ad_placement_name" to "",
             "ad_placement_id" to config.unitId,
-            "ad_ecpm_number" to (ecpm ?: EMPTY_ECPM),
+            "ad_ecpm_number" to reEcpm,
+            "ad_estimate_ecpm" to ecpm,
             "gap" to resolveGap(ecpm, reEcpm,(config.platform)),
-            "ad_source" to resolveMediation(config.platform),
+            "ad_source" to source,
             "ad_source_id" to config.unitId,
             "result_code" to RESULT_SUCCESS,
             "result_info" to "",
@@ -150,7 +152,7 @@ object AdsEventTracker {
     }
 
     /**
-     * 计算展示前比价价（ecpm）与最终展示价（reEcpm）的偏差方向。
+     * 计算展示前比价价（ecpm）与最终展示价（c）的偏差方向。
      * 仅当两个价格都为有效正值时才比较；任一价格缺失或无效时返回空字符串，
      * 避免把「无法比较」误报成某种偏差。
      */

@@ -38,8 +38,8 @@ class TradPlusBannerProvider : BannerAdProvider {
             }
 
             override fun onAdImpression(tpAdInfo: TPAdInfo?) {
-                AdsEventTracker.reportShown(config, trackingScene, ecpm = tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00, reEcpm = tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
-                AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,tpAdInfo?.ecpmcny,tpAdInfo?.adSourceName)
+                AdsEventTracker.reportShown(config, trackingScene, ecpm = tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00, reEcpm = tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00, source = tpAdInfo?.adSourceName)
+                AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,"USD",tpAdInfo?.adSourceName)
                 AdEventTracker.reportTotalAdsRenenue001Tp(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
                 onImpression()
             }
