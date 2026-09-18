@@ -7,17 +7,24 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.Gson
 import com.ysdc.aidpdf.BuildConfig
+import com.ysdc.aidpdf.ad.AdsAdmobLimitManager
 import com.ysdc.aidpdf.ad.AdsLimitManager
 import com.ysdc.aidpdf.ad.AidAdHub
+import com.ysdc.aidpdf.ad.DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON
 import com.ysdc.aidpdf.ad.DEFAULT_ADS_LIMIT_CONFIG_JSON
 import com.ysdc.aidpdf.ads.Ads
 import com.ysdc.aidpdf.ads.config.AdsConfigBridge
 import com.ysdc.aidpdf.core.block.BlockUtils
+import com.ysdc.aidpdf.reminder.config.DEFAULT_MEDIA_CONFIG_JSON
+import com.ysdc.aidpdf.reminder.config.Media2Manager
+import com.ysdc.aidpdf.reminder.config.MediaConfig
 import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderOverlayConfigRepository
 import com.ysdc.aidpdf.reminder.notice.PopRefresh
 import com.ysdc.aidpdf.reminder.notice.ReminderNotificationCenter
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
+import com.ysdc.aidpdf.utils.DEFAULT_PlAY_CONFIG_JSON
+import com.ysdc.aidpdf.utils.InstallUtil
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -30,7 +37,10 @@ object RemoteConfigUtils {
     private const val BLOCKED_REFERRER_KEY = "ac_black_refer_user"
     private const val ADB_BLOCK_SWITCH_KEY = "adb_block_switch"
     private const val REMOTE_AD_FUSE_CONFIG_KEY = "fuse_count"
+    private const val REMOTE_MEDIA_CONFIG_KEY = "media_config"
     private const val REMOTE_ADS_LIMIT_CONFIG_KEY = "ads_limit"
+    private const val REMOTE_ADS_ADMOB_LIMIT_CONFIG_KEY = "admob_limit"
+    private const val REMOTE_GOOGLE_PLAY_BLOCK_KEY = "google_play_block"
     private const val DEFAULT_REFERRER_CONFIG = """
         {
           "active": 1,
@@ -88,6 +98,9 @@ object RemoteConfigUtils {
                         mapOf(
                             GLOBAL_BLOCK_SWITCH_KEY to "0",
                             REMOTE_ADS_LIMIT_CONFIG_KEY to DEFAULT_ADS_LIMIT_CONFIG_JSON,
+                            REMOTE_ADS_ADMOB_LIMIT_CONFIG_KEY to DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON,
+                            REMOTE_MEDIA_CONFIG_KEY to DEFAULT_MEDIA_CONFIG_JSON,
+                            REMOTE_GOOGLE_PLAY_BLOCK_KEY to DEFAULT_PlAY_CONFIG_JSON,
                             REFERRER_CONFIG_KEY to DEFAULT_REFERRER_CONFIG,
                             BLOCKED_REFERRER_KEY to DEFAULT_BLOCKED_REFERRERS,
                             ADB_BLOCK_SWITCH_KEY to "1",
@@ -159,7 +172,33 @@ object RemoteConfigUtils {
             AidAdHub.log("Remote ads limit config skipped: ${it.message}")
         }
     }
-
+    private fun applyAdsAdmobLimitConfig() {
+        runCatching {
+            val json = getString(REMOTE_ADS_ADMOB_LIMIT_CONFIG_KEY).ifBlank { DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON }
+            AdsAdmobLimitManager.applyConfig(json)
+        }.onFailure {
+            AdsAdmobLimitManager.applyConfig(DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON)
+            AidAdHub.log("Remote ads admob limit config skipped: ${it.message}")
+        }
+    }
+    private fun applyGoogleConfig() {
+        runCatching {
+            val json = getString(REMOTE_GOOGLE_PLAY_BLOCK_KEY).ifBlank { DEFAULT_PlAY_CONFIG_JSON }
+            InstallUtil.applyConfig(json)
+        }.onFailure {
+            InstallUtil.applyConfig(DEFAULT_PlAY_CONFIG_JSON)
+            AidAdHub.log("Remote google play config skipped: ${it.message}")
+        }
+    }
+    private fun applyMediaConfig() {
+        runCatching {
+            val json = getString(REMOTE_MEDIA_CONFIG_KEY).ifBlank { DEFAULT_MEDIA_CONFIG_JSON }
+            Media2Manager.applyConfig(json)
+        }.onFailure {
+            Media2Manager.applyConfig(DEFAULT_MEDIA_CONFIG_JSON)
+            AidAdHub.log("Remote notice refresh config skipped: ${it.message}")
+        }
+    }
     /**
      * 从 Firebase Remote Config 拉取远程广告配置，解析成功后热切换广告目录。
      * 失败时静默忽略，保持当前配置（首次启动为本地默认，后续为上次成功的远程配置）。
@@ -183,6 +222,9 @@ object RemoteConfigUtils {
         applyPopRefresh()
         applyVirtualBlockSwitch()
         applyAdsLimitConfig()
+        applyAdsAdmobLimitConfig()
+        applyMediaConfig()
+        applyGoogleConfig()
     }
 
     private fun applyReferrerConfig() {

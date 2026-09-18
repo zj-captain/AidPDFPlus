@@ -15,6 +15,8 @@ import com.ysdc.aidpdf.ads.core.AdsExceptionInfo
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.BannerRenderRequest
 import com.ysdc.aidpdf.ads.provider.BannerAdProvider
+import com.ysdc.aidpdf.reminder.model.ReminderTrigger
+import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter.trigger
 
 class TradPlusBannerProvider : BannerAdProvider {
     override fun supports(platform: AdsPlatform): Boolean = platform == AdsPlatform.TradPlus
@@ -34,12 +36,13 @@ class TradPlusBannerProvider : BannerAdProvider {
         AdsEventTracker.reportLoadStarted(config)
         banner.setAdListener(object : BannerAdListener() {
             override fun onAdClicked(tpAdInfo: TPAdInfo?) {
+                trigger(ReminderTrigger.AD_CLICK)
                 AdsEventTracker.reportClick(config, trackingScene)
             }
 
             override fun onAdImpression(tpAdInfo: TPAdInfo?) {
-                AdsEventTracker.reportShown(config, trackingScene, ecpm = tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00, reEcpm = tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
-                AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,tpAdInfo?.ecpmcny,tpAdInfo?.adSourceName)
+                AdsEventTracker.reportShown(config, trackingScene, ecpm = tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00, reEcpm = tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00, source = tpAdInfo?.adSourceName)
+                AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,"USD",tpAdInfo?.adSourceName)
                 AdEventTracker.reportTotalAdsRenenue001Tp(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
                 onImpression()
             }

@@ -37,6 +37,7 @@ object TrackingEventNames {
     const val FLOATING_NOTIFICATION_CLICK = "floating_notification_click"
     const val MEDIA_NOTIFICATION_TRIGGER = "media_notification_trigger"
     const val MEDIA_NOTIFICATION_CLICK = "media_notification_click"
+    const val MEDIA2_NOTIFICATION_CLICK = "media2_notification_click"
     const val ALWAYS_NOTIFICATION_TRIGGER = "always_notification_trigger"
     const val ALWAYS_NOTIFICATION_CLICK = "always_notification_click"
 //    const val TIME_SCENE_SEND = "time_scene_send"

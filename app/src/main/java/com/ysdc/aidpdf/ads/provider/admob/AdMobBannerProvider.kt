@@ -40,7 +40,7 @@ class AdMobBannerProvider : BannerAdProvider {
                     parent.addView(adView)
                 }
                 AdsEventTracker.reportLoaded(config, success = true, resultCode = 200, resultInfo = "")
-                AdsEventTracker.reportShown(config, trackingScene)
+                AdsEventTracker.reportShown(config, trackingScene, source = "Admob")
 //                AdEventTracker.reportPaidValue(trackingScene?:config.scene.remoteKey, config, value, ad.getResponseInfo())
 //                AdEventTracker.reportTotalAdsRenenue001Admob(value)
                 onImpression()

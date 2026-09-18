@@ -223,6 +223,8 @@ var alarmReminderSystemNoticeSlot by SharedPreferencesDelegates.int(0, "alarm_sy
 var additionalReminderSystemNoticeSlot by SharedPreferencesDelegates.int(0, "additional_system_notice_slot")
 
 var adsLimitStateJson by SharedPreferencesDelegates.string("")
+
+var adsAdmobLimitStateJson by SharedPreferencesDelegates.string("")
 var lastRateShowTime by SharedPreferencesDelegates.long(0L, "last_rate_show_time")
 var rateValue by SharedPreferencesDelegates.int(0, "user_rate_value")
 var adUnitFuseStatesJson by SharedPreferencesDelegates.string("[]", "ad_unit_fuse_states_json")
@@ -230,3 +232,5 @@ var requestSysNotificationCount by SharedPreferencesDelegates.int(0, "request_sy
 var isFirstJudgeShowCustomNotify by SharedPreferencesDelegates.boolean(true, "is_first_judge_show_custom")
 
 var currentAdRevenue by SharedPreferencesDelegates.double(0.000000000000,"ad_revenue_total")
+//上次媒体通知的时间
+var mediaNoticeLastShowTime by SharedPreferencesDelegates.long( 0L,"media_notice_last_show_time")

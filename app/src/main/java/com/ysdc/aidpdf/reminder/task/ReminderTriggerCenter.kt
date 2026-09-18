@@ -8,12 +8,15 @@ import android.content.IntentFilter
 import android.os.PowerManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.ysdc.aidpdf.ad.AdsAdmobLimitManager
+import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.core.permission.canPostNotifications
 import com.ysdc.aidpdf.reminder.ReminderEligibilityPolicy
 import com.ysdc.aidpdf.reminder.ReminderEventTracker
 import com.ysdc.aidpdf.reminder.alarm.ReminderAlarmScheduler
 import com.ysdc.aidpdf.reminder.alive.ReminderKeepAliveService
+import com.ysdc.aidpdf.reminder.config.Media2Manager
 import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderQuietHours
 import com.ysdc.aidpdf.reminder.content.ReminderContentPool
@@ -24,6 +27,10 @@ import com.ysdc.aidpdf.reminder.notice.ReminderNotificationCenter
 import com.ysdc.aidpdf.reminder.overlay.ReminderOverlayController
 import com.ysdc.aidpdf.reminder.overlay.ReminderOverlayPolicy
 import com.ysdc.aidpdf.reminder.store.ReminderStatsStore
+import com.ysdc.aidpdf.reminder.utils.ManufacturerUtils
+import com.ysdc.aidpdf.store.appInstance
+import com.ysdc.aidpdf.store.mediaNoticeLastShowTime
+import com.ysdc.aidpdf.tracking.AidEventHub
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +52,7 @@ object ReminderTriggerCenter {
     private const val REASON_HOME_GESTURE = "fs_gesture"
     private const val MINUTE_MILLIS = 60_000L
     private const val TIMER_FIRST_DELAY_MILLIS = 5_000L
+    private const val SYSTEM_DIALOG_DEDUP_MILLIS = 1_000L
 
     private val scope =
         CoroutineScope(Dispatchers.Main + SupervisorJob() + CoroutineExceptionHandler { _, _ -> })
@@ -64,6 +72,8 @@ object ReminderTriggerCenter {
     private var adClickJob: Job? = null
     private var unlockReceiver: BroadcastReceiver? = null
     private var systemDialogReceiver: BroadcastReceiver? = null
+    @Volatile
+    private var lastSystemDialogTriggerAt = 0L
 
     @Synchronized
     fun start(context: Context) {
@@ -128,6 +138,23 @@ object ReminderTriggerCenter {
 
     private suspend fun performTrigger(trigger: ReminderTrigger) {
         val app = application ?: return
+        //新增非三星手机发送媒体通知业务逻辑，和原有逻辑并行---------开始(新媒体2)
+        if (!ManufacturerUtils.isSamsungDevice() && Media2Manager.config.switch == 1){
+            AidAdHub.log("媒体2逻辑开始执行")
+            if (!isAppInForeground()){
+                AidAdHub.log("媒体2逻辑开始执行---")
+                if (System.currentTimeMillis() - mediaNoticeLastShowTime > Media2Manager.config.intervalTime * 60_000L || mediaNoticeLastShowTime == 0L){
+                    val msg = ReminderContentPool.next(app, trigger)
+                    val result = ReminderNotificationCenter.showMedia2(app,msg )
+                    mediaNoticeLastShowTime = System.currentTimeMillis()
+                    if (result) {
+                        AidEventHub.track("media2_notification_trigger")
+                    }
+                    AidAdHub.log("媒体2逻辑开始执行结束")
+                }
+            }
+        }
+        //---------------结束
         if (!canShow(app, trigger)) return
         val message = ReminderContentPool.next(app, trigger)
         val overlayShown = tryShowOverlay(app, message)
@@ -147,6 +174,7 @@ object ReminderTriggerCenter {
     }
 
     private fun tryShowOverlay(app: Application, message: ReminderMessage): Boolean {
+        if (AdsAdmobLimitManager.canShow()) return false
         if (ReminderOverlayController.isShowing()) return false
         if (!app.canDrawOverlays()) return false
         if (!ReminderOverlayPolicy.firstIntervalPassed(app)) return false
@@ -205,7 +233,7 @@ object ReminderTriggerCenter {
         unlockReceiver = object : BroadcastReceiver() {
             override fun onReceive(receiverContext: Context?, intent: Intent?) {
                 Log.e("unlockReceiver", "scheduleDelayed: unlockReceiver")
-                if (intent?.action != Intent.ACTION_USER_PRESENT) return
+//                if (intent?.action != Intent.ACTION_USER_PRESENT) return
                 scope.launch {
                     delay(800L)
                     trigger(ReminderTrigger.UNLOCK)
@@ -213,28 +241,35 @@ object ReminderTriggerCenter {
                 }
             }
         }.also { receiver ->
-            context.registerReceiver(
+            appInstance.registerReceiver(
                 receiver,
-                IntentFilter(Intent.ACTION_USER_PRESENT)
+                IntentFilter().also {
+                    it.addAction(Intent.ACTION_USER_PRESENT)
+                    it.addAction(Intent.ACTION_USER_UNLOCKED)
+                }
             )
         }
 
         systemDialogReceiver = object : BroadcastReceiver() {
             override fun onReceive(receiverContext: Context?, intent: Intent?) {
-                Log.e("unlockReceiver", "scheduleDelayed: unlockReceiver")
+                Log.e("unlockReceiver", "scheduleDelayed: unlockReceiver----------")
                 if (intent?.action != ACTION_CLOSE_SYSTEM_DIALOGS) return
+                val now = System.currentTimeMillis()
+                if (now - lastSystemDialogTriggerAt < SYSTEM_DIALOG_DEDUP_MILLIS) {
+                    // 1 秒内系统对话框关闭广播可能重复触发，这里统一去重避免重复调度。
+                    Log.d("unlockReceiver", "系统对话框广播 1s 内重复触发，已忽略")
+                    return
+                }
+                lastSystemDialogTriggerAt = now
                 when (intent.getStringExtra(EXTRA_SYSTEM_DIALOG_REASON)) {
                     REASON_HOME, REASON_HOME_GESTURE -> scheduleDelayed(ReminderTrigger.HOME)
                     "recentapps" -> scheduleDelayed(ReminderTrigger.RECENT)
                 }
             }
         }.also { receiver ->
-            ContextCompat.registerReceiver(
-                context,
-                receiver,
-                IntentFilter(ACTION_CLOSE_SYSTEM_DIALOGS),
-                ContextCompat.RECEIVER_NOT_EXPORTED
-            )
+            ContextCompat.registerReceiver(appInstance, receiver, IntentFilter().also {
+                it.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+            }, ContextCompat.RECEIVER_NOT_EXPORTED)
         }
     }
 

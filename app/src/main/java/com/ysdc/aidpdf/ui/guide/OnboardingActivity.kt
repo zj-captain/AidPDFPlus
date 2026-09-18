@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.ysdc.aidpdf.App
 import com.ysdc.aidpdf.R
 import com.ysdc.aidpdf.ads.Ads
 import com.ysdc.aidpdf.ads.config.AdsScene
@@ -161,9 +162,20 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
                 addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
         }*/
-        openActivity<MainActivity>(finishCurrent = true) {
-            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
+       if (shouldShowOverlayPermissionPage()) {
+            startActivity(Intent(this, OverlayPermissionActivity::class.java).apply {
+                putExtra(OverlayPermissionActivity.EXTRA_FIRST_RUN_FLOW, isFirstRun)
+                putExtra(OverlayPermissionActivity.EXTRA_LAUNCH_FLOW, true)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
+            finish()
+        }else{
+           openActivity<MainActivity>(finishCurrent = true) {
+               addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
+           }
+           finish()
         }
+
     }
 
     private fun shouldShowOverlayPermissionPage(): Boolean {

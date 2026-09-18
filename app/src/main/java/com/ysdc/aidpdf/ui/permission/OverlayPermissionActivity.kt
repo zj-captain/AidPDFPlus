@@ -8,14 +8,12 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import com.ysdc.aidpdf.ads.Ads
 import com.ysdc.aidpdf.ads.config.AdsScene
-import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.databinding.ActivityOverlayPermissionBinding
-import com.ysdc.aidpdf.ui.MainActivity
-import com.ysdc.aidpdf.ui.basic.BaseActivity
-import com.ysdc.aidpdf.ui.guide.OnboardingActivity
 import com.ysdc.aidpdf.tracking.AidEventHub
 import com.ysdc.aidpdf.tracking.TrackingEventNames
+import com.ysdc.aidpdf.ui.MainActivity
+import com.ysdc.aidpdf.ui.basic.BaseActivity
 
 class OverlayPermissionActivity : BaseActivity<ActivityOverlayPermissionBinding>(
     ActivityOverlayPermissionBinding::inflate
@@ -106,29 +104,33 @@ class OverlayPermissionActivity : BaseActivity<ActivityOverlayPermissionBinding>
     private fun goNextPage() {
         if (navigatingNext || isFinishing || isDestroyed) return
         navigatingNext = true
-        if (BlockUtils.shouldBlockAds(this)) {
-            openNextPage()
-            return
-        }
-        Ads.showFullScreen(
-            scene = AdsScene.BackInterstitial,
-            activity = this,
-            onClosed = { openNextPage() },
-            onFailed = { openNextPage() }
-        )
+        openNextPage()
+//        if (BlockUtils.shouldBlockAds(this)) {
+//            openNextPage()
+//            return
+//        }
+//        Ads.showFullScreen(
+//            scene = AdsScene.BackInterstitial,
+//            activity = this,
+//            onClosed = { openNextPage() },
+//            onFailed = { openNextPage() }
+//        )
     }
 
     private fun openNextPage() {
         if (isFinishing || isDestroyed) return
-        if (firstRunFlow) {
-            startActivity(Intent(this, OnboardingActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            })
-        } else if (launchFlow) {
-            startActivity(Intent(this, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            })
-        }
+//        if (firstRunFlow) {
+//            startActivity(Intent(this, OnboardingActivity::class.java).apply {
+//                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//            })
+//        } else if (launchFlow) {
+//            startActivity(Intent(this, MainActivity::class.java).apply {
+//                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//            })
+//        }
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
         finish()
     }
 

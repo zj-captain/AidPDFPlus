@@ -19,6 +19,7 @@ import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoader
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoaderCallback
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
+import com.ysdc.aidpdf.App
 import com.ysdc.aidpdf.ad.AdEventTracker
 import com.ysdc.aidpdf.ads.config.AdsConfigBridge
 import com.ysdc.aidpdf.ads.config.AdsFormat
@@ -32,6 +33,9 @@ import com.ysdc.aidpdf.ads.core.AdsThread
 import com.ysdc.aidpdf.ads.provider.CachedAdProvider
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.NativeRenderRequest
+import com.ysdc.aidpdf.reminder.model.ReminderTrigger
+import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter.trigger
+import com.ysdc.aidpdf.store.appInstance
 
 class AdMobCachedAdProvider : CachedAdProvider {
     override fun supports(platform: AdsPlatform, format: AdsFormat): Boolean {
@@ -114,13 +118,14 @@ class AdMobCachedAdProvider : CachedAdProvider {
 
                     override fun onAdPaid(value: AdValue) {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000)
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000, source =payload.ad.getResponseInfo().loadedAdSourceResponseInfo?.name?:"admob" )
                             AdEventTracker.reportPaidValue(trackingScene?:payload.config.scene.remoteKey, payload.config, value, payload.ad.getResponseInfo())
                             AdEventTracker.reportTotalAdsRenenue001Admob(value)
                         }
                     }
                     override fun onAdClicked() {
                         AdsThread.runOnMain {
+                            trigger(ReminderTrigger.AD_CLICK)
                             AdsEventTracker.reportClick(payload.config, trackingScene)
                         }
                     }
@@ -165,13 +170,15 @@ class AdMobCachedAdProvider : CachedAdProvider {
 
                     override fun onAdPaid(value: AdValue) {
                         AdsThread.runOnMain {
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000)
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm,value.valueMicros / 1_000_000.0 * 1000, source =payload.ad.getResponseInfo().loadedAdSourceResponseInfo?.name?:"admob" )
                             AdEventTracker.reportPaidValue(trackingScene?:payload.config.scene.remoteKey, payload.config, value, payload.ad.getResponseInfo())
                             AdEventTracker.reportTotalAdsRenenue001Admob(value)
                         }
                     }
                     override fun onAdClicked() {
                         AdsThread.runOnMain {
+                            trigger(ReminderTrigger.AD_CLICK)
+                            appInstance.skipNextHotStart()
                             AdsEventTracker.reportClick(payload.config, trackingScene)
                         }
                     }
@@ -228,7 +235,8 @@ class AdMobCachedAdProvider : CachedAdProvider {
                         payload.config,
                         trackingScene,
                         ecpm = ecpm,
-                        reEcpm = value.valueMicros / 1_000_000.0 * 1000
+                        reEcpm = value.valueMicros / 1_000_000.0 * 1000,
+                        source =payload.ad.getResponseInfo().loadedAdSourceResponseInfo?.name?:"admob"
                     )
                     AdEventTracker.reportPaidValue(trackingScene?:payload.config.scene.remoteKey, payload.config, value, payload.ad.getResponseInfo())
                     AdEventTracker.reportTotalAdsRenenue001Admob(value)

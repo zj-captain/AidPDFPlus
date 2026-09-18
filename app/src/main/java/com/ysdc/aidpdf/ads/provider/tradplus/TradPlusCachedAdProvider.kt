@@ -28,6 +28,8 @@ import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.NativeAdStyle
 import com.ysdc.aidpdf.ads.model.NativeRenderRequest
 import com.ysdc.aidpdf.ads.provider.CachedAdProvider
+import com.ysdc.aidpdf.reminder.model.ReminderTrigger
+import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter.trigger
 
 class TradPlusCachedAdProvider : CachedAdProvider {
     override fun supports(platform: AdsPlatform, format: AdsFormat): Boolean {
@@ -57,9 +59,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         config: AdsUnitConfig,
         callback: (Result<Any>) -> Unit
     ) {
-        // 开屏缓存必须与 payload 一一对应，不能按广告位复用同一个 TPSplash，
-        // 否则旧缓存销毁时会把新缓存的底层对象一并销毁。
-        val splash = TPSplash(activity, config.unitId)
+        // TradPlus 按广告位长期复用对象，避免每次加载重复创建底层实例。
+        val splash = TradPlusHolderRegistry.getOrCreateSplash(activity, config.unitId)
         splash.setAdListener(object : SplashAdListener() {
             override fun onAdClicked(tpAdInfo: TPAdInfo?) = Unit
 
@@ -85,8 +86,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         config: AdsUnitConfig,
         callback: (Result<Any>) -> Unit
     ) {
-        // 插屏缓存同样需要独立底层对象，避免旧缓存释放时误伤下一次 reload 的新缓存。
-        val interstitial = TPInterstitial(activity, config.unitId)
+        // TradPlus 按广告位长期复用对象，避免每次加载重复创建底层实例。
+        val interstitial = TradPlusHolderRegistry.getOrCreateInterstitial(activity, config.unitId)
         interstitial.setAdListener(object : InterstitialAdListener {
             override fun onAdLoaded(tpAdInfo: TPAdInfo?) {
                 AdsLogger.d("TradPlus 插屏缓存加载成功，创建独立 TPInterstitial：unitId=${config.unitId}")
@@ -118,8 +119,8 @@ class TradPlusCachedAdProvider : CachedAdProvider {
         config: AdsUnitConfig,
         callback: (Result<Any>) -> Unit
     ) {
-        // 原生缓存需要与 payload 一一对应，避免复用同一对象导致多次 show/destroy 相互污染。
-        val nativeAd = TPNative(activity, config.unitId)
+        // TradPlus 按广告位长期复用对象，避免每次加载重复创建底层实例。
+        val nativeAd = TradPlusHolderRegistry.getOrCreateNative(activity, config.unitId)
         nativeAd.setAdListener(object : NativeAdListener() {
             override fun onAdLoaded(tpAdInfo: TPAdInfo?, tpBaseAd: TPBaseAd?) {
                 AdsLogger.d("TradPlus 原生缓存加载成功，创建独立 TPNative：unitId=${config.unitId}")
@@ -154,16 +155,63 @@ class TradPlusCachedAdProvider : CachedAdProvider {
     ) {
         when (payload) {
             is TradPlusOpenPayload -> {
+                if (activity.isFinishing || activity.isDestroyed) {
+                    val error = AdsExceptionInfo(
+                        code = AdsErrorCode.ShowFailed,
+                        scene = payload.config.scene,
+                        platform = AdsPlatform.TradPlus,
+                        message = "TradPlus 开屏展示失败：Activity 已结束",
+                        unitId = payload.config.unitId
+                    )
+                    AdsLogger.w("TradPlus 开屏展示被忽略：Activity 已结束 unitId=${payload.config.unitId}")
+                    AdsEventTracker.reportShowFailed(payload.config, trackingScene, error)
+                    onFailed(error)
+                    return
+                }
+                val contentRoot = activity.findViewById<ViewGroup>(android.R.id.content)
+                if (contentRoot == null) {
+                    val error = AdsExceptionInfo(
+                        code = AdsErrorCode.ShowFailed,
+                        scene = payload.config.scene,
+                        platform = AdsPlatform.TradPlus,
+                        message = "TradPlus 开屏展示失败：未找到 Activity content 容器",
+                        unitId = payload.config.unitId
+                    )
+                    AdsLogger.e("TradPlus 开屏展示失败：未找到 Activity content 容器 unitId=${payload.config.unitId}")
+                    AdsEventTracker.reportShowFailed(payload.config, trackingScene, error)
+                    onFailed(error)
+                    return
+                }
+                // TradPlus 官方文档要求 showAd(ViewGroup adContainer) 传入容器；
+                // 这里必须挂到真实视图树，避免使用未 attach 的临时 View 导致不展示也不回调。
+                val splashContainer = FrameLayout(activity).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                }
+                contentRoot.addView(splashContainer)
+                AdsLogger.d("TradPlus 开屏容器已挂载到 contentRoot，准备展示：unitId=${payload.config.unitId} childCount=${contentRoot.childCount}")
+                fun removeSplashContainer(reason: String) {
+                    val parent = splashContainer.parent
+                    if (parent is ViewGroup) {
+                        parent.removeView(splashContainer)
+                        AdsLogger.d("TradPlus 开屏容器已移除：unitId=${payload.config.unitId} reason=$reason")
+                    } else {
+                        AdsLogger.d("TradPlus 开屏容器移除跳过：unitId=${payload.config.unitId} reason=$reason parent=$parent")
+                    }
+                }
                 payload.ad.setAdListener(object : SplashAdListener() {
                     override fun onAdClicked(tpAdInfo: TPAdInfo?) {
-                        AdsThread.runOnMain { AdsEventTracker.reportClick(payload.config, trackingScene) }
+                        AdsThread.runOnMain {
+                            trigger(ReminderTrigger.AD_CLICK)
+                            AdsEventTracker.reportClick(payload.config, trackingScene) }
                     }
-
                     override fun onAdImpression(tpAdInfo: TPAdInfo?) {
                         AdsThread.runOnMain {
                             // 补传最终展示价（TPAdInfo.ecpm 为美元 eCPM），供埋点计算 gap。
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm, tpAdInfo?.ecpm?.toDoubleOrNull())
-                            AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,tpAdInfo?.ecpmcny,tpAdInfo?.adSourceName)
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm, tpAdInfo?.ecpm?.toDoubleOrNull(), source = tpAdInfo?.adSourceName)
+                            AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,"USD",tpAdInfo?.adSourceName)
                             AdEventTracker.reportTotalAdsRenenue001Tp(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
                             onShown()
                         }
@@ -171,6 +219,7 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
                     override fun onAdClosed(tpAdInfo: TPAdInfo?) {
                         AdsThread.runOnMain {
+                            removeSplashContainer("onAdClosed")
                             AdsEventTracker.reportClosed(payload.config, trackingScene)
                             onClosed()
                         }
@@ -180,6 +229,7 @@ class TradPlusCachedAdProvider : CachedAdProvider {
 
                     override fun onAdLoadFailed(tpAdError: TPAdError?) {
                         AdsThread.runOnMain {
+                            removeSplashContainer("onAdLoadFailed")
                             val error = AdsExceptionInfo(
                                 code = AdsErrorCode.ShowFailed,
                                 scene = payload.config.scene,
@@ -191,9 +241,25 @@ class TradPlusCachedAdProvider : CachedAdProvider {
                             onFailed(error)
                         }
                     }
+
+                    override fun onAdShowFailed(tpAdInfo: TPAdInfo?, tpAdError: TPAdError?) {
+                        AdsThread.runOnMain {
+                            removeSplashContainer("onAdShowFailed")
+                            val error = AdsExceptionInfo(
+                                code = AdsErrorCode.ShowFailed,
+                                scene = payload.config.scene,
+                                platform = AdsPlatform.TradPlus,
+                                message = tpAdError?.errorMsg ?: "TradPlus splash show failed",
+                                unitId = payload.config.unitId
+                            )
+                            AdsLogger.e("TradPlus 开屏展示失败回调：unitId=${payload.config.unitId} error=${tpAdError?.errorMsg}")
+                            AdsEventTracker.reportShowFailed(payload.config, trackingScene, error)
+                            onFailed(error)
+                        }
+                    }
                 })
-                val container = FrameLayout(activity)
-                payload.ad.showAd(container)
+                AdsLogger.d("TradPlus 开始调用开屏 showAd：unitId=${payload.config.unitId}")
+                payload.ad.showAd(splashContainer)
             }
 
             is TradPlusInterstitialPayload -> {
@@ -213,14 +279,16 @@ class TradPlusCachedAdProvider : CachedAdProvider {
                     override fun onAdLoaded(tpAdInfo: TPAdInfo?) = Unit
 
                     override fun onAdClicked(tpAdInfo: TPAdInfo?) {
-                        AdsThread.runOnMain { AdsEventTracker.reportClick(payload.config, trackingScene) }
+                        AdsThread.runOnMain {
+                            trigger(ReminderTrigger.AD_CLICK)
+                            AdsEventTracker.reportClick(payload.config, trackingScene) }
                     }
 
                     override fun onAdImpression(tpAdInfo: TPAdInfo?) {
                         AdsThread.runOnMain {
                             // 补传最终展示价（TPAdInfo.ecpm 为美元 eCPM），供埋点计算 gap。
-                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm, tpAdInfo?.ecpm?.toDoubleOrNull())
-                            AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,tpAdInfo?.ecpmcny,tpAdInfo?.adSourceName)
+                            AdsEventTracker.reportShown(payload.config, trackingScene, trackingType, ecpm, tpAdInfo?.ecpm?.toDoubleOrNull(), source = tpAdInfo?.adSourceName)
+                            AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,"USD",tpAdInfo?.adSourceName)
                             AdEventTracker.reportTotalAdsRenenue001Tp(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
                             onShown()
                         }
@@ -293,14 +361,16 @@ class TradPlusCachedAdProvider : CachedAdProvider {
             override fun onAdLoaded(tpAdInfo: TPAdInfo?, tpBaseAd: TPBaseAd?) = Unit
 
             override fun onAdClicked(tpAdInfo: TPAdInfo?) {
-                AdsThread.runOnMain { AdsEventTracker.reportClick(payload.config, trackingScene) }
+                AdsThread.runOnMain {
+                    trigger(ReminderTrigger.AD_CLICK)
+                    AdsEventTracker.reportClick(payload.config, trackingScene) }
             }
 
             override fun onAdImpression(tpAdInfo: TPAdInfo?) {
                 AdsThread.runOnMain {
                     // 补传最终展示价（TPAdInfo.ecpm 为美元 eCPM），供埋点计算 gap。
-                    AdsEventTracker.reportShown(payload.config, trackingScene, ecpm = ecpm, reEcpm = tpAdInfo?.ecpm?.toDoubleOrNull())
-                    AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,tpAdInfo?.ecpmcny,tpAdInfo?.adSourceName)
+                    AdsEventTracker.reportShown(payload.config, trackingScene, ecpm = ecpm, reEcpm = tpAdInfo?.ecpm?.toDoubleOrNull(), source = tpAdInfo?.adSourceName)
+                    AdEventTracker.sendTpRevenue(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00,"USD",tpAdInfo?.adSourceName)
                     AdEventTracker.reportTotalAdsRenenue001Tp(tpAdInfo?.ecpm?.toDoubleOrNull()?:0.00)
                     onImpression()
                 }
@@ -332,20 +402,15 @@ class TradPlusCachedAdProvider : CachedAdProvider {
     override fun destroyPayload(payload: Any) {
         when (payload) {
             is TradPlusOpenPayload -> {
-                // 开屏 payload 改为独立实例后，必须只销毁当前 payload 自己持有的对象，
-                // 避免按 unitId 清理时误伤后续 reload 出来的新缓存。
-                AdsLogger.d("TradPlus 开屏缓存销毁独立 TPSplash：unitId=${payload.config.unitId}")
-                payload.ad.onDestroy()
+                // TradPlus 现在采用广告位级对象复用，缓存销毁时不能顺手销毁 holder，
+                // 否则会把同广告位后续继续复用的对象一并释放。
+                AdsLogger.d("TradPlus 开屏缓存移除：unitId=${payload.config.unitId}，保留 TPSplash holder 供后续复用")
             }
             is TradPlusInterstitialPayload -> {
-                // 插屏 payload 改为独立实例后，销毁时只回收当前对象，避免 unitId 级别复用污染。
-                AdsLogger.d("TradPlus 插屏缓存销毁独立 TPInterstitial：unitId=${payload.config.unitId}")
-                payload.ad.onDestroy()
+                AdsLogger.d("TradPlus 插屏缓存移除：unitId=${payload.config.unitId}，保留 TPInterstitial holder 供后续复用")
             }
             is TradPlusNativePayload -> {
-                // 原生 payload 改为独立实例后，销毁时只释放当前对象，避免误销毁后续缓存。
-                AdsLogger.d("TradPlus 原生缓存销毁独立 TPNative：unitId=${payload.config.unitId}")
-                payload.ad.onDestroy()
+                AdsLogger.d("TradPlus 原生缓存移除：unitId=${payload.config.unitId}，保留 TPNative holder 供后续复用")
             }
         }
     }

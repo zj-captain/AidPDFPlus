@@ -54,8 +54,8 @@ object AdEventTracker {
     }
     fun sendTpRevenue(ecpm: Double, currencyCode: String?, responseInfoName: String?) {
         runCatching {
-            Adjust.trackAdRevenue(AdjustAdRevenue("admob_sdk").also {
-                it.setRevenue(ecpm * 1000, currencyCode)
+            Adjust.trackAdRevenue(AdjustAdRevenue("tradplus_sdk").also {
+                it.setRevenue(ecpm / 1000, "USD")
                 it.adRevenueNetwork = responseInfoName
             })
         }
@@ -63,14 +63,14 @@ object AdEventTracker {
         if (!BuildConfig.DEBUG) {
             runCatching {
                 firebaseAnalytics?.logEvent("ad_impression_revenue", Bundle().apply {
-                    putDouble(FirebaseAnalytics.Param.VALUE, ecpm * 1000)
+                    putDouble(FirebaseAnalytics.Param.VALUE, ecpm / 1000)
                     putString(FirebaseAnalytics.Param.CURRENCY, "USD")
                 })
             }
 
             runCatching {
                 facebookLogger.logPurchase(
-                    (ecpm * 1000).toBigDecimal(),
+                    (ecpm / 1000).toBigDecimal(),
                     Currency.getInstance("USD")
                 )
             }

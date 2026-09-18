@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import com.tp.compareprice.ComparePriceUtil
 import com.ysdc.aidpdf.ads.config.AdsCatalog
 import com.ysdc.aidpdf.ads.config.AdsFormat
 import com.ysdc.aidpdf.ads.config.AdsPlatform
@@ -31,6 +30,7 @@ import com.ysdc.aidpdf.ads.provider.tradplus.TradPlusOpenPayload
 import com.ysdc.aidpdf.ads.runtime.ActiveDisplayRegistry
 import com.ysdc.aidpdf.ads.runtime.PlatformRuntime
 import com.ysdc.aidpdf.ads.runtime.RuntimeRegistry
+import com.ysdc.aidpdf.ads.ui.FullScreenLoadingOverlay
 import com.ysdc.aidpdf.ads.utils.AdMobPriceReflectionUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -132,16 +132,33 @@ class CachedAdsRepository(
             if (runtime.autoReloadEnabled) {
                 load(scene, platform, activity = if (platform == AdsPlatform.TradPlus) activity else null)
             }
-            ProviderFactory.cached(platform, scene.expectedFormat).showFullScreen(
-                payload = cached.payload,
-                activity = activity,
-                onShown = onShown,
-                onClosed = onClosed,
-                onFailed = onFailed,
-                trackingScene = trackingScene,
-                trackingType = trackingType,
-                ecpm = ecpm
-            )
+            val loadingOverlay = FullScreenLoadingOverlay(activity)
+            loadingOverlay.show()
+            scope.launch {
+                delay(500)
+                loadingOverlay.dismiss()
+                AdsThread.runOnMain {
+                    ProviderFactory.cached(platform, scene.expectedFormat).showFullScreen(
+                        payload = cached.payload,
+                        activity = activity,
+                        onShown = {
+                            loadingOverlay.dismiss()
+                            onShown()
+                        },
+                        onClosed = {
+                            loadingOverlay.dismiss()
+                            onClosed()
+                        },
+                        onFailed = {
+                            loadingOverlay.dismiss()
+                            onFailed(it)
+                        },
+                        trackingScene = trackingScene,
+                        trackingType = trackingType,
+                        ecpm = ecpm
+                    )
+                }
+            }
         }
     }
 
@@ -513,7 +530,7 @@ class CachedAdsRepository(
         )
     }
 
-    // ===== 自动竞价辅助：候选构建、展示前取价、排序 =====
+    // ===== 历史自动竞价辅助：当前自动入口已改为 Ads.kt 中的平台优先级策略，这部分仓库逻辑保留备用 =====
 
     /** 展示竞价候选：平台与展示前读取到的价格快照。 */
     private data class DisplayCandidate(

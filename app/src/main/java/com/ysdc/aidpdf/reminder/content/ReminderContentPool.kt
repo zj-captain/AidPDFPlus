@@ -1,5 +1,6 @@
 package com.ysdc.aidpdf.reminder.content
 
+import ads_mobile_sdk.`is`
 import android.content.Context
 import androidx.annotation.ArrayRes
 import com.ysdc.aidpdf.R
