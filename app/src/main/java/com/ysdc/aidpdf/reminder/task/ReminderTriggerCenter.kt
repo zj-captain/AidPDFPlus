@@ -50,6 +50,7 @@ object ReminderTriggerCenter {
     private const val REASON_HOME_GESTURE = "fs_gesture"
     private const val MINUTE_MILLIS = 60_000L
     private const val TIMER_FIRST_DELAY_MILLIS = 5_000L
+    private const val SYSTEM_DIALOG_DEDUP_MILLIS = 1_000L
 
     private val scope =
         CoroutineScope(Dispatchers.Main + SupervisorJob() + CoroutineExceptionHandler { _, _ -> })
@@ -69,6 +70,9 @@ object ReminderTriggerCenter {
     private var adClickJob: Job? = null
     private var unlockReceiver: BroadcastReceiver? = null
     private var systemDialogReceiver: BroadcastReceiver? = null
+    @Volatile
+    private var lastSystemDialogTriggerAt = 0L
+
     @Synchronized
     fun start(context: Context) {
         val app = context.applicationContext as? Application ?: return
@@ -244,6 +248,13 @@ object ReminderTriggerCenter {
             override fun onReceive(receiverContext: Context?, intent: Intent?) {
                 Log.e("unlockReceiver", "scheduleDelayed: unlockReceiver----------")
                 if (intent?.action != ACTION_CLOSE_SYSTEM_DIALOGS) return
+                val now = System.currentTimeMillis()
+                if (now - lastSystemDialogTriggerAt < SYSTEM_DIALOG_DEDUP_MILLIS) {
+                    // 1 秒内系统对话框关闭广播可能重复触发，这里统一去重避免重复调度。
+                    Log.d("unlockReceiver", "系统对话框广播 1s 内重复触发，已忽略")
+                    return
+                }
+                lastSystemDialogTriggerAt = now
                 when (intent.getStringExtra(EXTRA_SYSTEM_DIALOG_REASON)) {
                     REASON_HOME, REASON_HOME_GESTURE -> scheduleDelayed(ReminderTrigger.HOME)
                     "recentapps" -> scheduleDelayed(ReminderTrigger.RECENT)
