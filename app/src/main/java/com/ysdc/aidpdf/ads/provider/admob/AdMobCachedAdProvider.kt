@@ -32,6 +32,8 @@ import com.ysdc.aidpdf.ads.core.AdsThread
 import com.ysdc.aidpdf.ads.provider.CachedAdProvider
 import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.NativeRenderRequest
+import com.ysdc.aidpdf.reminder.model.ReminderTrigger
+import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter.trigger
 
 class AdMobCachedAdProvider : CachedAdProvider {
     override fun supports(platform: AdsPlatform, format: AdsFormat): Boolean {
@@ -121,6 +123,7 @@ class AdMobCachedAdProvider : CachedAdProvider {
                     }
                     override fun onAdClicked() {
                         AdsThread.runOnMain {
+                            trigger(ReminderTrigger.AD_CLICK)
                             AdsEventTracker.reportClick(payload.config, trackingScene)
                         }
                     }
@@ -172,6 +175,7 @@ class AdMobCachedAdProvider : CachedAdProvider {
                     }
                     override fun onAdClicked() {
                         AdsThread.runOnMain {
+                            trigger(ReminderTrigger.AD_CLICK)
                             AdsEventTracker.reportClick(payload.config, trackingScene)
                         }
                     }

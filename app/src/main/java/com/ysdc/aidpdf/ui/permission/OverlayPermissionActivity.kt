@@ -8,14 +8,12 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import com.ysdc.aidpdf.ads.Ads
 import com.ysdc.aidpdf.ads.config.AdsScene
-import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.databinding.ActivityOverlayPermissionBinding
-import com.ysdc.aidpdf.ui.MainActivity
-import com.ysdc.aidpdf.ui.basic.BaseActivity
-import com.ysdc.aidpdf.ui.guide.OnboardingActivity
 import com.ysdc.aidpdf.tracking.AidEventHub
 import com.ysdc.aidpdf.tracking.TrackingEventNames
+import com.ysdc.aidpdf.ui.MainActivity
+import com.ysdc.aidpdf.ui.basic.BaseActivity
 
 class OverlayPermissionActivity : BaseActivity<ActivityOverlayPermissionBinding>(
     ActivityOverlayPermissionBinding::inflate

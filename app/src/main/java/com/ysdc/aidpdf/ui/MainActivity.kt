@@ -193,6 +193,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private var overlayPermissionPromptHandled = false
     private var systemNotificationPromptHandled = false
     private var permissionCheckRetryScheduled = false
+    private var lastTabAdShowTimeMillis = 0L
     private val permissionCheckRunnable = Runnable { continueHomePermissionChecks() }
 
     override fun hideNavigationBar(): Boolean = false
@@ -209,6 +210,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         binding.filterBar.doOnLayout { moveFilterIndicator(animate = false) }
         selectSection(HomeSection.HOME)
         openPendingReminderTarget()
+        lastTabAdShowTimeMillis = System.currentTimeMillis()
     }
 
     override fun bindActions() {
@@ -535,9 +537,20 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             applySection()
             return
         }
+        val now = System.currentTimeMillis()
+        // tab 切换广告至少间隔 1 秒，避免快速连续点击时反复弹出插屏。
+        if (now - lastTabAdShowTimeMillis <= TAB_AD_MIN_INTERVAL_MILLIS) {
+            Log.d(TAG, "tab切换广告被时间间隔拦截: interval=${now - lastTabAdShowTimeMillis}ms")
+            applySection()
+            return
+        }
         Ads.showFullScreen(
             scene = AdsScene.BackInterstitial,
             activity = this,
+            onShown = {
+                lastTabAdShowTimeMillis = now
+                Log.d(TAG, "tab切换广告开始展示: scene=${AdsScene.BackInterstitial} at=$now")
+            },
             onClosed = { applySection() },
             onFailed = { applySection() }
         )
@@ -1250,9 +1263,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private var notificationGuideShownThisProcess = false
 
     private companion object {
+        private const val TAG = "MainActivity"
         private const val TAG_OVERLAY_PERMISSION = "overlay_permission"
         private const val TAG_NOTIFICATION_PERMISSION = "notification_permission"
         private const val HOME_PERMISSION_RETRY_MILLIS = 300L
+        private const val TAB_AD_MIN_INTERVAL_MILLIS = 60_000L
     }
 
 

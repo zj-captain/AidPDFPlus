@@ -105,7 +105,7 @@ object BlockUtils {
     }
 
     fun shouldBlockAds(context: Context): Boolean {
-        if (BuildConfig.DEBUG) { Log.d(TAG, "shouldBlockAds: DEBUG 模式，不拦截"); return false }
+//        if (BuildConfig.DEBUG) { Log.d(TAG, "shouldBlockAds: DEBUG 模式，不拦截"); return false }
         if (globalBlockEnabled) { Log.d(TAG, "shouldBlockAds: 拦截 → globalBlockEnabled=true"); return true }
         if (InstallUtil.config.google_play_block == 1 && !InstallUtil.isFromGooglePlay()) {
             Log.d(TAG, "google商店: 拦截 → globalBlockEnabled=true");

@@ -35,6 +35,7 @@ import com.ysdc.aidpdf.tracking.AidEventHub
 import com.ysdc.aidpdf.tracking.CoreEventTracker
 import com.ysdc.aidpdf.tracking.TrackingEventNames
 import com.ysdc.aidpdf.ui.permission.OverlayPermissionActivity
+import com.ysdc.aidpdf.utils.InstallUtil
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -330,6 +331,10 @@ class LaunchLoadingActivity :
         }
         if (targetPlatform == null) {
             Log.w(TAG, "启动页广告展示目标为空，直接进入下一页：decision=$decision")
+            openNextPage()
+            return
+        }
+        if (InstallUtil.config.google_play_block == 1 && !InstallUtil.isFromGooglePlay()) {
             openNextPage()
             return
         }

@@ -131,6 +131,7 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>(ActivityLanguageB
         if (isFinishing || isDestroyed) return
         if (fromFirstRun) {
             openActivity<OnboardingActivity>(finishCurrent = true)
+            finish()
         } else {
             openActivity<MainActivity>(finishCurrent = true) {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
