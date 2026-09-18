@@ -9,6 +9,7 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.ysdc.aidpdf.ad.AdEventTracker
+import com.ysdc.aidpdf.ad.AdsAdmobLimitManager
 import com.ysdc.aidpdf.ads.Ads
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsScene
@@ -44,20 +45,21 @@ class LaunchLoadingActivity :
     BaseActivity<ActivityLaunchLoadingBinding>(ActivityLaunchLoadingBinding::inflate) {
 
     private enum class LaunchAdDecision {
-        SHOW_BEST,
-        SHOW_SINGLE,
+        SHOW_ADMOB,
+        SHOW_TRADPLUS,
         GO_NEXT
     }
 
     private data class LaunchAdState(
         val hasTpReady: Boolean,
-        val hasAdMobReady: Boolean
+        val hasAdMobReady: Boolean,
+        val adMobAvailableByLimit: Boolean
     ) {
         val hasAnyReady: Boolean
             get() = hasTpReady || hasAdMobReady
 
-        val hasBothReady: Boolean
-            get() = hasTpReady && hasAdMobReady
+        val canShowAdMobNow: Boolean
+            get() = adMobAvailableByLimit && hasAdMobReady
     }
 
     private var launchJob: Job? = null
@@ -142,10 +144,10 @@ class LaunchLoadingActivity :
                 return@launch
             }
             when (decision) {
-                LaunchAdDecision.SHOW_BEST,
-                LaunchAdDecision.SHOW_SINGLE -> {
+                LaunchAdDecision.SHOW_ADMOB,
+                LaunchAdDecision.SHOW_TRADPLUS -> {
                     Log.d(TAG, "启动页命中广告展示条件，准备展示开屏广告：decision=$decision requestIndex=$requestIndex")
-                    showLaunchOpenAd(requestIndex)
+                    showLaunchOpenAd(requestIndex, decision)
                 }
 
                 LaunchAdDecision.GO_NEXT -> {
@@ -261,16 +263,20 @@ class LaunchLoadingActivity :
             val elapsed = System.currentTimeMillis() - startedAt
             val state = currentLaunchAdState()
             logLaunchAdStage(elapsed, state)
-            if (state.hasBothReady) {
-                Log.d(TAG, "启动页在8秒内双平台都已就绪，直接进入比价展示：elapsed=${elapsed}ms")
-                return LaunchAdDecision.SHOW_BEST
+            if (state.canShowAdMobNow) {
+                Log.d(TAG, "启动页检测到 AdMob 可展示，优先展示 AdMob：elapsed=${elapsed}ms")
+                return LaunchAdDecision.SHOW_ADMOB
             }
-            if (elapsed >= FIRST_STAGE_TIMEOUT_MS && state.hasAnyReady) {
+            if (!state.adMobAvailableByLimit && state.hasTpReady) {
+                Log.d(TAG, "启动页检测到 AdMob 展示次数已用完且 TradPlus 有缓存，展示 TradPlus：elapsed=${elapsed}ms")
+                return LaunchAdDecision.SHOW_TRADPLUS
+            }
+            if (elapsed >= TOTAL_TIMEOUT_MS && state.hasTpReady) {
                 Log.d(
                     TAG,
-                    "启动页达到8秒阈值后命中展示条件：elapsed=${elapsed}ms tp=${state.hasTpReady} admob=${state.hasAdMobReady}"
+                    "启动页达到15秒上限时 TradPlus 已有缓存，立即展示 TradPlus：elapsed=${elapsed}ms admobLimitAvailable=${state.adMobAvailableByLimit}"
                 )
-                return if (state.hasBothReady) LaunchAdDecision.SHOW_BEST else LaunchAdDecision.SHOW_SINGLE
+                return LaunchAdDecision.SHOW_TRADPLUS
             }
             if (elapsed >= TOTAL_TIMEOUT_MS) {
                 Log.d(TAG, "启动页达到15秒总超时仍无可展示广告，直接进入下一页")
@@ -283,7 +289,8 @@ class LaunchLoadingActivity :
     private fun currentLaunchAdState(): LaunchAdState {
         return LaunchAdState(
             hasTpReady = Ads.hasReady(AdsScene.Launch, AdsPlatform.TradPlus),
-            hasAdMobReady = Ads.hasReady(AdsScene.Launch, AdsPlatform.AdMob)
+            hasAdMobReady = Ads.hasReady(AdsScene.Launch, AdsPlatform.AdMob),
+            adMobAvailableByLimit = AdsAdmobLimitManager.canShow()
         )
     }
 
@@ -293,7 +300,7 @@ class LaunchLoadingActivity :
             val stageLabel = if (elapsed < FIRST_STAGE_TIMEOUT_MS) "0~8s等待阶段" else "8~15s兜底阶段"
             Log.d(
                 TAG,
-                "启动页广告状态变化：stage=$stageLabel elapsed=${elapsed}ms tp=${state.hasTpReady} admob=${state.hasAdMobReady} any=${state.hasAnyReady} both=${state.hasBothReady}"
+                "启动页广告状态变化：stage=$stageLabel elapsed=${elapsed}ms tp=${state.hasTpReady} admob=${state.hasAdMobReady} admobLimitAvailable=${state.adMobAvailableByLimit} canShowAdMobNow=${state.canShowAdMobNow} any=${state.hasAnyReady}"
             )
             lastLoggedAdState = state
         }
@@ -301,12 +308,12 @@ class LaunchLoadingActivity :
             hasLoggedSecondStage = true
             Log.d(
                 TAG,
-                "启动页进入8~15秒兜底阶段：elapsed=${elapsed}ms tp=${state.hasTpReady} admob=${state.hasAdMobReady}"
+                "启动页进入8~15秒等待阶段：elapsed=${elapsed}ms tp=${state.hasTpReady} admob=${state.hasAdMobReady} admobLimitAvailable=${state.adMobAvailableByLimit}"
             )
         }
     }
 
-    private fun showLaunchOpenAd(requestIndex: Int) {
+    private fun showLaunchOpenAd(requestIndex: Int, decision: LaunchAdDecision) {
         if (hasHandledOpenAdResult || requestIndex != launchRequestIndex || isFinishing || isDestroyed) {
             Log.d(
                 TAG,
@@ -315,25 +322,41 @@ class LaunchLoadingActivity :
             return
         }
         hasHandledOpenAdResult = true
-        // 平台选择已下沉到 Ads 模块内部：展示时按 AdMob/TradPlus 价格比较，价高者优先展示。
+        val targetPlatform = when (decision) {
+            // 需求要求：AdMob 次数未用完时，只展示 AdMob；用完后才走 TradPlus。
+            LaunchAdDecision.SHOW_ADMOB -> AdsPlatform.AdMob
+            LaunchAdDecision.SHOW_TRADPLUS -> AdsPlatform.TradPlus
+            LaunchAdDecision.GO_NEXT -> null
+        }
+        if (targetPlatform == null) {
+            Log.w(TAG, "启动页广告展示目标为空，直接进入下一页：decision=$decision")
+            openNextPage()
+            return
+        }
+        Log.d(TAG, "启动页准备展示指定平台开屏广告：platform=$targetPlatform decision=$decision")
         Ads.showFullScreen(
             scene = AdsScene.Launch,
+            platform = targetPlatform,
             activity = this,
             onShown = {
                 isShowingAd = true
-                Log.d(TAG, "启动页开屏广告已展示")
+                if (targetPlatform == AdsPlatform.AdMob) {
+                    // 启动页这里走的是指定平台入口，需要手动累计 AdMob 专属展示次数。
+                    AdsAdmobLimitManager.recordShow()
+                }
+                Log.d(TAG, "启动页开屏广告已展示：platform=$targetPlatform")
                 if (requestIndex == launchRequestIndex) {
                     prepareNextPageInventory()
                 }
             },
             onClosed = {
                 isShowingAd = false
-                Log.d(TAG, "启动页开屏广告已关闭，准备进入下一页")
+                Log.d(TAG, "启动页开屏广告已关闭，准备进入下一页：platform=$targetPlatform")
                 openNextPage()
             },
             onFailed = {
                 isShowingAd = false
-                Log.e(TAG, "开屏广告展示失败，message=${it.message}")
+                Log.e(TAG, "开屏广告展示失败：platform=$targetPlatform message=${it.message}")
                 openNextPage()
             },
             trackingScene = launchAdTrackingScene(),

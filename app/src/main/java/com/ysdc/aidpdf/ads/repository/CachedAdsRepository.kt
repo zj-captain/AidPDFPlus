@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import com.ysdc.aidpdf.ad.AdsAdmobLimitManager
 import com.ysdc.aidpdf.ads.config.AdsCatalog
 import com.ysdc.aidpdf.ads.config.AdsFormat
 import com.ysdc.aidpdf.ads.config.AdsPlatform
@@ -137,6 +136,7 @@ class CachedAdsRepository(
             loadingOverlay.show()
             scope.launch {
                 delay(500)
+                loadingOverlay.dismiss()
                 AdsThread.runOnMain {
                     ProviderFactory.cached(platform, scene.expectedFormat).showFullScreen(
                         payload = cached.payload,
@@ -322,15 +322,7 @@ class CachedAdsRepository(
                     activity = activity,
                     parent = parent,
                     request = request,
-                    onShown = {
-                        if (candidate.platform == AdsPlatform.AdMob) {
-                            // 只在自动竞价最终由 AdMob 展示成功时，补记 AdMob 专属次数；
-                            // AdsLimitManager 仍由外层原有 onShown 逻辑继续记录，保持旧逻辑不变。
-                            AdsAdmobLimitManager.recordShow()
-                            AdsLogger.d("自动竞价：场景=$scene 平台=${candidate.platform} 原生展示成功，已记录 AdMob 专属次数")
-                        }
-                        onShown()
-                    },
+                    onShown = onShown,
                     onImpression = onImpression,
                     onFailed = { error ->
                         if (!failed) {
@@ -384,15 +376,7 @@ class CachedAdsRepository(
             scene = scene,
             platform = candidate.platform,
             activity = activity,
-            onShown = {
-                if (candidate.platform == AdsPlatform.AdMob) {
-                    // 只在自动竞价最终由 AdMob 展示成功时，补记 AdMob 专属次数；
-                    // AdsLimitManager 仍由外层原有 onShown 逻辑继续记录，保持旧逻辑不变。
-                    AdsAdmobLimitManager.recordShow()
-                    AdsLogger.d("自动竞价：场景=$scene 平台=${candidate.platform} 全屏展示成功，已记录 AdMob 专属次数")
-                }
-                onShown()
-            },
+            onShown = onShown,
             onClosed = onClosed,
             onFailed = { error ->
                 AdsLogger.w("自动竞价：场景=$scene 平台=${candidate.platform} 展示失败，尝试下一候选：${error.message}")
@@ -546,7 +530,7 @@ class CachedAdsRepository(
         )
     }
 
-    // ===== 自动竞价辅助：候选构建、展示前取价、排序 =====
+    // ===== 历史自动竞价辅助：当前自动入口已改为 Ads.kt 中的平台优先级策略，这部分仓库逻辑保留备用 =====
 
     /** 展示竞价候选：平台与展示前读取到的价格快照。 */
     private data class DisplayCandidate(
@@ -570,11 +554,6 @@ class CachedAdsRepository(
 
     private fun buildCandidate(scene: AdsScene, activity: AppCompatActivity,platform: AdsPlatform): DisplayCandidate? {
         val runtime = runtimeRegistry.get(scene, platform)
-        if (platform == AdsPlatform.AdMob && !AdsAdmobLimitManager.canShow()) {
-            // AdMob 专属上限只影响自动竞价候选资格；达到上限后直接不参与竞价，避免误伤 TradPlus。
-            AdsLogger.d("自动竞价：场景=$scene 平台=$platform 已达到 AdMob 专属上限，不参与竞价")
-            return null
-        }
         val cached = runtime.cachedAd ?: run {
             AdsLogger.d("自动竞价：场景=$scene 平台=$platform 无缓存，不参与竞价，尝试补缓存")
             maybeBackfillPlatform(scene,activity, platform)

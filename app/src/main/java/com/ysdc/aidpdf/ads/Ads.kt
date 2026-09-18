@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import com.ysdc.aidpdf.ad.AdsAdmobLimitManager
 import com.ysdc.aidpdf.ads.config.AdsCatalog
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsScene
@@ -62,7 +63,8 @@ object Ads {
         onClosed: () -> Unit,
         onFailed: (AdsExceptionInfo) -> Unit = {},
         trackingScene: String? = null,
-        trackingType: String? = null
+        trackingType: String? = null,
+        isOpen: Boolean? = false,
     ) {
         // 每日广告展示上限检查
         if (!AdsLimitManager.canShow()) {
@@ -77,6 +79,9 @@ object Ads {
             )
             return
         }
+        if (isOpen == false) {
+            AidEventHub.track("Shark_ad_chance", mapOf("scene" to trackingScene))
+        }
         cachedRepository?.showFullScreen(
             scene, platform, activity,
             onShown = { AdsLimitManager.recordShow(); onShown() },
@@ -85,7 +90,9 @@ object Ads {
     }
 
     /**
-     * 全屏广告展示入口：业务层不再指定平台，由模块内部按 AdMob/TradPlus 展示前价格比较，价高者优先。
+     * 全屏广告自动入口：不再做自动竞价。
+     * 规则：AdMob 未达到专属上限时优先展示 AdMob，失败后 TradPlus 兜底；
+     * AdMob 达到专属上限后，直接展示 TradPlus。
      */
     fun showFullScreen(
         scene: AdsScene,
@@ -110,14 +117,42 @@ object Ads {
             )
             return
         }
-        if (isOpen == false) {
-            AidEventHub.track("Shark_ad_chance", mapOf("scene" to trackingScene))
-        }
-
-        cachedRepository?.showBestFullScreen(
-            scene, activity,
-            onShown = { AdsLimitManager.recordShow(); onShown() },
-            onClosed, onFailed, trackingScene, trackingType
+        val preferAdMob = AdsAdmobLimitManager.canShow()
+        val primaryPlatform = if (preferAdMob) AdsPlatform.AdMob else AdsPlatform.TradPlus
+        val fallbackPlatform = if (preferAdMob) AdsPlatform.TradPlus else null
+        AdsLogger.d("广告展示优先级：scene=$scene 首选平台=$primaryPlatform 兜底平台=${fallbackPlatform ?: "无"}")
+        showFullScreen(
+            scene = scene,
+            platform = primaryPlatform,
+            activity = activity,
+            onShown = {
+                if (primaryPlatform == AdsPlatform.AdMob) {
+                    // AdMob 专属上限只在自动入口命中 AdMob 成功展示时累计。
+                    AdsAdmobLimitManager.recordShow()
+                }
+                onShown()
+            },
+            onClosed = onClosed,
+            onFailed = { error ->
+                val nextPlatform = fallbackPlatform
+                if (nextPlatform == null) {
+                    onFailed(error)
+                    return@showFullScreen
+                }
+                AdsLogger.w("广告展示首选平台失败，切换兜底平台：scene=$scene from=$primaryPlatform to=$nextPlatform reason=${error.message}")
+                showFullScreen(
+                    scene = scene,
+                    platform = nextPlatform,
+                    activity = activity,
+                    onShown = onShown,
+                    onClosed = onClosed,
+                    onFailed = onFailed,
+                    trackingScene = trackingScene,
+                    trackingType = trackingType
+                )
+            },
+            trackingScene = trackingScene,
+            trackingType = trackingType
         )
     }
 
@@ -153,7 +188,9 @@ object Ads {
     }
 
     /**
-     * 原生广告展示入口：业务层不再指定平台，由模块内部按 AdMob/TradPlus 展示前价格比较，价高者优先。
+     * 原生广告自动入口：不再做自动竞价。
+     * 规则：AdMob 未达到专属上限时优先展示 AdMob，拿不到有效 handle 时 TradPlus 兜底；
+     * AdMob 达到专属上限后，直接展示 TradPlus。
      */
     fun showNative(
         scene: AdsScene,
@@ -190,10 +227,47 @@ object Ads {
             return null
         }
         AidEventHub.track("Shark_ad_chance", mapOf("scene" to trackingScene))
-        return cachedRepository?.showBestNative(
-            scene, activity, parent, request,
-            onShown = { AdsLimitManager.recordShow(); onShown() },
-            onImpression, onFailed, trackingScene
+        val preferAdMob = AdsAdmobLimitManager.canShow()
+        val primaryPlatform = if (preferAdMob) AdsPlatform.AdMob else AdsPlatform.TradPlus
+        val fallbackPlatform = if (preferAdMob) AdsPlatform.TradPlus else null
+        AdsLogger.d("广告展示优先级：scene=$scene 原生首选平台=$primaryPlatform 兜底平台=${fallbackPlatform ?: "无"}")
+        val primaryHandle = showNative(
+            scene = scene,
+            platform = primaryPlatform,
+            activity = activity,
+            parent = parent,
+            request = request,
+            onShown = {
+                if (primaryPlatform == AdsPlatform.AdMob) {
+                    // AdMob 专属上限只在自动入口命中 AdMob 成功展示时累计。
+                    AdsAdmobLimitManager.recordShow()
+                }
+                onShown()
+            },
+            onImpression = onImpression,
+            onFailed = { error ->
+                // 原生展示是否兜底，取决于首选平台是否已经返回有效 handle；
+                // 这里仅处理首选平台在 showNative 内同步失败的情况。
+                if (fallbackPlatform == null) {
+                    onFailed(error)
+                }
+            },
+            trackingScene = trackingScene
+        )
+        if (primaryHandle != null || fallbackPlatform == null) {
+            return primaryHandle
+        }
+        AdsLogger.w("广告展示首选平台未返回有效 handle，切换兜底平台：scene=$scene from=$primaryPlatform to=$fallbackPlatform")
+        return showNative(
+            scene = scene,
+            platform = fallbackPlatform,
+            activity = activity,
+            parent = parent,
+            request = request,
+            onShown = onShown,
+            onImpression = onImpression,
+            onFailed = onFailed,
+            trackingScene = trackingScene
         )
     }
 
