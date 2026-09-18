@@ -3,6 +3,7 @@ package com.ysdc.aidpdf.ad
 import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.ysdc.aidpdf.store.adsAdmobLimitStateJson
+import com.ysdc.aidpdf.tracking.AidEventHub
 import java.util.Calendar
 
 const val DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON = """
@@ -26,7 +27,9 @@ data class AdsAdmobLimitState(
 )
 
 object AdsAdmobLimitManager {
-
+    @Volatile
+    private var isPost: Boolean = false
+        private set
     private val gson = Gson()
 
     @Volatile
@@ -50,6 +53,10 @@ object AdsAdmobLimitManager {
         state = normalizeState(state)
         val limit = config.ac_admob_limit.coerceAtLeast(0)
         val canShow = state.shownCount < limit
+        if (!canShow && !isPost){
+            isPost = true
+            AidEventHub.track("admobList")
+        }
         AidAdHub.log("Admob广告展示上限检查: 今天已经展示 ${state.shownCount} 次，今日上限 $limit 次，canShow=$canShow")
         return canShow
     }

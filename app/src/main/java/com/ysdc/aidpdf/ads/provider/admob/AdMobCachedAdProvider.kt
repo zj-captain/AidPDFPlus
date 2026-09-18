@@ -19,6 +19,7 @@ import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoader
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdLoaderCallback
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest
 import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
+import com.ysdc.aidpdf.App
 import com.ysdc.aidpdf.ad.AdEventTracker
 import com.ysdc.aidpdf.ads.config.AdsConfigBridge
 import com.ysdc.aidpdf.ads.config.AdsFormat
@@ -34,6 +35,7 @@ import com.ysdc.aidpdf.ads.model.AdDisplayHandle
 import com.ysdc.aidpdf.ads.model.NativeRenderRequest
 import com.ysdc.aidpdf.reminder.model.ReminderTrigger
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter.trigger
+import com.ysdc.aidpdf.store.appInstance
 
 class AdMobCachedAdProvider : CachedAdProvider {
     override fun supports(platform: AdsPlatform, format: AdsFormat): Boolean {
@@ -176,6 +178,7 @@ class AdMobCachedAdProvider : CachedAdProvider {
                     override fun onAdClicked() {
                         AdsThread.runOnMain {
                             trigger(ReminderTrigger.AD_CLICK)
+                            appInstance.skipNextHotStart()
                             AdsEventTracker.reportClick(payload.config, trackingScene)
                         }
                     }

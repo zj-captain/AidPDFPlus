@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.ysdc.aidpdf.App
 import com.ysdc.aidpdf.R
 import com.ysdc.aidpdf.ads.Ads
 import com.ysdc.aidpdf.ads.config.AdsScene
