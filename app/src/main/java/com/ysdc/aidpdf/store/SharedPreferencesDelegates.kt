@@ -223,6 +223,8 @@ var alarmReminderSystemNoticeSlot by SharedPreferencesDelegates.int(0, "alarm_sy
 var additionalReminderSystemNoticeSlot by SharedPreferencesDelegates.int(0, "additional_system_notice_slot")
 
 var adsLimitStateJson by SharedPreferencesDelegates.string("")
+
+var adsAdmobLimitStateJson by SharedPreferencesDelegates.string("")
 var lastRateShowTime by SharedPreferencesDelegates.long(0L, "last_rate_show_time")
 var rateValue by SharedPreferencesDelegates.int(0, "user_rate_value")
 var adUnitFuseStatesJson by SharedPreferencesDelegates.string("[]", "ad_unit_fuse_states_json")

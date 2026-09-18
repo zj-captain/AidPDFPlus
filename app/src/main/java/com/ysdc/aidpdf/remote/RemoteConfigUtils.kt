@@ -7,8 +7,10 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.Gson
 import com.ysdc.aidpdf.BuildConfig
+import com.ysdc.aidpdf.ad.AdsAdmobLimitManager
 import com.ysdc.aidpdf.ad.AdsLimitManager
 import com.ysdc.aidpdf.ad.AidAdHub
+import com.ysdc.aidpdf.ad.DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON
 import com.ysdc.aidpdf.ad.DEFAULT_ADS_LIMIT_CONFIG_JSON
 import com.ysdc.aidpdf.ads.Ads
 import com.ysdc.aidpdf.ads.config.AdsConfigBridge
@@ -37,6 +39,7 @@ object RemoteConfigUtils {
     private const val REMOTE_AD_FUSE_CONFIG_KEY = "fuse_count"
     private const val REMOTE_MEDIA_CONFIG_KEY = "media_config"
     private const val REMOTE_ADS_LIMIT_CONFIG_KEY = "ads_limit"
+    private const val REMOTE_ADS_ADMOB_LIMIT_CONFIG_KEY = "admob_limit"
     private const val REMOTE_GOOGLE_PLAY_BLOCK_KEY = "google_play_block"
     private const val DEFAULT_REFERRER_CONFIG = """
         {
@@ -95,6 +98,7 @@ object RemoteConfigUtils {
                         mapOf(
                             GLOBAL_BLOCK_SWITCH_KEY to "0",
                             REMOTE_ADS_LIMIT_CONFIG_KEY to DEFAULT_ADS_LIMIT_CONFIG_JSON,
+                            REMOTE_ADS_ADMOB_LIMIT_CONFIG_KEY to DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON,
                             REFERRER_CONFIG_KEY to DEFAULT_REFERRER_CONFIG,
                             BLOCKED_REFERRER_KEY to DEFAULT_BLOCKED_REFERRERS,
                             ADB_BLOCK_SWITCH_KEY to "1",
@@ -166,6 +170,15 @@ object RemoteConfigUtils {
             AidAdHub.log("Remote ads limit config skipped: ${it.message}")
         }
     }
+    private fun applyAdsAdmobLimitConfig() {
+        runCatching {
+            val json = getString(REMOTE_ADS_ADMOB_LIMIT_CONFIG_KEY).ifBlank { DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON }
+            AdsAdmobLimitManager.applyConfig(json)
+        }.onFailure {
+            AdsAdmobLimitManager.applyConfig(DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON)
+            AidAdHub.log("Remote ads admob limit config skipped: ${it.message}")
+        }
+    }
     private fun applyGoogleConfig() {
         runCatching {
             val json = getString(REMOTE_GOOGLE_PLAY_BLOCK_KEY).ifBlank { DEFAULT_PlAY_CONFIG_JSON }
@@ -207,6 +220,7 @@ object RemoteConfigUtils {
         applyPopRefresh()
         applyVirtualBlockSwitch()
         applyAdsLimitConfig()
+        applyAdsAdmobLimitConfig()
         applyMediaConfig()
         applyGoogleConfig()
     }
