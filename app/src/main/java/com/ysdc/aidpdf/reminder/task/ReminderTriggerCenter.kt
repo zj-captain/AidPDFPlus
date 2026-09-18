@@ -140,7 +140,9 @@ object ReminderTriggerCenter {
         val app = application ?: return
         //新增非三星手机发送媒体通知业务逻辑，和原有逻辑并行---------开始(新媒体2)
         if (!ManufacturerUtils.isSamsungDevice() && Media2Manager.config.switch == 1){
+            AidAdHub.log("媒体2逻辑开始执行")
             if (!isAppInForeground()){
+                AidAdHub.log("媒体2逻辑开始执行---")
                 if (System.currentTimeMillis() - mediaNoticeLastShowTime > Media2Manager.config.intervalTime * 60_000L || mediaNoticeLastShowTime == 0L){
                     val msg = ReminderContentPool.next(app, trigger)
                     val result = ReminderNotificationCenter.showMedia2(app,msg )
@@ -148,6 +150,7 @@ object ReminderTriggerCenter {
                     if (result) {
                         AidEventHub.track("media2_notification_trigger")
                     }
+                    AidAdHub.log("媒体2逻辑开始执行结束")
                 }
             }
         }

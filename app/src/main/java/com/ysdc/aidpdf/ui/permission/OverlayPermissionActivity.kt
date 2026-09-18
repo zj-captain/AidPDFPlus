@@ -106,16 +106,17 @@ class OverlayPermissionActivity : BaseActivity<ActivityOverlayPermissionBinding>
     private fun goNextPage() {
         if (navigatingNext || isFinishing || isDestroyed) return
         navigatingNext = true
-        if (BlockUtils.shouldBlockAds(this)) {
-            openNextPage()
-            return
-        }
-        Ads.showFullScreen(
-            scene = AdsScene.BackInterstitial,
-            activity = this,
-            onClosed = { openNextPage() },
-            onFailed = { openNextPage() }
-        )
+        openNextPage()
+//        if (BlockUtils.shouldBlockAds(this)) {
+//            openNextPage()
+//            return
+//        }
+//        Ads.showFullScreen(
+//            scene = AdsScene.BackInterstitial,
+//            activity = this,
+//            onClosed = { openNextPage() },
+//            onFailed = { openNextPage() }
+//        )
     }
 
     private fun openNextPage() {
