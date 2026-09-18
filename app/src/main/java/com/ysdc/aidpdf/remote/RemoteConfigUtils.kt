@@ -21,6 +21,8 @@ import com.ysdc.aidpdf.reminder.config.ReminderOverlayConfigRepository
 import com.ysdc.aidpdf.reminder.notice.PopRefresh
 import com.ysdc.aidpdf.reminder.notice.ReminderNotificationCenter
 import com.ysdc.aidpdf.reminder.task.ReminderTriggerCenter
+import com.ysdc.aidpdf.utils.DEFAULT_PlAY_CONFIG_JSON
+import com.ysdc.aidpdf.utils.InstallUtil
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -35,6 +37,7 @@ object RemoteConfigUtils {
     private const val REMOTE_AD_FUSE_CONFIG_KEY = "fuse_count"
     private const val REMOTE_MEDIA_CONFIG_KEY = "media_config"
     private const val REMOTE_ADS_LIMIT_CONFIG_KEY = "ads_limit"
+    private const val REMOTE_GOOGLE_PLAY_BLOCK_KEY = "google_play_block"
     private const val DEFAULT_REFERRER_CONFIG = """
         {
           "active": 1,
@@ -163,6 +166,15 @@ object RemoteConfigUtils {
             AidAdHub.log("Remote ads limit config skipped: ${it.message}")
         }
     }
+    private fun applyGoogleConfig() {
+        runCatching {
+            val json = getString(REMOTE_GOOGLE_PLAY_BLOCK_KEY).ifBlank { DEFAULT_PlAY_CONFIG_JSON }
+            InstallUtil.applyConfig(json)
+        }.onFailure {
+            InstallUtil.applyConfig(DEFAULT_PlAY_CONFIG_JSON)
+            AidAdHub.log("Remote google play config skipped: ${it.message}")
+        }
+    }
     private fun applyMediaConfig() {
         runCatching {
             val json = getString(REMOTE_MEDIA_CONFIG_KEY).ifBlank { DEFAULT_MEDIA_CONFIG_JSON }
@@ -196,6 +208,7 @@ object RemoteConfigUtils {
         applyVirtualBlockSwitch()
         applyAdsLimitConfig()
         applyMediaConfig()
+        applyGoogleConfig()
     }
 
     private fun applyReferrerConfig() {

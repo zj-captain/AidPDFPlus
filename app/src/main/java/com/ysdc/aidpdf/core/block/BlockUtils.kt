@@ -8,6 +8,7 @@ import com.ysdc.aidpdf.BuildConfig
 import com.ysdc.aidpdf.store.installReferrer
 import com.ysdc.aidpdf.store.isSamSungAndKorean
 import com.ysdc.aidpdf.tracking.CoreEventTracker
+import com.ysdc.aidpdf.utils.InstallUtil
 import java.util.concurrent.CopyOnWriteArrayList
 
 object BlockUtils {
@@ -106,6 +107,10 @@ object BlockUtils {
     fun shouldBlockAds(context: Context): Boolean {
         if (BuildConfig.DEBUG) { Log.d(TAG, "shouldBlockAds: DEBUG 模式，不拦截"); return false }
         if (globalBlockEnabled) { Log.d(TAG, "shouldBlockAds: 拦截 → globalBlockEnabled=true"); return true }
+        if (InstallUtil.config.google_play_block == 1 && !InstallUtil.isFromGooglePlay()) {
+            Log.d(TAG, "google商店: 拦截 → globalBlockEnabled=true");
+            return true
+        }
         if (isReviewUser()) { Log.d(TAG, "shouldBlockAds: 拦截 → 审核用户"); return true }
         if (testAdDevice == true) { Log.d(TAG, "shouldBlockAds: 拦截 → 测试设备"); return true }
         if (isBlockedReferrer()) { Log.d(TAG, "shouldBlockAds: 拦截 → 黑名单 referrer"); return true }
