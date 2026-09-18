@@ -12,7 +12,7 @@ import com.ysdc.aidpdf.reminder.store.ReminderStatsStore
 
 object ReminderContentPool {
 
-    fun next(context: Context, trigger: ReminderTrigger,isMedia: Boolean = false): ReminderMessage {
+    fun next(context: Context, trigger: ReminderTrigger): ReminderMessage {
         val contentGroup = sourceTrigger(trigger)
         val texts = context.resources.getStringArray(textArrayFor(contentGroup))
         val size = minOf(texts.size, TARGET_ORDER.size)
@@ -26,8 +26,7 @@ object ReminderContentPool {
                 text = texts[index],
                 button = context.getString(R.string.reminder_action_check),
                 imageRes = imageFor(target)
-            ),
-            isMedia = isMedia
+            )
         )
     }
 

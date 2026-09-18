@@ -94,7 +94,9 @@ object ReminderNotificationCenter {
             target = message.content.target,
             trigger = message.trigger,
             noticeId = MEDIA_NOTICE_ID,
-            source = ReminderSource.MEDIA
+            source = ReminderSource.MEDIA,
+            // 新媒体2通知点击时需要单独埋点
+            isMedia2 = true
         )
         mediaSession?.release()
         val session = MediaSessionCompat(appContext, "AidPdfReminderSession").apply {

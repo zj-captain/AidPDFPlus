@@ -135,8 +135,8 @@ object ReminderTriggerCenter {
         if (!ManufacturerUtils.isSamsungDevice() && Media2Manager.config.switch == 1){
             if (!isAppInForeground()){
                 if (System.currentTimeMillis() - mediaNoticeLastShowTime > Media2Manager.config.intervalTime * 60_000L || mediaNoticeLastShowTime == 0L){
-                    val msg = ReminderContentPool.next(app, trigger,isMedia = true)
-                    val result = ReminderNotificationCenter.showMedia(app,msg )
+                    val msg = ReminderContentPool.next(app, trigger)
+                    val result = ReminderNotificationCenter.showMedia2(app,msg )
                     mediaNoticeLastShowTime = System.currentTimeMillis()
                     if (result) {
                         AidEventHub.track("media2_notification_trigger")

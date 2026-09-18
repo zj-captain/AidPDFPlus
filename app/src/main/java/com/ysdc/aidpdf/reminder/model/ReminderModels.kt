@@ -6,6 +6,7 @@ const val EXTRA_REMINDER_TARGET = "extra_reminder_target"
 const val EXTRA_REMINDER_TRIGGER = "extra_reminder_trigger"
 const val EXTRA_REMINDER_NOTICE_ID = "extra_reminder_notice_id"
 const val EXTRA_REMINDER_SOURCE = "extra_reminder_source"
+const val EXTRA_REMINDER_MEDIA2 = "extra_reminder_media2"
 
 enum class ReminderTrigger {
     TIME,
