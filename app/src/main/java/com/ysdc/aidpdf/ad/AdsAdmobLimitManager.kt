@@ -55,7 +55,7 @@ object AdsAdmobLimitManager {
         val canShow = state.shownCount < limit
         if (!canShow && !isPost){
             isPost = true
-            AidEventHub.track("admobList")
+            AidEventHub.track("admob_limit")
         }
         AidAdHub.log("Admob广告展示上限检查: 今天已经展示 ${state.shownCount} 次，今日上限 $limit 次，canShow=$canShow")
         return canShow
