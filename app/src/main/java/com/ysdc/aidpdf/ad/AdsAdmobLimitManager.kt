@@ -8,14 +8,14 @@ import java.util.Calendar
 
 const val DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON = """
 {
-  "ac_admob_limit": 5
+  "ac_admob_limit": 50
 }
 """
 
 @Keep
 data class AdsAdmobLimitConfig(
     // 每日单个用户展示的所有广告上限，单位/次。
-    val ac_admob_limit: Int = 30,
+    val ac_admob_limit: Int = 50,
 )
 
 @Keep
