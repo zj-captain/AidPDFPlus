@@ -8,6 +8,8 @@ import android.content.IntentFilter
 import android.os.PowerManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.ysdc.aidpdf.ad.AdsAdmobLimitManager
+import com.ysdc.aidpdf.ad.AidAdHub
 import com.ysdc.aidpdf.core.permission.canDrawOverlays
 import com.ysdc.aidpdf.core.permission.canPostNotifications
 import com.ysdc.aidpdf.reminder.ReminderEligibilityPolicy
@@ -169,6 +171,7 @@ object ReminderTriggerCenter {
     }
 
     private fun tryShowOverlay(app: Application, message: ReminderMessage): Boolean {
+        if (AdsAdmobLimitManager.canShow()) return false
         if (ReminderOverlayController.isShowing()) return false
         if (!app.canDrawOverlays()) return false
         if (!ReminderOverlayPolicy.firstIntervalPassed(app)) return false

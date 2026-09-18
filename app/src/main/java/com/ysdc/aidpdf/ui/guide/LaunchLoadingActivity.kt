@@ -24,6 +24,7 @@ import com.ysdc.aidpdf.reminder.model.ReminderSource
 import com.ysdc.aidpdf.reminder.notice.ReminderNotificationCenter
 import com.ysdc.aidpdf.reminder.ReminderEventTracker
 import com.ysdc.aidpdf.reminder.store.ReminderNavigationStore
+import com.ysdc.aidpdf.store.isFirstRun
 import com.ysdc.aidpdf.store.requestSysNotificationCount
 import com.ysdc.aidpdf.ui.basic.BaseActivity
 import com.ysdc.aidpdf.ui.language.LanguageActivity
@@ -32,9 +33,11 @@ import com.ysdc.aidpdf.ui.uninstall.UninstallProblemActivity
 import com.ysdc.aidpdf.tracking.AidEventHub
 import com.ysdc.aidpdf.tracking.CoreEventTracker
 import com.ysdc.aidpdf.tracking.TrackingEventNames
+import com.ysdc.aidpdf.ui.permission.OverlayPermissionActivity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.jvm.java
 import kotlin.time.Duration.Companion.milliseconds
 
 class LaunchLoadingActivity :
@@ -166,7 +169,7 @@ class LaunchLoadingActivity :
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             })
             finish()
-        } else {
+        }else {
             startActivity(LanguageActivity.firstRunIntent(this))
             finish()
         }

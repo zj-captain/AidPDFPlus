@@ -120,15 +120,18 @@ class OverlayPermissionActivity : BaseActivity<ActivityOverlayPermissionBinding>
 
     private fun openNextPage() {
         if (isFinishing || isDestroyed) return
-        if (firstRunFlow) {
-            startActivity(Intent(this, OnboardingActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            })
-        } else if (launchFlow) {
-            startActivity(Intent(this, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            })
-        }
+//        if (firstRunFlow) {
+//            startActivity(Intent(this, OnboardingActivity::class.java).apply {
+//                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//            })
+//        } else if (launchFlow) {
+//            startActivity(Intent(this, MainActivity::class.java).apply {
+//                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//            })
+//        }
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
         finish()
     }
 

@@ -161,9 +161,19 @@ class OnboardingActivity : BaseActivity<ActivityOnboardingBinding>(ActivityOnboa
                 addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
         }*/
-        openActivity<MainActivity>(finishCurrent = true) {
-            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
+       if (shouldShowOverlayPermissionPage()) {
+            startActivity(Intent(this, OverlayPermissionActivity::class.java).apply {
+                putExtra(OverlayPermissionActivity.EXTRA_FIRST_RUN_FLOW, isFirstRun)
+                putExtra(OverlayPermissionActivity.EXTRA_LAUNCH_FLOW, true)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
+            finish()
+        }else{
+           openActivity<MainActivity>(finishCurrent = true) {
+               addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
+           }
         }
+
     }
 
     private fun shouldShowOverlayPermissionPage(): Boolean {
