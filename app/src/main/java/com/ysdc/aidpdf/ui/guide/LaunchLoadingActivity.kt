@@ -8,10 +8,12 @@ import android.util.Log
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import com.ysdc.aidpdf.ad.AdEventTracker
 import com.ysdc.aidpdf.ads.Ads
 import com.ysdc.aidpdf.ads.config.AdsPlatform
 import com.ysdc.aidpdf.ads.config.AdsScene
 import com.ysdc.aidpdf.ads.consent.AidUmpGate
+import com.ysdc.aidpdf.ads.core.AdsEventTracker
 import com.ysdc.aidpdf.ads.utils.AdTrackingScene
 import com.ysdc.aidpdf.core.block.BlockUtils
 import com.ysdc.aidpdf.core.permission.canPostNotifications
@@ -80,6 +82,8 @@ class LaunchLoadingActivity :
         captureReminderNavigation()
         onBackPressedDispatcher.addCallback(this) {}
         requestNotificationThenStart()
+        AidEventHub.track("Shark_ad_chance",mapOf("scene" to launchAdTrackingScene(),
+            "type" to launchAdTrackingType()) )
     }
 
     override fun onAttachedToWindow() {
@@ -330,7 +334,8 @@ class LaunchLoadingActivity :
                 openNextPage()
             },
             trackingScene = launchAdTrackingScene(),
-            trackingType = launchAdTrackingType()
+            trackingType = launchAdTrackingType(),
+            isOpen = true
         )
     }
 

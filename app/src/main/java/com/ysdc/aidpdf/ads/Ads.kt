@@ -18,6 +18,7 @@ import com.ysdc.aidpdf.ads.repository.BannerCoordinator
 import com.ysdc.aidpdf.ads.repository.CachedAdsRepository
 import com.ysdc.aidpdf.ad.AdsLimitManager
 import com.ysdc.aidpdf.core.block.BlockUtils
+import com.ysdc.aidpdf.tracking.AidEventHub
 
 object Ads {
     private var cachedRepository: CachedAdsRepository? = null
@@ -93,7 +94,8 @@ object Ads {
         onClosed: () -> Unit,
         onFailed: (AdsExceptionInfo) -> Unit = {},
         trackingScene: String? = null,
-        trackingType: String? = null
+        trackingType: String? = null,
+        isOpen: Boolean? = false,
     ) {
         // 每日广告展示上限检查
         if (!AdsLimitManager.canShow()) {
@@ -108,6 +110,10 @@ object Ads {
             )
             return
         }
+        if (isOpen == false) {
+            AidEventHub.track("Shark_ad_chance", mapOf("scene" to trackingScene))
+        }
+
         cachedRepository?.showBestFullScreen(
             scene, activity,
             onShown = { AdsLimitManager.recordShow(); onShown() },
@@ -183,6 +189,7 @@ object Ads {
             )
             return null
         }
+        AidEventHub.track("Shark_ad_chance", mapOf("scene" to trackingScene))
         return cachedRepository?.showBestNative(
             scene, activity, parent, request,
             onShown = { AdsLimitManager.recordShow(); onShown() },
@@ -213,6 +220,7 @@ object Ads {
             )
             return null
         }
+        AidEventHub.track("Shark_ad_chance", mapOf("scene" to trackingScene))
         // Banner 展示是同步的，返回非 null 即展示成功，直接记录
         val handle = bannerCoordinator?.showBanner(
             scene, platform, activity, parent, request, onImpression, onFailed, trackingScene

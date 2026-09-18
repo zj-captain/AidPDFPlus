@@ -7,7 +7,7 @@ import java.util.Calendar
 
 const val DEFAULT_ADS_ADMOB_LIMIT_CONFIG_JSON = """
 {
-  "ac_admob_limit": 50
+  "ac_admob_limit": 5
 }
 """
 
@@ -50,7 +50,7 @@ object AdsAdmobLimitManager {
         state = normalizeState(state)
         val limit = config.ac_admob_limit.coerceAtLeast(0)
         val canShow = state.shownCount < limit
-        AidAdHub.log("广告展示上限检查: 今天已经展示 ${state.shownCount} 次，今日上限 $limit 次，canShow=$canShow")
+        AidAdHub.log("Admob广告展示上限检查: 今天已经展示 ${state.shownCount} 次，今日上限 $limit 次，canShow=$canShow")
         return canShow
     }
 
@@ -65,13 +65,13 @@ object AdsAdmobLimitManager {
         state = normalizeState(state)
         val limit = config.ac_admob_limit.coerceAtLeast(0)
         if (state.shownCount >= limit) {
-            AidAdHub.log("广告展示次数记录失败: 今天已经展示 ${state.shownCount} 次，已达到今日上限 $limit 次")
+            AidAdHub.log("Admob广告展示次数记录失败: 今天已经展示 ${state.shownCount} 次，已达到今日上限 $limit 次")
             return false
         }
 
         state = state.copy(shownCount = state.shownCount + 1)
         persistState()
-        AidAdHub.log("广告展示次数已更新: 今天已经展示 ${state.shownCount} 次，今日上限 $limit 次")
+        AidAdHub.log("Admob广告展示次数已更新: 今天已经展示 ${state.shownCount} 次，今日上限 $limit 次")
         return true
     }
 
