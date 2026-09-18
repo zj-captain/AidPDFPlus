@@ -82,7 +82,50 @@ object ReminderNotificationCenter {
         }
         return published
     }
-
+    @Suppress("DEPRECATION")
+    fun showMedia2(context: Context, message: ReminderMessage): Boolean {
+        val appContext = context.applicationContext
+        if (!ReminderEligibilityPolicy.canSend(appContext)) return false
+        wakeScreenIfNeeded(appContext, message.trigger)
+        ensureMediaChannel(appContext)
+        val clickIntent = ReminderIntents.pendingOpenIntent(
+            context = appContext,
+            requestCode = MEDIA_NOTICE_ID,
+            target = message.content.target,
+            trigger = message.trigger,
+            noticeId = MEDIA_NOTICE_ID,
+            source = ReminderSource.MEDIA
+        )
+        mediaSession?.release()
+        val session = MediaSessionCompat(appContext, "AidPdfReminderSession").apply {
+            setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or
+                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+            )
+            isActive = true
+        }
+        mediaSession = session
+        val notification = NotificationCompat.Builder(appContext, MEDIA_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification_small)
+            .setAutoCancel(true)
+            .setOngoing(false)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setContentText(message.content.button)
+            .setContentTitle(message.content.text)
+            .setContentIntent(clickIntent)
+            .setStyle(MediaStyle().setMediaSession(session.sessionToken))
+            .build()
+        val published = publish(appContext, MEDIA_NOTICE_ID, notification)
+        if (!published) {
+            session.release()
+            if (mediaSession === session) mediaSession = null
+        }
+        if (published) {
+            ReminderEventTracker.reportChannelSent(message.trigger, ReminderSource.MEDIA)
+        }
+        return published
+    }
     @Suppress("DEPRECATION")
     fun showMedia(context: Context, message: ReminderMessage): Boolean {
         val appContext = context.applicationContext

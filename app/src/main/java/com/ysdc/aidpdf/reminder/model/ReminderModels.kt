@@ -70,4 +70,5 @@ data class ReminderContent(
 data class ReminderMessage(
     val trigger: ReminderTrigger,
     val content: ReminderContent,
+    var isMedia: Boolean = false
 )

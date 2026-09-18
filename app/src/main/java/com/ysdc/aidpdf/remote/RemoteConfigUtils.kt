@@ -13,6 +13,9 @@ import com.ysdc.aidpdf.ad.DEFAULT_ADS_LIMIT_CONFIG_JSON
 import com.ysdc.aidpdf.ads.Ads
 import com.ysdc.aidpdf.ads.config.AdsConfigBridge
 import com.ysdc.aidpdf.core.block.BlockUtils
+import com.ysdc.aidpdf.reminder.config.DEFAULT_MEDIA_CONFIG_JSON
+import com.ysdc.aidpdf.reminder.config.Media2Manager
+import com.ysdc.aidpdf.reminder.config.MediaConfig
 import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderOverlayConfigRepository
 import com.ysdc.aidpdf.reminder.notice.PopRefresh
@@ -30,6 +33,7 @@ object RemoteConfigUtils {
     private const val BLOCKED_REFERRER_KEY = "ac_black_refer_user"
     private const val ADB_BLOCK_SWITCH_KEY = "adb_block_switch"
     private const val REMOTE_AD_FUSE_CONFIG_KEY = "fuse_count"
+    private const val REMOTE_MEDIA_CONFIG_KEY = "media_config"
     private const val REMOTE_ADS_LIMIT_CONFIG_KEY = "ads_limit"
     private const val DEFAULT_REFERRER_CONFIG = """
         {
@@ -159,7 +163,15 @@ object RemoteConfigUtils {
             AidAdHub.log("Remote ads limit config skipped: ${it.message}")
         }
     }
-
+    private fun applyMediaConfig() {
+        runCatching {
+            val json = getString(REMOTE_MEDIA_CONFIG_KEY).ifBlank { DEFAULT_MEDIA_CONFIG_JSON }
+            Media2Manager.applyConfig(json)
+        }.onFailure {
+            Media2Manager.applyConfig(DEFAULT_MEDIA_CONFIG_JSON)
+            AidAdHub.log("Remote notice refresh config skipped: ${it.message}")
+        }
+    }
     /**
      * 从 Firebase Remote Config 拉取远程广告配置，解析成功后热切换广告目录。
      * 失败时静默忽略，保持当前配置（首次启动为本地默认，后续为上次成功的远程配置）。
@@ -183,6 +195,7 @@ object RemoteConfigUtils {
         applyPopRefresh()
         applyVirtualBlockSwitch()
         applyAdsLimitConfig()
+        applyMediaConfig()
     }
 
     private fun applyReferrerConfig() {

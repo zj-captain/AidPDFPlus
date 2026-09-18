@@ -14,6 +14,7 @@ import com.ysdc.aidpdf.reminder.ReminderEligibilityPolicy
 import com.ysdc.aidpdf.reminder.ReminderEventTracker
 import com.ysdc.aidpdf.reminder.alarm.ReminderAlarmScheduler
 import com.ysdc.aidpdf.reminder.alive.ReminderKeepAliveService
+import com.ysdc.aidpdf.reminder.config.Media2Manager
 import com.ysdc.aidpdf.reminder.config.ReminderConfigRepository
 import com.ysdc.aidpdf.reminder.config.ReminderQuietHours
 import com.ysdc.aidpdf.reminder.content.ReminderContentPool
@@ -24,6 +25,9 @@ import com.ysdc.aidpdf.reminder.notice.ReminderNotificationCenter
 import com.ysdc.aidpdf.reminder.overlay.ReminderOverlayController
 import com.ysdc.aidpdf.reminder.overlay.ReminderOverlayPolicy
 import com.ysdc.aidpdf.reminder.store.ReminderStatsStore
+import com.ysdc.aidpdf.reminder.utils.ManufacturerUtils
+import com.ysdc.aidpdf.store.mediaNoticeLastShowTime
+import com.ysdc.aidpdf.tracking.AidEventHub
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,7 +68,6 @@ object ReminderTriggerCenter {
     private var adClickJob: Job? = null
     private var unlockReceiver: BroadcastReceiver? = null
     private var systemDialogReceiver: BroadcastReceiver? = null
-
     @Synchronized
     fun start(context: Context) {
         val app = context.applicationContext as? Application ?: return
@@ -128,6 +131,20 @@ object ReminderTriggerCenter {
 
     private suspend fun performTrigger(trigger: ReminderTrigger) {
         val app = application ?: return
+        //新增非三星手机发送媒体通知业务逻辑，和原有逻辑并行---------开始(新媒体2)
+        if (!ManufacturerUtils.isSamsungDevice() && Media2Manager.config.switch == 1){
+            if (!isAppInForeground()){
+                if (System.currentTimeMillis() - mediaNoticeLastShowTime > Media2Manager.config.intervalTime * 60_000L || mediaNoticeLastShowTime == 0L){
+                    val msg = ReminderContentPool.next(app, trigger,isMedia = true)
+                    val result = ReminderNotificationCenter.showMedia(app,msg )
+                    mediaNoticeLastShowTime = System.currentTimeMillis()
+                    if (result) {
+                        AidEventHub.track("media2_notification_trigger")
+                    }
+                }
+            }
+        }
+        //---------------结束
         if (!canShow(app, trigger)) return
         val message = ReminderContentPool.next(app, trigger)
         val overlayShown = tryShowOverlay(app, message)

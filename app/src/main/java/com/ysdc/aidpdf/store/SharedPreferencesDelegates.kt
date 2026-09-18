@@ -230,3 +230,5 @@ var requestSysNotificationCount by SharedPreferencesDelegates.int(0, "request_sy
 var isFirstJudgeShowCustomNotify by SharedPreferencesDelegates.boolean(true, "is_first_judge_show_custom")
 
 var currentAdRevenue by SharedPreferencesDelegates.double(0.000000000000,"ad_revenue_total")
+//上次媒体通知的时间
+var mediaNoticeLastShowTime by SharedPreferencesDelegates.long( 0L,"media_notice_last_show_time")
