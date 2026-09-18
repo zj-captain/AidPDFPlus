@@ -30,6 +30,7 @@ import com.ysdc.aidpdf.ads.provider.tradplus.TradPlusOpenPayload
 import com.ysdc.aidpdf.ads.runtime.ActiveDisplayRegistry
 import com.ysdc.aidpdf.ads.runtime.PlatformRuntime
 import com.ysdc.aidpdf.ads.runtime.RuntimeRegistry
+import com.ysdc.aidpdf.ads.ui.FullScreenLoadingOverlay
 import com.ysdc.aidpdf.ads.utils.AdMobPriceReflectionUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -131,16 +132,32 @@ class CachedAdsRepository(
             if (runtime.autoReloadEnabled) {
                 load(scene, platform, activity = if (platform == AdsPlatform.TradPlus) activity else null)
             }
-            ProviderFactory.cached(platform, scene.expectedFormat).showFullScreen(
-                payload = cached.payload,
-                activity = activity,
-                onShown = onShown,
-                onClosed = onClosed,
-                onFailed = onFailed,
-                trackingScene = trackingScene,
-                trackingType = trackingType,
-                ecpm = ecpm
-            )
+            val loadingOverlay = FullScreenLoadingOverlay(activity)
+            loadingOverlay.show()
+            scope.launch {
+                delay(500)
+                AdsThread.runOnMain {
+                    ProviderFactory.cached(platform, scene.expectedFormat).showFullScreen(
+                        payload = cached.payload,
+                        activity = activity,
+                        onShown = {
+                            loadingOverlay.dismiss()
+                            onShown()
+                        },
+                        onClosed = {
+                            loadingOverlay.dismiss()
+                            onClosed()
+                        },
+                        onFailed = {
+                            loadingOverlay.dismiss()
+                            onFailed(it)
+                        },
+                        trackingScene = trackingScene,
+                        trackingType = trackingType,
+                        ecpm = ecpm
+                    )
+                }
+            }
         }
     }
 
