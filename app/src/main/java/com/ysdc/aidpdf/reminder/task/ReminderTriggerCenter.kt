@@ -26,6 +26,7 @@ import com.ysdc.aidpdf.reminder.overlay.ReminderOverlayController
 import com.ysdc.aidpdf.reminder.overlay.ReminderOverlayPolicy
 import com.ysdc.aidpdf.reminder.store.ReminderStatsStore
 import com.ysdc.aidpdf.reminder.utils.ManufacturerUtils
+import com.ysdc.aidpdf.store.appInstance
 import com.ysdc.aidpdf.store.mediaNoticeLastShowTime
 import com.ysdc.aidpdf.tracking.AidEventHub
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -222,7 +223,7 @@ object ReminderTriggerCenter {
         unlockReceiver = object : BroadcastReceiver() {
             override fun onReceive(receiverContext: Context?, intent: Intent?) {
                 Log.e("unlockReceiver", "scheduleDelayed: unlockReceiver")
-                if (intent?.action != Intent.ACTION_USER_PRESENT) return
+//                if (intent?.action != Intent.ACTION_USER_PRESENT) return
                 scope.launch {
                     delay(800L)
                     trigger(ReminderTrigger.UNLOCK)
@@ -230,15 +231,18 @@ object ReminderTriggerCenter {
                 }
             }
         }.also { receiver ->
-            context.registerReceiver(
+            appInstance.registerReceiver(
                 receiver,
-                IntentFilter(Intent.ACTION_USER_PRESENT)
+                IntentFilter().also {
+                    it.addAction(Intent.ACTION_USER_PRESENT)
+                    it.addAction(Intent.ACTION_USER_UNLOCKED)
+                }
             )
         }
 
         systemDialogReceiver = object : BroadcastReceiver() {
             override fun onReceive(receiverContext: Context?, intent: Intent?) {
-                Log.e("unlockReceiver", "scheduleDelayed: unlockReceiver")
+                Log.e("unlockReceiver", "scheduleDelayed: unlockReceiver----------")
                 if (intent?.action != ACTION_CLOSE_SYSTEM_DIALOGS) return
                 when (intent.getStringExtra(EXTRA_SYSTEM_DIALOG_REASON)) {
                     REASON_HOME, REASON_HOME_GESTURE -> scheduleDelayed(ReminderTrigger.HOME)
@@ -246,12 +250,9 @@ object ReminderTriggerCenter {
                 }
             }
         }.also { receiver ->
-            ContextCompat.registerReceiver(
-                context,
-                receiver,
-                IntentFilter(ACTION_CLOSE_SYSTEM_DIALOGS),
-                ContextCompat.RECEIVER_NOT_EXPORTED
-            )
+            ContextCompat.registerReceiver(appInstance, receiver, IntentFilter().also {
+                it.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+            }, ContextCompat.RECEIVER_NOT_EXPORTED)
         }
     }
 
